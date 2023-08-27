@@ -14,16 +14,14 @@ import { createPinia } from 'pinia';
 
 const pinia = createPinia();
 const app = createApp(App)
-
-app.use(router).use(ElementPlus).use(pinia).mount('#app')
-
-// const axiosInstance = axios.create({
-//   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
-// });
-// const axioss = ref(axiosInstance)
-// // app.config.globalProperties.$axios = axiosInstance;
-// provide('axios',axioss)
-
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+app.use(router).use(ElementPlus).use(pinia).mount('#app')
+
+const axiosInstance = axios.create({
+  baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+});
+provide('axios', axiosInstance)
+
+
