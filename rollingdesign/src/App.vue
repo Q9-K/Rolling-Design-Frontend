@@ -1,5 +1,5 @@
 <!--
- * @Date: 2023-08-27 14:53:57
+ * @Date: 2023-08-28 03:58:55
  * @Author: Q9K
  * @Description: 
 -->
@@ -27,75 +27,30 @@
       </template>
     </el-popover>
   </div>
+  <nav>
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+  </nav>
+  <router-view/>
 </template>
+
 <script setup>
 import { provide, onMounted, onBeforeMount } from 'vue'
 import axios from 'axios'
-import { useSocketStore } from './stores/useSocketStore'
-// const socketStore = useSocketStore()
-// const axiosInstance = axios.create({
-//   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
-// });
-// provide('axios', axiosInstance)
-const gridData = [
-  {
-    date: '2016-05-02',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Jack',
-    address: 'New York City',
-  },
-]
-
-onMounted(() => {
-
-})
-// onBeforeMount(() => {
-//   const socket = new WebSocket('ws://101.43.159.45:8001/13/chat/2')
-//   socketStore.socket = socket
+const axiosInstance = axios.create({
+  baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+});
+provide('axios', axiosInstance)
+// // onMounted(async () => {
+// let res = await axios.get('http://www.aamofe.top/api/team/all_teams', {
+//   headers: {
+//     Authorization: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NDg0OTQsImlkIjoxfQ.HIgCyImqu4gytXnLAeE_7qkYd0INgcHeh6NHL_W3dMQ'
+//   }
 // })
-// socket.close(1000, '我太傻逼了')
+// console.log(res.data)
 
+//   console.log(res.data)
+// })
+
+// provide('test', 'test')
 </script>
-
-<style scoped lang="scss">
-.box {
-  position: relative;
-  display: flex;
-  // align-items: center;
-
-  i {
-    font-size: 40px;
-    width: 40px;
-    position: relative;
-
-    &:hover {
-      color: #175ceb;
-      cursor: pointer;
-    }
-  }
-
-  .dot {
-    position: absolute;
-
-    border-radius: 50%;
-
-    height: 15px;
-    width: 15px;
-    background: red;
-  }
-}
-</style>
