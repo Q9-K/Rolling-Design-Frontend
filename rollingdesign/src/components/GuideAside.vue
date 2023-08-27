@@ -256,10 +256,10 @@ const addTeamIntroductionInput = ref('')
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath)
+  // console.log(key, keyPath)
 }
 const handleClose = (key, keyPath) => {
-  console.log(key, keyPath)
+  // console.log(key, keyPath)
 }
 
 /*跳转对应页*/
@@ -298,7 +298,7 @@ const fetchTeamlistData = () => {
           teamList.value.push(team);/*【这样写】*/
           return;
         })
-        console.log(teamList.value);
+        // console.log(teamList.value);
       }
       else {
         ElMessage.warning(response.data.msg);
@@ -313,15 +313,15 @@ const fetchProjectData = () => {
 
   axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
     .then((response) => {
-      console.log(authStore().token);
+      // console.log(authStore().token);
       console.log(response);
 
       if (response.data.errno == 0) {  //所有团队信息
-        response.data.teams.forEach((project, index) => {
+        response.data.projects.forEach((project, index) => {
           projectList.value.push(project);/*【这样写】*/
           return;
         })
-        console.log(projectList.value);
+        // console.log(projectList.value);
       }
       else {
         ElMessage.warning(response.data.msg);
@@ -334,7 +334,7 @@ const fetchProjectData = () => {
 const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   console.log(Headers);
-  console.log(authStore().userId)
+  // console.log(authStore().userId)
 
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
@@ -346,7 +346,6 @@ const fetchNowTeam = () => {
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         // nowTeam. = response.data.team.team_num;
-        console.log(nowTeam.name);
         return;
       }
       else {
@@ -369,7 +368,7 @@ onMounted(() => {
 
 const guideIndex = ref();//侧栏导航高亮标识！！！
 const highLight = () => {//计算侧栏应该是哪里高亮
-  console.log(route.meta.index);
+  // console.log(route.meta.index);
   if (route.meta.index != "teamManage" && route.meta.index != "project") {
     guideIndex.value = route.meta.index;
   }
@@ -379,7 +378,7 @@ const highLight = () => {//计算侧栏应该是哪里高亮
   else if (route.meta.index == "project") {
     guideIndex.value = 'project-' + route.params.id;
   }
-  console.log("v:" + guideIndex.value);
+  // console.log("v:" + guideIndex.value);
 }
 /*侧栏导航栏结束*/
 

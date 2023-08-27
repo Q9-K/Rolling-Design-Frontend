@@ -30,7 +30,6 @@
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
                 <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
-                <el-button type="primary">新建项目</el-button>
               </div>
             </el-row>
 
@@ -50,59 +49,104 @@
               </template>
             </el-dialog>
 
-            <!--********开始-->
-            <el-tabs v-model="activeTab">
-              <el-tab-pane label="团队项目" name="tab1">
-                <!--项目部分-->
-                <div style="margin-top:20px">
-                  <!-- <ProjectDisplay /> -->
-                  <ProjectDisplay></ProjectDisplay>
-                </div>
 
-              </el-tab-pane>
 
-              <el-tab-pane label="成员权限" name="tab2">
-                <div>
-                  <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="nickName" label="昵称" width="180" />
-                    <el-table-column prop="name" label="真实姓名" width="180" />
-                    <el-table-column prop="email" label="邮箱" />
-                    <el-table-column prop="role" label="身份" />
-                    <!--如果登录者是创建者-->
-                    <!-- <el-table-column prop="op" label="操作">
+            <div>
+              <el-table :data="memberList" style="width: 100%">
+                <el-table-column prop="nickname" label="昵称" width="180" />
+                <el-table-column prop="username" label="真实姓名" width="180" />
+                <el-table-column prop="email" label="邮箱" />
+                <!-- <el-table-column prop="role" label="身份" /> -->
+
+                <el-table-column label="身份" width="180">
+
+                  <template #default="scope">
+                    <!--如果该栏是创建者 或者 目前登录者身份是普通成员-->
+                    <div v-if="scope.row.role_string === 'CR' || roleOperation === 'formal'">
+                      <span style="color:gray">{{ scope.row.role }}</span>
+                    </div>
+                    <!--到这，说明该栏肯定不是创建者 目前登录者身份也不是普通成员-->
+                    <!--目前登录者身份是创建者-->
+                    <div v-else-if="roleOperation === 'all'">
+                      <!--该栏为管理员-->
+                      <div v-if="scope.row.role_string === 'MR'">
+                        {{ scope.row.role }}
+                      </div>
+                      <!--该栏为普通成员-->
+                      <div v-else-if="scope.row.role_string === 'MB'">
+                      {{ scope.row.role }}
+                      </div>
+                    </div>
+
+                    <!--目前登录者身份是管理员-->
+                    <div v-else-if="roleOperation === 'admin'">
+                      <div v-if="scope.row.role_string === 'MR'">
+                      <span style="color:gray">{{ scope.row.role }}</span>
+                      </div>
+                      <div v-if="scope.row.role_string === 'MB'">
+                      {{ scope.row.role }}
+                      </div>
+                    </div>
+
+
+
+                    <!--到这，说明该栏肯定不是创建者-->
+
+                    <!--当前登录者为创建者-->
+                    <el-popover
+                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'all'"
+                      effect="light" trigger="click" placement="bottom" width="auto">
+                      <template #default>
+                        <!--当前这一栏是什么-->
+                        <div>管理员<span v-if="scope.row.role_string === 'MR'"><el-icon><Select /></el-icon></span></div>
+                        <div>普通成员<span v-if="scope.row.role_string === 'MB'"><el-icon><Select /></el-icon></span></div>
+                        <div class="my-divider"></div>
+                        <div>移除成员<el-icon><DeleteFilled /></el-icon></div>
+                      </template>
+
+                      <template #reference>
+                        <el-icon>
+                          <ArrowDown />
+                        </el-icon>
+                      </template>
+                    </el-popover>
+
+                    <!--当前登录者为管理员 且 该栏为普通成员-->
+                    <el-popover
+                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'admin'&&scope.row.role_string === 'MR'"
+                      effect="light" trigger="click" placement="bottom" width="auto">
+                      <template #default>
+                        <div><span>管理员</span></div>
+                        <div>普通成员<span><el-icon><Select /></el-icon></span></div>
+                        <div class="my-divider"></div>
+                        <div>移除成员<el-icon><DeleteFilled /></el-icon></div>
+                      </template>
+
+                      <template #reference>
+                        <el-icon>
+                          <ArrowDown />
+                        </el-icon>
+                      </template>
+                    </el-popover>
+
+                  </template>
+                </el-table-column>
+
+                <!--如果登录者是创建者-->
+                <!-- <el-table-column prop="op" label="操作">
                     <template #default>
                       <el-button link type="primary" size="small">Detail</el-button>
                       <el-button link type="primary" size="small">Edit</el-button>
                     </template>
                   </el-table-column> -->
-                    <el-table-column prop="op" label="操作">
-                      <template #default>
-                        <el-button link type="primary" size="small">Detail</el-button>
-                        <el-button link type="primary" size="small">Detail</el-button>
-                      </template>
-                    </el-table-column>
-                  </el-table>
+                <el-table-column prop="op" label="操作">
+                  <template #default>
+                    <el-button type="primary" size="small">Detail</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
 
-                </div>
-              </el-tab-pane>
-
-              <el-tab-pane label="团队设置" name="tab3">
-                <p>这是标签页 3 的内容</p>
-                <!--昵称-->
-                <el-row style="display: flex;align-items: center;justify-content: space-between;">
-                  <div class="leftContent" style="display: flex;justify-content:flex-start">
-                    <div>
-                      <div class="hintText" style="text-align: left;margin-bottom: 5px;">昵称</div>
-                      <div style="text-align: left;">xx用户名</div>
-                    </div>
-                  </div>
-                  <el-button link type="primary" size="small" style="justify-content: flex-end;"
-                    @click="nickNameConfig = true">修改昵称</el-button>
-                </el-row>
-                <el-divider />
-              </el-tab-pane>
-            </el-tabs>
-            <!--********结束-->
+            </div>
 
 
           </div>
@@ -127,11 +171,12 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import {
   More,
-  Comment,
-  Grid,
+  ArrowDown,
+  Select,
+  DeleteFilled 
 } from '@element-plus/icons-vue'
+import { now } from '@vueuse/shared'
 const route = useRoute()
-const activeTab = ref('tab1'); // 设置默认激活的标签页
 
 /*跳转对应页*/
 const jumpTo = (path) => {
@@ -142,7 +187,7 @@ const jumpTo = (path) => {
 /*邀请成员*/
 const centerDialogVisible = ref(false) /*邀请对话框*/
 const input = ref('')/*邀请成员时，输入框*/
-
+const memberList = ref([])
 /*成员列表*/
 const tableData = [
   {
@@ -165,36 +210,61 @@ const tableData = [
 const nowTeam = reactive({
   teamId: '',
   name: '',
-  logo: '',
-  createTime:'',
-  creator:'',
+  createTime: '',
+  creator: '',
+  roleString: '',
 })
 
+let roleOperation = ref('');
 const fetchData = () => {
-  console.log(route.meta.index);
-
-  // http://www.aamofe.top/api/team/get_current_team/
-  /*获取团队信息*/
-}
-
-
-const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
-  console.log(Headers);
-  console.log(authStore().userId)
-
+  //获取当前团队
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
       console.log(response);
 
-      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+      if (response.data.errno == 0) {  //获取信息
         nowTeam.teamId = response.data.team.id;
         nowTeam.name = response.data.team.name;
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
-        // nowTeam. = response.data.team.team_num;
-        console.log(nowTeam.name);
-        return;
+        nowTeam.role = response.data.team.role;
+        nowTeam.roleString = response.data.team.role_string;
+
+        //执行获取团队所有成员
+        axios.get('http://www.aamofe.top/api/team/all_members/', { params: { team_id: nowTeam.teamId }, headers: Headers })
+          .then((response) => {
+            console.log(response);
+
+            if (response.data.errno == 0) {  //所有团队信息
+              response.data.members.forEach((member, index) => {
+                //op字段为当前登录者可以对该
+                // if()
+
+                memberList.value.push(member);/*【这样写】*/
+                return;
+              })
+              console.log(memberList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+            }
+            else {
+              ElMessage.warning(response.data.msg);
+            }
+          }).catch(error => {
+            console.log(error);
+          })
+
+        console.log(nowTeam.roleString);
+        if (nowTeam.roleString === "CR") {
+          roleOperation = "all";
+          // console.log(12);
+        }
+        else if (nowTeam.roleString === "MR") { //管理员
+          roleOperation = "admin";
+        }
+        else if (nowTeam.roleString === "MB") { //普通成员
+          roleOperation = "formal";
+        }
+        console.log('roleOperation' + roleOperation);
       }
       else {
         ElMessage.warning(response.data.msg);
@@ -202,12 +272,11 @@ const fetchNowTeam = () => {
     }).catch(error => {
       console.log(error);
     })
-
+  // console.log('team_id:' + nowTeam.teamId);
 }
 
 onMounted(() => {
   fetchData();
-  fetchNowTeam();
 })
 </script>
 
@@ -265,17 +334,15 @@ onMounted(() => {
   align-items: center;
 }
 
-.text {
-  font-size: 14px;
+.my-divider {
+  height: 1px;
+  /* 设置横线的高度 */
+  background-color: rgb(234, 232, 232);
+  /* 设置横线的颜色 */
+  margin: 10px 0;
+  /* 可选：设置横线上下的间距 */
 }
 
-.item {
-  margin-bottom: 18px;
-}
-
-.box-card {
-  width: 480px;
-}
 
 /*上传团队封面*/
 .avatar-uploader .avatar {

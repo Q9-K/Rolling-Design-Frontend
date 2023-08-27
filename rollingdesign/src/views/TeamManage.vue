@@ -165,7 +165,7 @@ const tableData = [
 
 const fetchData=()=>
 {
-  console.log(route.meta.index);
+  // console.log(route.meta.index);
 
   // http://www.aamofe.top/api/team/get_current_team/
   /*获取团队信息*/

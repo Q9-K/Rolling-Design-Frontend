@@ -275,9 +275,28 @@ const jumpTo = (path) => {
 
 const fetchUserData = () => {
   let Headers = { 'Authorization': authStore().token };
-  // let Headers1 = { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NDg0OTQsImlkIjoxfQ.HIgCyImqu4gytXnLAeE_7qkYd0INgcHeh6NHL_W3dMQ"};
 
-  // axios.get('http://www.aamofe.top/api/user/show_info/2', { headers: Headers })
+  axios.get('http://www.aamofe.top/api/user/show_info/0', { headers: Headers })
+    .then((response) => {
+      // console.log(Headers);
+      console.log(response);
+
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        user.userId = response.data.user_info.id;
+        user.name = response.data.user_info.username;
+        user.nickName = response.data.user_info.nickname;
+        user.userAvatar = response.data.user_info.avatar_url;   //这是头像
+        user.email = response.data.user_info.email;
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+
+  // axios.get('http://www.aamofe.top/api/user/personal_info/', { headers: Headers })
   //   .then((response) => {
   //     console.log(Headers);
   //     console.log(response);
@@ -288,6 +307,7 @@ const fetchUserData = () => {
   //       user.nickName = response.data.user_info.nickname;
   //       user.userAvatar = response.data.user_info.avatar_url;   //这是头像
   //       user.email = response.data.user_info.email;
+  //       console.log(user);
   //       return;
   //     }
   //     else {
@@ -296,27 +316,6 @@ const fetchUserData = () => {
   //   }).catch(error => {
   //     console.log(error);
   //   })
-
-  axios.get('http://www.aamofe.top/api/user/personal_info/', { headers: Headers })
-    .then((response) => {
-      console.log(Headers);
-      console.log(response);
-
-      if (response.data.errno == 0) {  //获取成功“我”的身份信息
-        user.userId = response.data.user_info.id;
-        user.name = response.data.user_info.username;
-        user.nickName = response.data.user_info.nickname;
-        user.userAvatar = response.data.user_info.avatar_url;   //这是头像
-        user.email = response.data.user_info.email;
-        console.log(user);
-        return;
-      }
-      else {
-        ElMessage.warning(response.data.msg);
-      }
-    }).catch(error => {
-      console.log(error);
-    })
 }
 
 onMounted(() => {
