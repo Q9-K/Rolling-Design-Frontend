@@ -26,16 +26,6 @@
 
       </div>
 
-      <!-- <div>
-        <div>
-          一起创造
-        </div>
-        <div> 面向团队的专业 UI/UX 设计工具</div>
-
-        <div> 多人同时编辑、随时在线评审、设计一键交付，让想法更快实现</div>
-        <div>快来使用吧～</div>
-      </div> -->
-
       <div>
         <img class="show" src="@/assets/show.png" />
       </div>
@@ -44,19 +34,17 @@
     <div v-else>
       <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
         <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
-        <span style="margin-right:30px">
+        <span style="margin-right:30px" @click="jumpTo('/index')">
           主页
         </span>
-        <span style="margin-right:30px">
-          草稿箱
+
+        <span style="margin-right:30px" @click="jumpTo('/teamPeople')">
+          团队人员
         </span>
-        <span style="margin-right:30px">
-          团队管理
-        </span>
-        <span style="margin-right:30px">
+        <span style="margin-right:30px" @click="jumpTo('/index')">
           项目
         </span>
-        <span>
+        <span @click="jumpTo('/message')">
           消息中心
         </span>
 
@@ -152,15 +140,7 @@
 
       </div>
 
-      <div>
-        <div>
-          一起创造
-        </div>
-        <div> 面向团队的专业 UI/UX 设计工具</div>
 
-        <div> 多人同时编辑、随时在线评审、设计一键交付，让想法更快实现</div>
-        <div>快来使用吧～</div>
-      </div>
 
       <div>
         <img class="show" src="@/assets/show.png" />
@@ -173,10 +153,10 @@
 import { useRouter } from 'vue-router'
 import { ref, unref, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { authStore } from "../store/index.js"
 // import { isDark } from '~/composables/dark'
 import { reactive, toRefs } from 'vue'
 import axios from 'axios'
-import { authStore } from "../store/index.js"
 // const axios = inject('axios')
 
 
@@ -298,7 +278,7 @@ const login = () => {
         localStorage.setItem('isLogin', true);
         localStorage.setItem('userId', res.data.user_info.user_id);
         //id
-        userStore.userId=res.data.user_info.user_id;
+        userStore.userId = res.data.user_info.user_id;
         //token
         token.value = res.data.user_info.token;
         console.log(token.value);
@@ -328,6 +308,12 @@ console.log('hhh' + userStore.isLogin);
 /*跳转对应页*/
 const jumpTo = (path) => {
   //this.$router.push('/video/'+video_id);
+  console.log(1);
+  if (authStore().isLogin === false) {
+    loginDialog.value = true;
+    return;
+  }
+  console.log(3);
   const path_url = '/' + path;
   window.open(path_url, '_self');
 }
