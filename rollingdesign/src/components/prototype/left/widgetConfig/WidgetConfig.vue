@@ -2,6 +2,8 @@
 import {ref, watch} from "vue";
 import RectConfig from "@/components/prototype/left/widgetConfig/RectConfig.vue";
 import {Rect} from "konva/lib/shapes/Rect";
+import {Text} from "konva/lib/shapes/Text";
+import TextConfig from "@/components/prototype/left/widgetConfig/TextConfig.vue";
 
 const props = defineProps([
   'currentElement'
@@ -12,6 +14,10 @@ const widgetType = ref(null)
 const handleDifferentType = (widget) => {
   if (widget instanceof Rect) {
     widgetType.value = 'rect'
+  }
+  else if (widget instanceof Text) {
+    console.log(widget)
+    widgetType.value = 'text'
   }
 }
 
@@ -32,6 +38,10 @@ watch(
   <div class="widget-config">
     <RectConfig
       v-if="widgetType === 'rect'"
+      :current-element="currentElement"
+    />
+    <TextConfig
+      v-else-if="widgetType === 'text'"
       :current-element="currentElement"
     />
     <p v-else>
