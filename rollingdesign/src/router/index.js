@@ -28,23 +28,11 @@ const routes = [
     // path: '/video/:id',/*注意这里*/
     path: '/design/:id',
     name: '/design',
-    component: () => import('../')
+    component: () => import('../views/')
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/DesignView.vue'),
-    // meta: { index: 'project:id' }
-    // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
-  },
-  {
-    // path: '/video/:id',/*注意这里*/
-    path: '/doc/:id',
-    name: '/doc',
-    component: () => import('../')
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    // component: () => import(/* webpackChunkName: "about" */ '../views/DocView.vue'),
     // meta: { index: 'project:id' }
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
