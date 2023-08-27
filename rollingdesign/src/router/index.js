@@ -9,20 +9,21 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    redirect: '/fileEdit'
+    // component: () => import('../App.vue')
+    redirect: '/tiptap/3'
   },
-  {
-    path: '/fileEdit',
-    name: 'fileEdit',
-    component: () => import('../views/FileEditor.vue')
-  },
+  // {
+  //   path: '/fileEdit',
+  //   name: 'fileEdit',
+  //   component: () => import('../views/FileEditor.vue')
+  // },
   // {
   //   path: '/test',
   //   name: 'test',
   //   component: () => import('../views/Test.vue')
   // },
   {
-    path: '/tiptap',
+    path: '/tiptap/:id',
     name: 'tiptap',
     component: () => import('../views/TipTap.vue')
   },
