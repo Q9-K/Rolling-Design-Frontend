@@ -21,14 +21,31 @@
           <div class="page" style="width:98%;margin-left: 1%;">
             <!--团队信息-->
             <el-row class="block" style="display: flex;align-items: center;">
-              <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" />
-              <span style="font-size:larger;font-weight: 800;">xxx的团队</span>
+              <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
+              <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
 
               <div style="display: flex;flex: 1;justify-content: flex-end;">
+                <el-button type="primary" @click="designDialogVisible = true">新建原型</el-button>
+                <el-button type="primary" @click="newDoc()">新建文档</el-button>
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
                 <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
               </div>
             </el-row>
+
+            <el-dialog v-model="designDialogVisible" title="新建原型" width="26%" center>
+              <span>
+                <!--输入信息，查找-->
+                <el-input v-model="designNameInput" placeholder="请输入原型名字" />
+                <!--通过链接-->
+              </span>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button type="primary" @click="newDesidn();">
+                    确认
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
 
             <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
               <span>
@@ -48,14 +65,14 @@
             <!--团队信息结束-->
 
             <el-row style="margin-top:40px;margin-bottom: 30px;">
-              <span style="font-size:large;font-weight: 500;">项目名字</span>
+              <span style="font-size:large;font-weight: 500;">{{ nowProject.name }}</span>
             </el-row>
 
             <!--原型部分-->
             <!--展开状态（此为默认状态）-->
             <div v-if="designShow">
               <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" >
+                <span style="font-size:large;font-weight: 500;">
                   <el-icon @click="designShow = false">
                     <CaretBottom />
                   </el-icon>原型
@@ -64,25 +81,21 @@
 
               <!--原型封面图-->
               <!--如果有原型-->
-              <el-row v-if="designNum">
-                <div class="designBlock" v-for="(item, index) in items" :key="index">
+              <el-row v-if="nowProject.designNum">
+                <div class="designBlock" v-for="(item, index) in designList" :key="index">
                   <div style="width:100%">
-                    <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
+                    <img @click="jumpToDesign(item.id)" class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
                   </div>
                   <div style="display:flex;justify-content: space-between;width:90%">
                     <span class="designName" style="padding-left:4px;display: flex;">
-                      项目名字{{ index }}
+                      {{ item.title }}
                     </span>
-                    <span class="rightContent">
-                      <el-icon ref="designMoreOp" v-click-outside="designOpOut">
+                    <!-- <span class="rightContent">
+                      <el-icon >
                         <More />
                       </el-icon>
-                    </span>
+                    </span> -->
                   </div>
-
-                  <el-popover ref="designPopoverOp" :virtual-ref="designMoreOp" trigger="click" title="With title" virtual-triggering>
-                    <span> Some content </span>
-                  </el-popover>
 
                 </div>
               </el-row>
@@ -106,7 +119,7 @@
             <!--展开状态（此为默认状态）-->
             <div v-if="fileShow">
               <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" >
+                <span style="font-size:large;font-weight: 500;">
                   <el-icon @click="fileShow = false">
                     <CaretBottom />
                   </el-icon>文档
@@ -114,14 +127,14 @@
               </el-row>
               <!--原型封面图-->
               <!--如果有原型-->
-              <el-row v-if="fileNum">
-                <div class="designBlock" v-for="(item, index) in items" :key="index">
+              <el-row v-if="nowProject.projectNum">
+                <div class="designBlock" v-for="(item, index) in docList" :key="index">
                   <div style="width:100%">
                     <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
                   </div>
                   <div style="display:flex;justify-content: space-between;width:90%">
                     <span class="designName" style="padding-left:4px;display: flex;">
-                      文档名字{{ index }}
+                      {{ item.tiele }}
                     </span>
                     <span class="rightContent">
                       <el-icon ref="docMoreOp" v-click-outside="docOpOut">
@@ -130,7 +143,8 @@
                     </span>
                   </div>
 
-                  <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click" title="With title" virtual-triggering>
+                  <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click" title="With title"
+                    virtual-triggering>
                     <span> Some content </span>
                   </el-popover>
 
@@ -160,9 +174,15 @@
 </template>
 
 <script setup>
+import qs from 'qs'
+import axios from 'axios'
 import { ref, unref } from 'vue'
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router';
+const route = useRoute()
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
+import { authStore } from "../store/index.js"
 import Clipboard from 'clipboard';
 import { ClickOutside as vClickOutside } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -181,50 +201,11 @@ const addTeamNameInput = ref('')
 const addTeamIntroductionInput = ref('')
 /*上传团队标志*/
 const imageUrl = ref('')
-
-// const handleAvatarSuccess: UploadProps['onSuccess'] = (
-//   response,
-//   uploadFile
-// ) => {
-//   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-// }
-
-// const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-//   if (rawFile.type !== 'image/jpeg') {
-//     ElMessage.error('Avatar picture must be JPG format!')
-//     return false
-//   } else if (rawFile.size / 1024 / 1024 > 2) {
-//     ElMessage.error('Avatar picture size can not exceed 2MB!')
-//     return false
-//   }
-//   return true
-// }
+const designDialogVisible=ref(false);
+const designNameInput=ref('')
 /*头像*/
 import { reactive, toRefs } from 'vue'
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-/*点击头像，有下拉列表*/
-const buttonRef = ref()
-const popoverRef = ref()
-const onClickOutside = () => {
-  unref(popoverRef).popperRef?.delayHide?.()
-}
-
-
-const beforeRemove = (uploadFile, uploadFiles) => {
-  return ElMessageBox.confirm(
-    `Cancel the transfer of ${uploadFile.name} ?`
-  ).then(
-    () => true,
-    () => false
-  )
-}
+import router from '@/router';
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -234,11 +215,10 @@ const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
 
-
 /*跳转对应页*/
-const jumpTo = (path) => {
+const jumpToDesign = (id) => {
   //this.$router.push('/video/'+video_id);
-  const path_url = '/' + path;
+  const path_url = '/design/' + id;
   window.open(path_url, '_self');
 }
 /*侧栏导航栏结束*/
@@ -269,6 +249,220 @@ const fileOpOut = () => {
   unref(filePopoverOp).popperRef?.delayHide?.()
 }
 
+const nowTeam = reactive({
+  teamId: '',
+  name: '',
+  logo: '',
+  createTime: '',
+  creator: '',
+  // des: '',
+  // projectNum: '',
+  // memberNum:'',
+})
+const fetchNowTeam = () => {
+  let Headers = { 'Authorization': authStore().token };
+  console.log(Headers);
+  // console.log(authStore().userId)
+
+  axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        nowTeam.teamId = response.data.team.id;
+        nowTeam.name = response.data.team.name;
+        nowTeam.createTime = response.data.team.created_at;
+        nowTeam.creator = response.data.team.creator;
+        // nowTeam. = response.data.team.team_num;
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+
+}
+
+//单个项目
+const nowProject = reactive({
+  projectId: '',
+  name: '',
+  docNum: '',
+  designNum: '',
+})
+const fetchNowProject = () => {
+  let Headers = { 'Authorization': authStore().token };
+  console.log(Headers);
+  // console.log(authStore().userId)
+
+  axios.get('http://www.aamofe.top/api/team/get_one_project/', { params: { project_id: route.params.id }, headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        nowProject.projectId = response.data.project.id;
+        nowProject.name = response.data.project.name;
+        nowProject.docNum = response.data.project.document_num;
+        nowProject.designNum = response.data.project.prototype_num;
+        // nowTeam. = response.data.team.team_num;
+
+        console.log(nowProject);
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+
+}
+
+//
+//设计
+const designList = ref([]);
+const fetchDesignListData = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/document/all_prototype/' + route.params.id + '/', { headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.prototype.forEach((design, index) => {
+          //op字段为当前登录者可以对该
+          // if()
+          designList.value.push(design);/*【这样写】*/
+        })
+        // designNum=response.data.prototype.
+        console.log(designList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+}
+
+//文档
+const docList = ref([]);
+const fetchDocListData = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/document/all_prototype/' + route.params.id + '/', { headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.documents.forEach((doc, index) => {
+          //op字段为当前登录者可以对该
+          // if()
+          docList.value.push(doc);/*【这样写】*/
+        })
+        console.log(docList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+}
+
+
+
+onMounted(() => {
+  fetchNowTeam();
+  fetchNowProject();
+  fetchDesignListData();
+  fetchDocListData();
+  console.log();
+})
+
+
+const newDesign=()=>{
+  if (!(designInput)) {
+    console.log('不能为空');
+    ElMessage.warning('请输入名称');
+    return;
+  }
+
+  let formData = new FormData();
+  formData.append("team_name", addTeamIntroductionInput.value);
+  formData.append("Authorization", authStore().token);
+
+  axios.post('http://www.aamofe.top/api/document/create_prototype/'+nowProject.projectId+'/', qs.stringify({
+    title: designNameInput.value
+  }),{
+    headers:{
+      Authorization:authStore().token
+    }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(formData);
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        designDialogVisible = false;
+        designNameInput = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    }); 
+}
+
+const newDoc=()=>{
+  // if (!(designInput)) {
+  //   console.log('不能为空');
+  //   ElMessage.warning('请输入名称');
+  //   return;
+  // }
+
+  let formData = new FormData();
+  formData.append("team_name", addTeamIntroductionInput.value);
+  formData.append("Authorization", authStore().token);
+
+  axios.post('http://www.aamofe.top/api/document/create_document/'+nowProject.projectId+'/', qs.stringify(
+    // {title: designNameInput.value}
+    ),
+    {
+    headers:{
+      Authorization:authStore().token
+    }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(formData);
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        // designDialogVisible = false;
+        // designNameInput = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    }); 
+}
 </script>
 
 <style scoped>

@@ -52,13 +52,13 @@
 
 
             <div>
-              <el-table :data="memberList" style="width: 100%">
+              <el-table :data="memberList" style="width: 60%">
                 <el-table-column prop="nickname" label="昵称" width="180" />
                 <el-table-column prop="username" label="真实姓名" width="180" />
-                <el-table-column prop="email" label="邮箱" />
+                <el-table-column prop="email" label="邮箱" width="300"/>
                 <!-- <el-table-column prop="role" label="身份" /> -->
 
-                <el-table-column label="身份" width="180">
+                <el-table-column label="身份">
 
                   <template #default="scope">
                     <!--如果该栏是创建者 或者 目前登录者身份是普通成员-->
@@ -74,17 +74,17 @@
                       </div>
                       <!--该栏为普通成员-->
                       <div v-else-if="scope.row.role_string === 'MB'">
-                      {{ scope.row.role }}
+                        {{ scope.row.role }}
                       </div>
                     </div>
 
                     <!--目前登录者身份是管理员-->
                     <div v-else-if="roleOperation === 'admin'">
                       <div v-if="scope.row.role_string === 'MR'">
-                      <span style="color:gray">{{ scope.row.role }}</span>
+                        <span style="color:gray">{{ scope.row.role }}</span>
                       </div>
                       <div v-if="scope.row.role_string === 'MB'">
-                      {{ scope.row.role }}
+                        {{ scope.row.role }}
                       </div>
                     </div>
 
@@ -98,10 +98,14 @@
                       effect="light" trigger="click" placement="bottom" width="auto">
                       <template #default>
                         <!--当前这一栏是什么-->
-                        <div>管理员<span v-if="scope.row.role_string === 'MR'"><el-icon><Select /></el-icon></span></div>
-                        <div>普通成员<span v-if="scope.row.role_string === 'MB'"><el-icon><Select /></el-icon></span></div>
+                        <div @click="updateRole(scope.row.id, 'MR')">管理员<span
+                            v-if="scope.row.role_string === 'MR'"><el-icon><Select /></el-icon></span></div>
+                        <div @click="updateRole(scope.row.id, 'MB')">普通成员<span
+                            v-if="scope.row.role_string === 'MB'"><el-icon><Select /></el-icon></span></div>
                         <div class="my-divider"></div>
-                        <div>移除成员<el-icon><DeleteFilled /></el-icon></div>
+                        <div @click="updateRole(scope.row.id, 'DE')">移除成员<el-icon>
+                            <DeleteFilled />
+                          </el-icon></div>
                       </template>
 
                       <template #reference>
@@ -113,13 +117,15 @@
 
                     <!--当前登录者为管理员 且 该栏为普通成员-->
                     <el-popover
-                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'admin'&&scope.row.role_string === 'MR'"
+                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'admin' && scope.row.role_string === 'MR'"
                       effect="light" trigger="click" placement="bottom" width="auto">
                       <template #default>
-                        <div><span>管理员</span></div>
+                        <div @click="updateRole(scope.row.id, 'MR')"> <span>管理员</span></div>
                         <div>普通成员<span><el-icon><Select /></el-icon></span></div>
                         <div class="my-divider"></div>
-                        <div>移除成员<el-icon><DeleteFilled /></el-icon></div>
+                        <div @click="updateRole(scope.row.id, 'DE')">移除成员<el-icon>
+                            <DeleteFilled />
+                          </el-icon></div>
                       </template>
 
                       <template #reference>
@@ -139,11 +145,6 @@
                       <el-button link type="primary" size="small">Edit</el-button>
                     </template>
                   </el-table-column> -->
-                <el-table-column prop="op" label="操作">
-                  <template #default>
-                    <el-button type="primary" size="small">Detail</el-button>
-                  </template>
-                </el-table-column>
               </el-table>
 
             </div>
@@ -173,7 +174,7 @@ import {
   More,
   ArrowDown,
   Select,
-  DeleteFilled 
+  DeleteFilled
 } from '@element-plus/icons-vue'
 import { now } from '@vueuse/shared'
 const route = useRoute()
@@ -187,7 +188,7 @@ const jumpTo = (path) => {
 /*邀请成员*/
 const centerDialogVisible = ref(false) /*邀请对话框*/
 const input = ref('')/*邀请成员时，输入框*/
-const memberList = ref([])
+const memberList = ref([])//!!!
 /*成员列表*/
 const tableData = [
   {
@@ -278,6 +279,53 @@ const fetchData = () => {
 onMounted(() => {
   fetchData();
 })
+
+const updateRole = (user_id, newRole) => {
+  let formData = new FormData();
+  formData.append("choice", newRole);
+  formData.append("user_id", user_id);
+  formData.append("Authorization", authStore().token);
+  console.log('http://www.aamofe.top/api/team/update_permisson/' + nowTeam.teamId + '/');
+  axios.post('http://www.aamofe.top/api/team/update_permisson/' + nowTeam.teamId + '/', formData)
+    .then(response => {
+      // console.log(formData);
+      console.log(response);
+
+      if (response.data.errno == 0) {
+        // this.$message.success('投诉视频成功');
+        axios.get('http://www.aamofe.top/api/team/all_members/', { params: { team_id: nowTeam.teamId }, headers: Headers })
+          .then((response) => {
+            console.log(response);
+
+            if (response.data.errno == 0) {  //所有团队信息
+              memberList=ref([]);//!!!
+              response.data.members.forEach((member, index) => {
+                //op字段为当前登录者可以对该
+                // if()
+
+                memberList.value.push(member);/*【这样写】*/
+                return;
+              })
+              console.log(memberList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+            }
+            else {
+              ElMessage.warning(response.data.msg);
+            }
+          }).catch(error => {
+            console.log(error);
+          })
+      }
+      else {
+        /*投诉不成功，对话框不关闭*/
+        ElMessage.warning(response.data.msg);/*弹窗显示报错*/
+        return;
+      }
+    })
+    .catch(error => {
+      console.log('Error: ' + error);
+      ElMessage.warning('发生错误，投诉视频失败');
+    });
+}
 </script>
 
 <style scoped>

@@ -24,13 +24,13 @@
               <el-col :span="16">
                 <el-row style="display: flex;align-items: center;">
                   <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-                  <span style="font-size:larger;font-weight: 800;">{{nowTeam.name}}</span>
+                  <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
                 </el-row>
               </el-col>
 
               <el-col :span="8">
                 <div style="display: flex;flex:1;justify-content: flex-end;">
-                  <el-button type="primary" @click="newProjectDialog=true">新建项目</el-button>
+                  <el-button type="primary" @click="newProjectDialog = true">新建项目</el-button>
 
                   <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
                   <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
@@ -72,11 +72,11 @@
             </el-dialog>
             <!--团队信息结束-->
 
-            <el-row style="margin-top:40px;margin-bottom:0;">
+            <el-row style="margin-top:40px;margin-bottom:30px;">
               <span style="font-size: 23px;font-weight: 900;">主页</span>
             </el-row>
 
-            <div class="draftFiles" style="margin-top:20px">
+            <!-- <div class="draftFiles" style="margin-top:20px">
               <el-row style="margin-top:20px;margin-bottom: 30px;">
                 <el-col :span="24">
                   <el-row class="blockHeader" style="display:flex">
@@ -124,9 +124,9 @@
                   </div>
                 </el-col>
               </el-row>
-            </div>
+            </div> -->
 
-            <el-row style="margin-top:40px;margin-bottom: 30px;">
+            <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">项目</span>
             </el-row>
             <el-row :gutter="25">
@@ -138,52 +138,58 @@
                   项目名字
                 </div>
               </el-col>
-              <el-col :span="4">
-                <div style="width:100%">
-                  <img class="round" src="@/assets/projectImage.png" style="width:170px;height:140px" />
-                </div>
-                <div>
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div>
-                  <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                  项目名字
-                </div>
-              </el-col>
-            </el-row>
+            </el-row> -->
 
+            <!-- <el-tabs v-model="activeTab"> -->
+              <!-- <el-tab-pane label="团队项目" name="tab1"> -->
+                <!--项目部分-->
+                <div style="margin-top:20px">
+                  <!-- <ProjectDisplay /> -->
+                  <el-row style="margin-top:40px;margin-bottom: 30px;">
+                    <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
+                    项目
+                    </span>
+                  </el-row>
+                  <!--项目封面图-->
+                  <!--如果有项目-->
+                  <el-row v-if="projectNum">
+                    <div class="designBlock" v-for="(projectItem, index) in projectList" :key="index">
+                      <div style="width:100%">
+                        <img @click="jumpToProject(projectItem.id)" class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
+                      </div>
+                      <div style="display:flex;justify-content: space-between;width:90%">
+                        <span class="designName" style="padding-left:4px;display: flex;">
+                          {{ projectItem.name }}
+                        </span>
+                      </div>
+                    </div>
+                  </el-row>
+                  <!--如果没有项目-->
+                  <el-row v-else>
+                    <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
+                  </el-row>
+                </div>
+
+              <!-- </el-tab-pane> -->
+
+              <!-- <el-tab-pane label="团队设置" name="tab2"-->
+                <!--昵称-->
+                <!-- <div style="width:80%;margin-left: 10%;">
+                  <el-row style="display: flex;align-items: center;justify-content: space-between;">
+                    <div class="leftContent" style="display: flex;justify-content:flex-start">
+                      <div>
+                        <div class="hintText" style="text-align: left;margin-bottom: 5px;">团队名称</div>
+                        <div style="text-align: left;">xx用户名</div>
+                      </div>
+                    </div>
+                    <el-button link type="primary" size="small" style="justify-content: flex-end;"
+                      @click="nickNameConfig = true">修改用户名</el-button>
+                  </el-row>
+                  <el-divider />
+                </div>
+              </el-tab-pane>
+            </el-tabs> --> 
+            <!--********结束-->
           </div>
         </el-main>
       </el-container>
@@ -193,7 +199,7 @@
 
 <script setup>
 import axios from 'axios'
-import { ref, unref} from 'vue'
+import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
 const route = useRoute()
 import { onMounted } from 'vue'
@@ -203,54 +209,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-  Avatar,
-  ArrowDown,
-  Edit,
-  Platform,
-  Bell,
-  Tools,
-  SwitchButton,
-  Plus,
-  HomeFilled,
-  Share,
-  DeleteFilled,
-  Comment,
-  Grid,
-} from '@element-plus/icons-vue'
-/*侧栏*/
 
-/*切换团队*/
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
-/*新建团队*/
-const addTeamVisible = ref(false)
-const addTeamNameInput = ref('')
-const addTeamIntroductionInput = ref('')
-/*头像*/
-const squareUrl = ref('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png')
-// const state = reactive({
-//   circleUrl:
-//     'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-//   squareUrl:
-//     'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-//   sizeList: ['small', '', 'large'],
-// })
-// const { circleUrl, squareUrl, sizeList } = toRefs(state)
-/*点击头像，有下拉列表*/
-import { ClickOutside as vClickOutside } from 'element-plus'
-// const buttonRef = ref()
-// const popoverRef = ref()
-// const onClickOutside = () => {
-//   unref(popoverRef).popperRef?.delayHide?.()
-//}
+/*侧栏*/
+const activeTab = ref('tab1'); // 设置默认激活的标签页
+
+
+
+
 /*进入账户设置*/
 const personMsgDialog = ref(false)
 const nickNameConfig = ref(false)
@@ -295,9 +260,9 @@ const handleClose = (key, keyPath) => {
 
 
 /*跳转对应页*/
-const jumpTo = (path) => {
-  //this.$router.push('/video/'+video_id);
-  const path_url = '/' + path;
+const jumpToProject = (id) => {
+  //this.$router.push('/video/'+id);
+  const path_url = '/project/' + id;
   window.open(path_url, '_self');
 }
 /*侧栏导航栏结束*/
@@ -312,10 +277,12 @@ const nowTeam = reactive({
   teamId: '',
   name: '',
   logo: '',
-  createTime:'',
-  creator:'',
+  createTime: '',
+  creator: '',
 })
 
+const projectNum=ref();
+const projectList=ref([]);
 const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   console.log(Headers);
@@ -328,7 +295,7 @@ const fetchNowTeam = () => {
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         nowTeam.teamId = response.data.team.id;
         nowTeam.name = response.data.team.name;
-        nowTeam.createTime= response.data.team.created_at;
+        nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         // nowTeam. = response.data.team.team_num;
         console.log(nowTeam.name);
@@ -345,15 +312,44 @@ const fetchNowTeam = () => {
 
 onMounted(() => {
   fetchNowTeam();
+  fetchProjectData();
 })
 
-const newProjectDialog=ref(false)
-const newProjectNameInput=ref('');
+const newProjectDialog = ref(false)
+const newProjectNameInput = ref('');
 //创建新项目
-const createNewProject=()=>{
+const createNewProject = () => {
   let Headers = { 'Authorization': authStore().token };
   // axios.post('',)
   //....
+}
+
+const fetchProjectData = () => {
+  let Headers = { 'Authorization': authStore().token };
+
+  axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
+    .then((response) => {
+      // console.log(authStore().token);
+      console.log(response);
+
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.projects.forEach((project, index) => {
+          projectList.value.push(project);/*【这样写】*/
+        })
+        console.log(projectList.value);
+
+        projectNum.value=response.data.projects.length;
+        console.log(response.data.projects.length)
+        // console.log(projectNum);
+        // console.log('hhh');
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
 }
 </script>
 
@@ -362,6 +358,24 @@ const createNewProject=()=>{
   color: gray;
   font-size: small;
   font-weight: 600;
+}
+
+.designBlock {
+  width: 18%;
+  margin-bottom: 40px;
+  margin-right: 14px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.round {
+  border-radius: 10px;
+  /* 设置边框圆角半径，根据需要调整 */
+}
+
+.designImg {
+  margin-bottom: 5px;
 }
 
 .draftFiles {

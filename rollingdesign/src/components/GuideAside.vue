@@ -77,21 +77,6 @@
           </template>
         </el-menu-item>
 
-        <!--管理成员,点击进入成员授权界面; 如果是默认，则成员只有自己-->
-        <el-sub-menu index="teamManage">
-          <template #title>
-            <el-icon>
-              <Avatar />
-            </el-icon>
-            <span>我的团队</span>
-          </template>
-
-          <!-- <el-menu-item v-for="(index)" index="1-1" @click="jumpToTeam(peopleItem.id)">项目</el-menu-item> -->
-          <el-menu-item v-for="(teamItem, index) in teamList" :key="index" :index="'team-' + teamItem.id"
-            @click="jumpToTeam(teamItem.id)">项目{{ teamItem.name }}</el-menu-item>
-          <!-- <el-menu-item index="1-1">团队1</el-menu-item> -->
-        </el-sub-menu>
-
         <!--项目-->
         <el-sub-menu index="project">
           <template #title>
@@ -102,17 +87,17 @@
           </template>
 
           <el-menu-item v-for="(projectItem, index) in projectList" :key="index" :index="'project-' + projectItem.id"
-            @click="jumpToProject(projectItem.id)">项目1{{ projectItem.name }}</el-menu-item>
+            @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
           <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
         </el-sub-menu>
 
         <!--回收站-->
-        <el-menu-item index="recover" @click="jumpTo('recover')">
+        <!-- <el-menu-item index="recover" @click="jumpTo('recover')">
           <el-icon>
             <DeleteFilled />
           </el-icon>
           <span>回收站</span>
-        </el-menu-item>
+        </el-menu-item> -->
 
         <!--消息中心-->
         <el-menu-item index="message" @click="jumpTo('message')">
@@ -179,6 +164,7 @@
 </template>
 
 <script setup>
+import qs from 'qs'
 import axios from 'axios'
 import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
@@ -222,11 +208,13 @@ const teamOutside = () => {
 }
 
 const switchToTeam = (team_id) => {
-  console.log('switch');
 
+  console.log(team_id);
   let formData = new FormData();
   formData.append("team_id", team_id);
-
+  console.log(authStore().token);
+  // formData.append("Authorization", authStore().token);
+  formData.append("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1OTM2NDEsImlkIjoxfQ.-I7TVwdZw17TzANbN702KW7Uh6_a9otODi6T4Vo5_fA");
   axios.post('http://www.aamofe.top/api/team/checkout_team/', formData)
     .then(res => {
       // 处理响应数据
@@ -234,6 +222,10 @@ const switchToTeam = (team_id) => {
 
       if (res.data.errno == 0)//成功
       {
+        //重新载入数据
+        fetchNowTeam();
+        fetchTeamlistData();
+        fetchProjectData();
         return;
       }
       else {//失败
@@ -390,40 +382,44 @@ const input = ref('')/*邀请成员时，输入框*/
 //
 const buildNewTeam = () => {
 
-    if (!(addTeamIntroductionInput)) {
-      console.log('不能为空');
-      ElMessage.warning('请输入团队名称');
-      return;
+  if (!(addTeamIntroductionInput)) {
+    console.log('不能为空');
+    ElMessage.warning('请输入团队名称');
+    return;
+  }
+
+  let formData = new FormData();
+  formData.append("team_name", addTeamIntroductionInput.value);
+  formData.append("Authorization", authStore().token);
+
+  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({
+    team_name: addTeamIntroductionInput.value
+  }),{
+    headers:{
+      Authorization:authStore().token
     }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(formData);
+      console.log(res);
 
-    let formData = new FormData();
-    formData.append("team_name", addTeamIntroductionInput.value);
-    formData.append("Authorization", authStore().token);
-
-    axios.post('http://www.aamofe.top/api/team/create_team/', formData)
-      .then(res => {
-        // 处理响应数据
-        console.log(formData);
-        console.log(res);
-
-        if (res.data.errno == 0)//成功
-        {
-          ElMessage.success(res.data.msg);
-          addTeamVisible=false;
-          addTeamIntroductionInput='';
-          return;
-        }
-        else {//失败
-          ElMessage.error(res.data.msg);
-          return;
-        }
-      })
-      .catch(error => {
-        // 处理请求错误
-        console.error(error);
-      });
-
-
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        addTeamVisible = false;
+        addTeamIntroductionInput = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 </script>
 
