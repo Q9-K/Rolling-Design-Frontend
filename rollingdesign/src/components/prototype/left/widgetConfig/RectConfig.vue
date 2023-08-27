@@ -1,5 +1,6 @@
 <script setup>
 import {ref, watch} from "vue";
+import './widgetTypeConfig.scss'
 
 const props = defineProps([
   'currentElement'
@@ -41,36 +42,36 @@ const changeRectStrokeColor = (value) => {
 </script>
 
 <template>
-  <div class="rect-config">
-    <div class="rect-config-box">
-      <div class="rect-config-title">
+  <div class="config-outer">
+    <div class="config-box">
+      <div class="config-title">
         圆角
       </div>
       <el-slider
         v-model="radius"
         max="50"
-        class="rect-config-setter"
+        class="config-setter"
         @input="value => changeRectRadius(value)"
       />
     </div>
-    <div class="rect-config-box">
-      <div class="rect-config-title">
+    <div class="config-box">
+      <div class="config-title">
         边框粗细
       </div>
       <el-slider
         v-model="strokeWidth"
         max="20"
-        class="rect-config-setter"
+        class="config-setter"
         @input="value => changeRectStrokeWidth(value)"
       />
     </div>
-    <div class="rect-config-box">
-      <div class="rect-config-title">
+    <div class="config-box">
+      <div class="config-title">
         边框颜色
       </div>
       <el-color-picker
         v-model="strokeColor"
-        class="rect-config-setter"
+        class="config-setter"
         @active-change="value => changeRectStrokeColor(value)"
       />
     </div>
@@ -81,28 +82,4 @@ const changeRectStrokeColor = (value) => {
 </template>
 
 <style scoped lang="scss">
-.rect-config {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  .rect-config-box {
-    width: 100%;
-    height: 7vh;
-    display: flex;
-    flex-wrap: nowrap;
-    .rect-config-title {
-      width: 30%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .rect-config-setter {
-      width: 60%;
-      height: 100%;
-      margin-left: 5%;
-      margin-right: 5%;
-    }
-  }
-}
 </style>

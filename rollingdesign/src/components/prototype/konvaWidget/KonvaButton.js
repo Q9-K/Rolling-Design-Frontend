@@ -1,14 +1,21 @@
 import Konva from "konva";
 
 export default class KonvaButton extends Konva.Group {
-  constructor(config) {
+  constructor(config, stage, layer) {
     super(config);
+
+    let backgroundColor = 'lightgray'
+    if (config.fill) {
+      backgroundColor = config.fill
+    }
 
     // 添加背景矩形
     const background = new Konva.Rect({
       width: config.width,
       height: config.height,
-      fill: 'lightgray',
+      fill: backgroundColor,
+      stroke: 'white',
+      strokeWidth: 0.01,
       cornerRadius: 5,
     });
 
