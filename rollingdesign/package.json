@@ -23,6 +23,7 @@
     "element-tiptap": "^2.0.0-alpha.1",
     "element-tiptap-vue3-fixed": "^1.1.10",
     "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
     "file-saver": "^2.0.5",
     "konva": "^9.2.0",
     "qs": "^6.11.2",
@@ -36,10 +37,14 @@
     "yjs": "^13.6.7"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-typescript": "^7.22.5",
+    "@vue/cli": "^5.0.8",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "sass": "^1.32.7",
-    "sass-loader": "^12.0.0"
+    "sass-loader": "^12.0.0",
+    "vue-loader": "^16.8.3"
   }
 }
