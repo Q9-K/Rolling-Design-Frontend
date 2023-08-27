@@ -1,14 +1,18 @@
 <template>
+  <!--
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
   <router-view/>
+  -->
+  <PrototypeDesign />
 </template>
 
 <script setup>
 import { provide, onMounted } from 'vue'
 import axios from 'axios'
+import PrototypeDesign from "@/components/prototype/PrototypeDesign.vue";
 const axiosInstance = axios.create({
   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
 });
