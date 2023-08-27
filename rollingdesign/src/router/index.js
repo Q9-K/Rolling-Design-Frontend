@@ -27,6 +27,11 @@ const routes = [
     name: 'tiptap',
     component: () => import('../views/TipTap.vue')
   },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: () => import('../views/chatRoom.vue')
+  }
 ]
 
 const router = createRouter({
