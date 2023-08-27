@@ -22,7 +22,7 @@ const pinia = createPinia();
 app.use(router)
 app.use(ElementPlus)
 app.use(ElementTiptapPlugin)
-
+app.use(router)
 app.use(pinia)
 
 

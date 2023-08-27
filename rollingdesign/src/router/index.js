@@ -1,7 +1,7 @@
 /*
  * @Date: 2023-08-25 01:08:32
  * @Author: Q9K
- * @Description: 
+ * @Description:
  */
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -10,8 +10,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../App.vue')
-    // redirect: '/tiptap/3'
+    // component: () => import('../App.vue')
+    redirect: '/invite/1'
   },
   // {
   //   path: '/fileEdit',
@@ -38,99 +38,104 @@ const routes = [
   },
   /*相当于主页*/
   {
-    path: '/index',
-    name: 'index',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/IndexView.vue'),
-    meta: { index: 'index' }
+    path:'/invite/:id',
+    name:'invite',
+    component: ()=>{import('../views/Invite.vue')}
   },
-  // 项目展示页
-  {
-    // path: '/video/:id',/*注意这里*/
-    path: '/project/:id',
-    name: 'project',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
-    // meta: { index: 'project:id' }
-    // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
-    meta: { index: 'project' }
-  },
-  // 团队成员
-  {
-    path: '/teamPeople',
-    name: 'teamPeople',
-    component: () => import(/* webpackChunkName: "about" */ '../views/TeamPeople.vue'),
-    // meta: { index: 'team:id' }/*--------*/
-    // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
-    meta: { index: 'teamPeople' }
-  },
-  // 管理团队中的成员
-  {
-    path: '/teamManage/:id',
-    name: 'teamManage',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/TeamManage.vue'),
-    // meta: { index: 'team:id' }/*--------*/
-    // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
-    meta: { index: 'teamManage' }
-  },
-  // 分享
   // {
-  //   path: '/share',
-  //   name: 'share',
+  //   path: '/index',
+  //   name: 'index',
   //   // route level code-splitting
   //   // this generates a separate chunk (about.[hash].js) for this route
   //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/ShareView.vue'),
-  //   meta: { index: 'share' }
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/IndexView.vue'),
+  //   meta: { index: 'index' }
   // },
-  // // 草稿箱
+  // // 项目展示页
   // {
-  //   path: '/draft',
-  //   name: 'draft',
+  //   // path: '/video/:id',/*注意这里*/
+  //   path: '/project/:id',
+  //   name: 'project',
   //   // route level code-splitting
   //   // this generates a separate chunk (about.[hash].js) for this route
   //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/DraftView.vue'),
-  //   meta: { index: 'draft' }
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
+  //   // meta: { index: 'project:id' }
+  //   // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
+  //   meta: { index: 'project' }
   // },
-  // 回收站
-  {
-    path: '/recover',
-    name: 'recover',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/RecoverView.vue'),
-    meta: { index: 'recover' }
-  },
-  // 消息
-  {
-    path: '/message',
-    name: 'message',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
-    meta: { index: 'message' }
-  },
-  {
-    path: '/test',
-    name: 'test',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
-    path: '/chat',
-    name: 'chat',
-    component: () => import('../views/chatRoom.vue')
-  }
+  // // 团队成员
+  // {
+  //   path: '/teamPeople',
+  //   name: 'teamPeople',
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/TeamPeople.vue'),
+  //   // meta: { index: 'team:id' }/*--------*/
+  //   // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
+  //   meta: { index: 'teamPeople' }
+  // },
+  // // 管理团队中的成员
+  // {
+  //   path: '/teamManage/:id',
+  //   name: 'teamManage',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/TeamManage.vue'),
+  //   // meta: { index: 'team:id' }/*--------*/
+  //   // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
+  //   meta: { index: 'teamManage' }
+  // },
+  // // 分享
+  // // {
+  // //   path: '/share',
+  // //   name: 'share',
+  // //   // route level code-splitting
+  // //   // this generates a separate chunk (about.[hash].js) for this route
+  // //   // which is lazy-loaded when the route is visited.
+  // //   component: () => import(/* webpackChunkName: "about" */ '../views/ShareView.vue'),
+  // //   meta: { index: 'share' }
+  // // },
+  // // // 草稿箱
+  // // {
+  // //   path: '/draft',
+  // //   name: 'draft',
+  // //   // route level code-splitting
+  // //   // this generates a separate chunk (about.[hash].js) for this route
+  // //   // which is lazy-loaded when the route is visited.
+  // //   component: () => import(/* webpackChunkName: "about" */ '../views/DraftView.vue'),
+  // //   meta: { index: 'draft' }
+  // // },
+  // // 回收站
+  // {
+  //   path: '/recover',
+  //   name: 'recover',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/RecoverView.vue'),
+  //   meta: { index: 'recover' }
+  // },
+  // // 消息
+  // {
+  //   path: '/message',
+  //   name: 'message',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
+  //   meta: { index: 'message' }
+  // },
+  // {
+  //   path: '/test',
+  //   name: 'test',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
+  //   path: '/chat',
+  //   name: 'chat',
+  //   component: () => import('../views/chatRoom.vue')
+  // }
 ]
 
 const router = createRouter({
