@@ -1,9 +1,9 @@
 /*
  * @Date: 2023-08-28 05:58:10
  * @Author: Q9K
- * @Description: 
+ * @Description:
  */
-import { createApp } from 'vue'
+import { createApp, provide, ref } from 'vue'
 import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
