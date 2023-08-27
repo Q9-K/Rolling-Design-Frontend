@@ -241,6 +241,7 @@ onMounted(async () => {
     const lock = document.is_locked
     const time = document.modified_at.replace("T", " ").replace("Z", " ")
     lastEditTime.value = new Date(time).toLocaleString()
+
     // UserName = document.
     // editAble.value = document.editable
 
@@ -357,6 +358,7 @@ const extensions = [
         },
     }),
 ];
+
 onUnmounted(() => {
 
 })
@@ -365,7 +367,9 @@ onUnmounted(() => {
 const popper = ref()
 const link = ref('')
 
+
 const generateLink = async () => {
+
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id: 3,
         editable: 1
@@ -392,7 +396,10 @@ const copyLink = () => {
     })
 }
 
-
+const onCreate = ({ editor }) => {
+    editor.isFocused = true
+    console.log(editor)
+}
 
 </script>
 

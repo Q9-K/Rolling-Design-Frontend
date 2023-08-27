@@ -23,6 +23,7 @@
     "element-tiptap": "^2.0.0-alpha.1",
     "element-tiptap-vue3-fixed": "^1.1.10",
     "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
     "qs": "^6.11.2",
     "turndown": "^7.1.2",
     "vue": "^3.2.13",

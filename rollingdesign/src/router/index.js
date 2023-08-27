@@ -9,8 +9,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    // component: () => import('../App.vue')
-    redirect: '/tiptap/3'
+    component: () => import('../App.vue')
+    // redirect: '/tiptap/3'
   },
   // {
   //   path: '/fileEdit',
@@ -27,6 +27,11 @@ const routes = [
     name: 'tiptap',
     component: () => import('../views/TipTap.vue')
   },
+  {
+    path: '/invite/:token',
+    name: 'invite',
+    component: () => import('../views/Invite.vue')
+  }
 ]
 
 const router = createRouter({
