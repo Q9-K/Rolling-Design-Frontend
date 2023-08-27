@@ -20,7 +20,10 @@
 </template>
   
 <script>
+import qs from 'qs'
 import { UserFilled } from '@element-plus/icons-vue'
+import { useSocketStore } from '../stores/useSocketStore'
+const socketStore = useSocketStore()
 export default {
     props: {
         items: {
@@ -86,9 +89,19 @@ export default {
                 try {
                     // let res = axios.post('/api接口')
                     // TODO:完成发送消息
-                    let socket = new WebSocket(`ws://101.43.159.45:8001/notice/${user_id}`)
-                    socket.send(JSON.stringify('我是傻逼'))
-                    socket.close(1000, '我太傻逼了')
+                    const socket = socketStore.socket
+                    // console.log(socket.readyState)
+                    if (socket.readyState == socket.OPEN) {
+                        socket.send(JSON.stringify({
+                            user_id: '1',
+                            url: 'www.baidu.com',
+                            file_id: '1'
+                        }))
+                        console.log(`@ user_name 成功`)
+                    }
+                    else {
+                        console.log('已断开共享文档连接')
+                    }
                 } catch (err) {
                     console.error(err)
                 }
