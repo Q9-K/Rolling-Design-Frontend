@@ -22,9 +22,10 @@
     "element-plus": "^2.3.9",
     "element-tiptap": "^2.0.0-alpha.1",
     "element-tiptap-vue3-fixed": "^1.1.10",
-    "pinia": "^2.1.6",
     "qs": "^6.11.2",
     "turndown": "^7.1.2",
+    "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
     "vue": "^3.2.13",
     "vue-advanced-chat": "^2.0.7",
     "vue-router": "^4.0.3",
@@ -33,10 +34,14 @@
     "yjs": "^13.6.7"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-typescript": "^7.22.5",
+    "@vue/cli": "^5.0.8",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "sass": "^1.32.7",
-    "sass-loader": "^12.0.0"
+    "sass-loader": "^12.0.0",
+    "vue-loader": "^16.8.3"
   }
 }

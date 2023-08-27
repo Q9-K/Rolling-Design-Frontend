@@ -13,6 +13,7 @@
 <script setup>
 import { provide, onMounted } from 'vue'
 import axios from 'axios'
+import {ref} from 'vue'
 const axiosInstance = axios.create({
   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
 });
@@ -25,8 +26,24 @@ provide('axios', axiosInstance)
 // })
 // console.log(res.data)
 
-//   console.log(res.data)
-// })
+// {/* <scrip setup> */}
 
-// provide('test', 'test')
+// const app = createApp(App)
+
+// import axios from 'axios'
+// const axiosInstance = axios.create({
+//   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+// });
+// provide('axios',axiosInstance)
 </script>
+
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+</style>
