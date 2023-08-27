@@ -90,7 +90,7 @@
         </el-dialog>
 
         <!--注册-->
-        <el-dialog v-model="registerDialog" title="注册" width="20%">
+        <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="20%">
           <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
             <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱注册</el-col>
             <el-col :span="24">
@@ -390,6 +390,19 @@ onMounted(() => {
 
 
 ::v-deep .loginPage {
+  /* --el-bg-color: #000741 !important; */
+  /* height: 100vh; */
+  /* width: 100%; */
+  /* height: 100%; */
+  overflow: hidden;
+  background-image: url('../assets/login_bg.png');
+  /* background-size: cover;  */
+  background-size: 100% 100%;
+  opacity: 0.85;
+  background-repeat: no-repeat;
+}
+
+::v-deep .registerPage {
   /* --el-bg-color: #000741 !important; */
   /* height: 100vh; */
   /* width: 100%; */

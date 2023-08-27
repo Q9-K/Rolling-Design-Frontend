@@ -40,7 +40,7 @@
               </span>
               <template #footer>
                 <span class="dialog-footer">
-                  <el-button type="primary" @click="newDesidn();">
+                  <el-button type="primary" @click="newDesign();">
                     确认
                   </el-button>
                 </span>

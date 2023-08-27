@@ -48,8 +48,8 @@
                     <!-- <el-col :span="24" style="text-align: left;color: rgb(80, 79, 79);font-size: 13px;">描述</el-col> -->
                   </el-row>
                 </div>
-
-                <div v-if="index != teamList.length - 1" class="my-divider"></div>
+                <el-divider />
+                <!-- <div v-if="index != teamList.length - 1" class="my-divider"></div> -->
               </div>
 
               <!--团队信息结束-->
@@ -188,7 +188,7 @@ import {
 /*侧栏*/
 const squareUrl = ref('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png')
 
-const nowTeam = reactive({
+let nowTeam = reactive({
   teamId: '',
   name: '',
   logo: '',
@@ -198,8 +198,8 @@ const nowTeam = reactive({
   // projectNum: '',
   // memberNum:'',
 })
-const teamList = ref([]);
-const projectList = ref([]);
+let teamList = ref([]);
+let projectList = ref([]);
 /*切换团队*/
 const btnSwiTeam = ref()
 const popoverTeam = ref()
@@ -215,7 +215,14 @@ const switchToTeam = (team_id) => {
   console.log(authStore().token);
   // formData.append("Authorization", authStore().token);
   formData.append("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1OTM2NDEsImlkIjoxfQ.-I7TVwdZw17TzANbN702KW7Uh6_a9otODi6T4Vo5_fA");
-  axios.post('http://www.aamofe.top/api/team/checkout_team/', formData)
+  axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify(
+    {
+      team_id: team_id
+    }), {
+    headers: {
+      Authorization: authStore().token
+    }
+  })
     .then(res => {
       // 处理响应数据
       console.log(res);
@@ -226,6 +233,7 @@ const switchToTeam = (team_id) => {
         fetchNowTeam();
         fetchTeamlistData();
         fetchProjectData();
+        console.log(teamList.value);
         return;
       }
       else {//失败
@@ -277,7 +285,7 @@ const jumpToTeam = (team_id) => {
 const fetchTeamlistData = () => {
   let Headers = { 'Authorization': authStore().token };
   // let Headers1 = { 'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NDg0OTQsImlkIjoxfQ.HIgCyImqu4gytXnLAeE_7qkYd0INgcHeh6NHL_W3dMQ"};
-
+  teamList = ref([]);
 
   axios.get('http://www.aamofe.top/api/team/all_teams/', { headers: Headers })
     .then((response) => {
@@ -302,7 +310,7 @@ const fetchTeamlistData = () => {
 
 const fetchProjectData = () => {
   let Headers = { 'Authorization': authStore().token };
-
+  projectList = ref([])
   axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
     .then((response) => {
       // console.log(authStore().token);
@@ -327,6 +335,17 @@ const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   console.log(Headers);
   // console.log(authStore().userId)
+
+  nowTeam = reactive({
+    teamId: '',
+    name: '',
+    logo: '',
+    createTime: '',
+    creator: '',
+    // des: '',
+    // projectNum: '',
+    // memberNum:'',
+  })
 
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
@@ -394,9 +413,9 @@ const buildNewTeam = () => {
 
   axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({
     team_name: addTeamIntroductionInput.value
-  }),{
-    headers:{
-      Authorization:authStore().token
+  }), {
+    headers: {
+      Authorization: authStore().token
     }
   })
     .then(res => {

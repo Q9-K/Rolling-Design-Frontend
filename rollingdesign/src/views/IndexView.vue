@@ -198,6 +198,7 @@
 </template>
 
 <script setup>
+import qs from 'qs'
 import axios from 'axios'
 import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
@@ -322,6 +323,45 @@ const createNewProject = () => {
   let Headers = { 'Authorization': authStore().token };
   // axios.post('',)
   //....
+
+  if (!(newProjectNameInput)) {
+    console.log('不能为空');
+    ElMessage.warning('请输入名称');
+    return;
+  }
+
+  let formData = new FormData();
+  // formData.append("team_name", addTeamIntroductionInput.value);
+  formData.append("Authorization", authStore().token);
+
+  axios.post('http://www.aamofe.top/api/document/create_project/'+nowTeam.teamId+'/', qs.stringify({
+    project_name: newProjectNameInput.value
+  }),{
+    headers:{
+      Authorization:authStore().token
+    }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(formData);
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        newProjectDialog = false;
+        newProjectNameInput = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    }); 
 }
 
 const fetchProjectData = () => {
