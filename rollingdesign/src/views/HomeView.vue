@@ -89,14 +89,14 @@
             style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
             <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">真实姓名</el-col>
             <el-col :span="24">
-              <el-input v-model="registerNickNameInput" placeholder="输入姓名" />
+              <el-input v-model="registerNameInput" placeholder="输入姓名" />
             </el-col>
           </el-row>
           <el-row
             style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
             <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">昵称</el-col>
             <el-col :span="24">
-              <el-input v-model="registerNameInput" placeholder="输入昵称" />
+              <el-input v-model="registerNickNameInput" placeholder="输入昵称" />
             </el-col>
           </el-row>
           <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
