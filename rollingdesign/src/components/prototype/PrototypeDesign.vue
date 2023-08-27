@@ -32,6 +32,12 @@ onMounted(() => {
   console.log(stageStringify)
 
   if (stageStringify) {
+    // TODO 重新打开插入的图片
+    /*
+      太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
+      死给你看
+     */
+
     const stageJSON = JSON.parse(stageStringify)
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
     sessionStorage.removeItem('stageStringify')
@@ -161,8 +167,7 @@ onMounted(() => {
     contextMenuLayer.draw();
   });
 
-  // 每隔半秒钟重新绘制
-  // TODO MAYBE HERE
+  // 每隔0.1秒钟重新绘制
   setInterval(() => {
     layer.batchDraw();
   }, 100);
@@ -241,7 +246,7 @@ const saveGraph = () => {
   const stageJSON = stage.toJSON()
   const stageStringify = JSON.stringify(stageJSON)
   console.log("-------------------------")
-  console.log(stageStringify)
+  console.log(stageJSON)
   console.log("-------------------------")
 
   const prototypeName = sessionStorage.getItem("prototypeName")
@@ -249,7 +254,7 @@ const saveGraph = () => {
 
   // TODO 向后端发送保存原型设计的接口
   /*
-  axios.post(prefixUrl + '/api/document/save_prototype/', qs.stringify({
+  axios.post('http://www.aamofe.top' + '/api/document/save_prototype/', qs.stringify({
     prototype_id: 2,
     content: stageStringify,
     title:prototypeName
@@ -276,6 +281,10 @@ const addText = () => {
     fontFamily: 'Arial',
     fill: 'black',
     draggable: true,
+  })
+
+  text.on('click', (e) => {
+    currentElement.value = e.target
   })
 
   text.on('dblclick', () => {
@@ -372,10 +381,17 @@ const addButton = () => {
     height: 50,
     text: 'Click Me',
     draggable: true,
+    cornerRadius: 50,
+    fill: 'lightgray',
     onClick: () => {
       console.log("哈哈哈哈哈")
       // alert('Button Clicked!');
     },
+  }, stage, layer)
+
+  button.on('click', (e) => {
+    console.log(e.target)
+    currentElement.value = e.target.parent.children[0]
   })
 
   groups.push(button)
