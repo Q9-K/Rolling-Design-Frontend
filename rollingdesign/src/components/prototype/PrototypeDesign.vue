@@ -44,8 +44,20 @@ onMounted(() => {
       height: 534.6,
       // height: 1080
     });
+
+    const bgLayer = new Konva.default.Layer();
+    stage.add(bgLayer);
+
+    // 创建一个背景矩形
+    const backgroundRect = new Konva.default.Rect({
+      width: stage.width(),
+      height: stage.height(),
+      fill: 'white', // 设置背景颜色
+    });
+    bgLayer.add(backgroundRect);
   }
 
+  /*
   const bgLayer = new Konva.default.Layer();
   stage.add(bgLayer);
 
@@ -56,6 +68,8 @@ onMounted(() => {
     fill: 'white', // 设置背景颜色
   });
   bgLayer.add(backgroundRect);
+
+   */
 
   layer = new Konva.default.Layer();
   stage.add(layer);
