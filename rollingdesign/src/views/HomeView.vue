@@ -1,118 +1,128 @@
 <template>
   <div class="loginContainer">
     <!--header-->
-    <!--如果已经登录-->
-    <div v-if="userStore.isLogin">
-      <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
-        <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
-        <span style="margin-right:30px">
-          主页
-        </span>
-        <span style="margin-right:30px">
-          草稿箱
-        </span>
-        <span style="margin-right:30px">
-          团队管理
-        </span>
-        <span style="margin-right:30px">
-          项目
-        </span>
-        <span>
-          消息中心
-        </span>
+    <el-container>
+      <el-header>
+        <!--如果已经登录-->
+        <div v-if="userStore.isLogin">
+          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 10px;">
+            <img alt="web logo" src="@/assets/webLogo.png" style="width:10%;margin-right: 30px;">
+            <span style="margin-right:30px">
+              主页
+            </span>
+            <span style="margin-right:30px">
+              草稿箱
+            </span>
+            <span style="margin-right:30px">
+              团队管理
+            </span>
+            <span style="margin-right:30px">
+              项目
+            </span>
+            <span>
+              消息中心
+            </span>
 
-        <el-button color="#626aef" style="margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
-        <el-button color="#626aef" style="margin-left:1%" size="large" @click="logout()">退出登录</el-button>
+            <el-button color="#626aef" style="margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
+            <el-button color="#626aef" style="margin-left:1%" size="large" @click="logout()">退出登录</el-button>
 
-      </div>
-
-      <div>
-        <img class="show" src="@/assets/show.png" />
-      </div>
-    </div>
-    <!--未登录-->
-    <div v-else>
-      <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
-        <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
-        <span style="margin-right:30px" @click="jumpTo('/index')">
-          主页
-        </span>
-
-        <span style="margin-right:30px" @click="jumpTo('/teamPeople')">
-          团队人员
-        </span>
-        <span style="margin-right:30px" @click="jumpTo('/index')">
-          项目
-        </span>
-        <span @click="jumpTo('/message')">
-          消息中心
-        </span>
-
-        <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
-        <el-button color="#626aef" style="margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
-        <el-button color="#626aef" style="margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
-
-        <!--登录-->
-        <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
-          <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱登录</el-col>
-            <el-col :span="24">
-              <el-input v-model="loginEmailInput" placeholder="输入邮箱" />
-            </el-col>
-          </el-row>
-          <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入密码</el-col>
-            <el-col :span="24">
-              <el-input v-model="loginPwdInput" type="password" placeholder="输入密码" show-password />
-            </el-col>
-          </el-row>
-
-          <div style="margin-top:25px;width: 100%;">
-            <el-button type="primary" style="width:90%" @click="login()">登录</el-button>
+            <!-- <a href=" " target="_blank">备案号：</a>
+        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
           </div>
-          <div style="margin-top:25px;width: 90%;padding-left: 20px;">
-            <div style="display: flex;justify-content: center;">
-              <el-button link size="small" @click="loginDialog = false; registerDialog = true">还没有账号？去注册</el-button>
-            </div>
+
+          <div>
+            <img class="show" src="@/assets/show.png" />
           </div>
-        </el-dialog>
+        </div>
+        <!--未登录-->
+        <div v-else>
+          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
+            <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
+            <span style="margin-right:30px" @click="jumpTo('/index')">
+              主页
+            </span>
 
-        <!--注册-->
-        <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="20%">
-          <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱注册</el-col>
-            <el-col :span="24">
-              <el-input v-model="registerEmailInput" placeholder="输入邮箱" />
-            </el-col>
-          </el-row>
-          <el-row
-            style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">真实姓名</el-col>
-            <el-col :span="24">
-              <el-input v-model="registerNameInput" placeholder="输入姓名" />
-            </el-col>
-          </el-row>
-          <el-row
-            style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">昵称</el-col>
-            <el-col :span="24">
-              <el-input v-model="registerNickNameInput" placeholder="输入昵称" />
-            </el-col>
-          </el-row>
-          <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">密码要求8-16位且包含数字和字母</el-col>
-            <el-col :span="24">
-              <el-input v-model="registerPwdInput" type="password" placeholder="输入密码" show-password />
-            </el-col>
-          </el-row>
-          <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
-            <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">确认密码</el-col>
-            <el-col :span="24">
-              <el-input v-model="registerPwdConfrimInput" type="password" placeholder="请再次输入密码" show-password />
-            </el-col>
-          </el-row>
+            <span style="margin-right:30px" @click="jumpTo('/teamPeople')">
+              团队人员
+            </span>
+            <span style="margin-right:30px" @click="jumpTo('/index')">
+              项目
+            </span>
+            <span @click="jumpTo('/message')">
+              消息中心
+            </span>
 
-          <!-- <el-row style="margin-top:25px;justify-items: flex-start;width: 90%;margin-left: 5%;">
+            <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
+            <el-button color="#626aef" style="margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
+            <el-button color="#626aef" style="margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
+
+
+            <!-- <a href=" " target="_blank">备案号：</a>
+          <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
+
+
+            <!--登录-->
+            <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
+              <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱登录</el-col>
+                <el-col :span="24">
+                  <el-input v-model="loginEmailInput" placeholder="输入邮箱" />
+                </el-col>
+              </el-row>
+              <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入密码</el-col>
+                <el-col :span="24">
+                  <el-input v-model="loginPwdInput" type="password" placeholder="输入密码" show-password />
+                </el-col>
+              </el-row>
+
+              <div style="margin-top:25px;width: 100%;">
+                <el-button type="primary" style="width:90%" @click="login()">登录</el-button>
+              </div>
+              <div style="margin-top:25px;width: 90%;padding-left: 20px;">
+                <div style="display: flex;justify-content: center;">
+                  <el-button link size="small" @click="loginDialog = false; registerDialog = true">还没有账号？去注册</el-button>
+                </div>
+              </div>
+            </el-dialog>
+
+            <!--注册-->
+            <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="20%">
+              <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱注册</el-col>
+                <el-col :span="24">
+                  <el-input v-model="registerEmailInput" placeholder="输入邮箱" />
+                </el-col>
+              </el-row>
+              <el-row
+                style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">真实姓名</el-col>
+                <el-col :span="24">
+                  <el-input v-model="registerNameInput" placeholder="输入姓名" />
+                </el-col>
+              </el-row>
+              <el-row
+                style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">昵称</el-col>
+                <el-col :span="24">
+                  <el-input v-model="registerNickNameInput" placeholder="输入昵称" />
+                </el-col>
+              </el-row>
+              <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24"
+                  style="text-align: left;margin-bottom: 10px;">密码要求8-16位且包含数字和字母</el-col>
+                <el-col :span="24">
+                  <el-input v-model="registerPwdInput" type="password" placeholder="输入密码" show-password />
+                </el-col>
+              </el-row>
+              <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
+                <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">确认密码</el-col>
+                <el-col :span="24">
+                  <el-input v-model="registerPwdConfrimInput" type="password" placeholder="请再次输入密码" show-password />
+                </el-col>
+              </el-row>
+
+              <!-- <el-row style="margin-top:25px;justify-items: flex-start;width: 90%;margin-left: 5%;">
           <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">验证码2分钟内有效</el-col>
           <el-col :span="24">
             <el-row :gutter="10">
@@ -127,25 +137,28 @@
           </el-col>
         </el-row> -->
 
-          <div style="margin-top:25px;width: 100%;">
-            <el-button type="primary" style="width:90%" @click="register">注册</el-button>
+              <div style="margin-top:25px;width: 100%;">
+                <el-button type="primary" style="width:90%" @click="register">注册</el-button>
+              </div>
+              <div style="margin-top:25px;width: 90%;padding-left: 20px;">
+                <div style="display: flex;justify-content: center;">
+                  <el-button link size="small" @click="loginDialog = true; registerDialog = false">已有账号？去登录</el-button>
+                </div>
+              </div>
+
+            </el-dialog>
           </div>
-          <div style="margin-top:25px;width: 90%;padding-left: 20px;">
-            <div style="display: flex;justify-content: center;">
-              <el-button link size="small" @click="loginDialog = true; registerDialog = false">已有账号？去登录</el-button>
-            </div>
-          </div>
+        </div>
+      </el-header>
 
-        </el-dialog>
-
-      </div>
-
-
-
-      <div>
-        <img class="show" src="@/assets/show.png" />
-      </div>
-    </div>
+      <el-main style="height:80vh">
+        <div>
+          <img class="show" src="@/assets/show.png" />
+        </div>
+      </el-main>
+      <el-footer style=" position: absolute;bottom: 0;right: 0;text-align: center;"><a href=" " target="_blank">备案号：</a>
+        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a></el-footer>
+    </el-container>
   </div>
 </template>
 
@@ -374,6 +387,13 @@ onMounted(() => {
   font-size: 18px;
 }
 
+.center-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
 
 ::v-deep .loginPage {
   /* --el-bg-color: #000741 !important; */

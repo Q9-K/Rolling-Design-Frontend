@@ -48,8 +48,8 @@
                     <!-- <el-col :span="24" style="text-align: left;color: rgb(80, 79, 79);font-size: 13px;">描述</el-col> -->
                   </el-row>
                 </div>
-                <el-divider />
-                <!-- <div v-if="index != teamList.length - 1" class="my-divider"></div> -->
+                <!-- <el-divider /> -->
+                <div v-if="index != teamList.length - 2" class="my-divider"></div><!--【】因为多了num-->
               </div>
 
               <!--团队信息结束-->
@@ -412,7 +412,7 @@ const buildNewTeam = () => {
   formData.append("Authorization", authStore().token);
 
   axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({
-    team_name: addTeamIntroductionInput.value
+    team_name: addTeamInput.value
   }), {
     headers: {
       Authorization: authStore().token

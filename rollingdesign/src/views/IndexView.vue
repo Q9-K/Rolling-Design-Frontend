@@ -141,40 +141,64 @@
             </el-row> -->
 
             <!-- <el-tabs v-model="activeTab"> -->
-              <!-- <el-tab-pane label="团队项目" name="tab1"> -->
-                <!--项目部分-->
-                <div style="margin-top:20px">
-                  <!-- <ProjectDisplay /> -->
-                  <el-row style="margin-top:40px;margin-bottom: 30px;">
-                    <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
-                    项目
+            <!-- <el-tab-pane label="团队项目" name="tab1"> -->
+            <!--项目部分-->
+            <div style="margin-top:20px">
+              <!-- <ProjectDisplay /> -->
+              <el-row style="margin-top:40px;margin-bottom: 30px;">
+                <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
+                  项目
+                </span>
+              </el-row>
+              <!--项目封面图-->
+              <!--如果有项目-->
+              <el-row v-if="projectNum">
+                <div class="designBlock" v-for="(projectItem, index) in projectList" :key="index">
+                  <div style="width:100%">
+                    <img @click="jumpToProject(projectItem.id)" class="round designImg" src="@/assets/projectImage.png"
+                      style="width:90%;height:150px" />
+                  </div>
+                  <div style="display:flex;justify-content: space-between;width:90%">
+                    <span class="designName" style="padding-left:4px;display: flex;">
+                      {{ projectItem.name }}
                     </span>
-                  </el-row>
-                  <!--项目封面图-->
-                  <!--如果有项目-->
-                  <el-row v-if="projectNum">
-                    <div class="designBlock" v-for="(projectItem, index) in projectList" :key="index">
-                      <div style="width:100%">
-                        <img @click="jumpToProject(projectItem.id)" class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
-                      </div>
-                      <div style="display:flex;justify-content: space-between;width:90%">
-                        <span class="designName" style="padding-left:4px;display: flex;">
-                          {{ projectItem.name }}
+                    <span class="rightContent">
+
+                      <el-popover placement="bottom" :width="100" trigger="click">
+                        <template #reference>
+                          <el-icon>
+                            <More />
+                          </el-icon>
+                        </template>
+                        <div sytle="margin-bottom:10px" @click="renameProject(projectItem.id)">重命名</div>
+                        <div @click="deleteProject(projectItem.id)">删除</div>
+                      </el-popover>
+                    </span>
+
+                    <el-dialog v-model="renameProjectDialog" title="重命名项目" width="30%" :before-close="handleClose">
+                      <el-input v-model="newProjectNameInput" placeholder="请输入项目名称" />
+                      <template #footer>
+                        <span class="dialog-footer">
+                          <el-button type="primary" @click="renameProject(projectItem.id)">
+                            确认
+                          </el-button>
                         </span>
-                      </div>
-                    </div>
-                  </el-row>
-                  <!--如果没有项目-->
-                  <el-row v-else>
-                    <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-                  </el-row>
+                      </template>
+                    </el-dialog>
+                  </div>
                 </div>
+              </el-row>
+              <!--如果没有项目-->
+              <el-row v-else>
+                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
+              </el-row>
+            </div>
 
-              <!-- </el-tab-pane> -->
+            <!-- </el-tab-pane> -->
 
-              <!-- <el-tab-pane label="团队设置" name="tab2"-->
-                <!--昵称-->
-                <!-- <div style="width:80%;margin-left: 10%;">
+            <!-- <el-tab-pane label="团队设置" name="tab2"-->
+            <!--昵称-->
+            <!-- <div style="width:80%;margin-left: 10%;">
                   <el-row style="display: flex;align-items: center;justify-content: space-between;">
                     <div class="leftContent" style="display: flex;justify-content:flex-start">
                       <div>
@@ -188,7 +212,7 @@
                   <el-divider />
                 </div>
               </el-tab-pane>
-            </el-tabs> --> 
+            </el-tabs> -->
             <!--********结束-->
           </div>
         </el-main>
@@ -233,6 +257,47 @@ const handleRemove = (file, uploadFiles) => {
 
 const handlePreview = (uploadFile) => {
   console.log(uploadFile)
+}
+const renameProjectDialog=ref(false);
+const renameProjectInput=ref('');
+const renameProject = (projectId) => {
+  if (!(renameProjectInput)) {
+    console.log('不能为空');
+    ElMessage.warning('请输入名称');
+    return;
+  }
+
+  axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
+    name: renameProjectInput.value,project_id:projectId
+  }), {
+    headers: {
+      Authorization: authStore().token
+    }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        renameProjectDialog.value = false;
+        renameProjectInput.value = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+const deleteProject=()=>{
+  axios.post('http://www.aamofe.top/api/team/api/team/update_project/',)
 }
 
 const handleExceed = (files, uploadFiles) => {
@@ -282,8 +347,8 @@ const nowTeam = reactive({
   creator: '',
 })
 
-const projectNum=ref();
-const projectList=ref([]);
+const projectNum = ref();
+const projectList = ref([]);
 const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   console.log(Headers);
@@ -334,11 +399,11 @@ const createNewProject = () => {
   // formData.append("team_name", addTeamIntroductionInput.value);
   formData.append("Authorization", authStore().token);
 
-  axios.post('http://www.aamofe.top/api/document/create_project/'+nowTeam.teamId+'/', qs.stringify({
+  axios.post('http://www.aamofe.top/api/team/create_project/' + nowTeam.teamId + '/', qs.stringify({
     project_name: newProjectNameInput.value
-  }),{
-    headers:{
-      Authorization:authStore().token
+  }), {
+    headers: {
+      Authorization: authStore().token
     }
   })
     .then(res => {
@@ -346,7 +411,7 @@ const createNewProject = () => {
       console.log(formData);
       console.log(res);
 
-      if (res.data.errno == 0)//成功
+      if (res.data.errno == 1)//成功
       {
         ElMessage.success(res.data.msg);
         newProjectDialog = false;
@@ -361,7 +426,7 @@ const createNewProject = () => {
     .catch(error => {
       // 处理请求错误
       console.error(error);
-    }); 
+    });
 }
 
 const fetchProjectData = () => {
@@ -378,7 +443,7 @@ const fetchProjectData = () => {
         })
         console.log(projectList.value);
 
-        projectNum.value=response.data.projects.length;
+        projectNum.value = response.data.projects.length;
         console.log(response.data.projects.length)
         // console.log(projectNum);
         // console.log('hhh');
@@ -390,6 +455,11 @@ const fetchProjectData = () => {
     }).catch(error => {
       console.log(error);
     })
+}
+
+//邀请别人加入团队
+const invite=()=>{
+
 }
 </script>
 

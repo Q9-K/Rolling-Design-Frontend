@@ -126,11 +126,12 @@
                 </span>
               </el-row>
               <!--原型封面图-->
+
               <!--如果有原型-->
-              <el-row v-if="nowProject.projectNum">
+              <el-row v-if="nowProject.docNum">
                 <div class="designBlock" v-for="(item, index) in docList" :key="index">
                   <div style="width:100%">
-                    <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
+                    <img @click="jumpToDoc(item.id)" class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
                   </div>
                   <div style="display:flex;justify-content: space-between;width:90%">
                     <span class="designName" style="padding-left:4px;display: flex;">
@@ -143,10 +144,10 @@
                     </span>
                   </div>
 
-                  <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click" title="With title"
+                  <!-- <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click" title="With title"
                     virtual-triggering>
                     <span> Some content </span>
-                  </el-popover>
+                  </el-popover> -->
 
                 </div>
               </el-row>
@@ -219,6 +220,12 @@ const handleClose = (key, keyPath) => {
 const jumpToDesign = (id) => {
   //this.$router.push('/video/'+video_id);
   const path_url = '/design/' + id;
+  window.open(path_url, '_self');
+}
+
+const jumpToDoc = (id) => {
+  //this.$router.push('/video/'+video_id);
+  const path_url = '/doc/' + id;
   window.open(path_url, '_self');
 }
 /*侧栏导航栏结束*/
@@ -350,7 +357,7 @@ const fetchDesignListData = () => {
 const docList = ref([]);
 const fetchDocListData = () => {
   let Headers = { 'Authorization': authStore().token };
-  axios.get('http://www.aamofe.top/api/document/all_prototype/' + route.params.id + '/', { headers: Headers })
+  axios.get('http://www.aamofe.top/api/document/all_documents/' + route.params.id + '/', { headers: Headers })
     .then((response) => {
       console.log(response);
 
@@ -371,7 +378,6 @@ const fetchDocListData = () => {
 }
 
 
-
 onMounted(() => {
   fetchNowTeam();
   fetchNowProject();
@@ -382,7 +388,7 @@ onMounted(() => {
 
 
 const newDesign=()=>{
-  if (!(designInput)) {
+  if (!(designNameInput)) {
     console.log('不能为空');
     ElMessage.warning('请输入名称');
     return;
@@ -429,12 +435,12 @@ const newDoc=()=>{
   //   return;
   // }
 
-  let formData = new FormData();
-  formData.append("team_name", addTeamIntroductionInput.value);
-  formData.append("Authorization", authStore().token);
+  // let formData = new FormData();
+  // formData.append("team_name", addTeamIntroductionInput.value);
+  // formData.append("Authorization", authStore().token);
 
   axios.post('http://www.aamofe.top/api/document/create_document/'+nowProject.projectId+'/', qs.stringify(
-    // {title: designNameInput.value}
+    {title: '默认文档'}
     ),
     {
     headers:{
