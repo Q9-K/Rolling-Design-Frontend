@@ -18,7 +18,9 @@
             @click="searchData(true)"
             style="margin: 5px 10px 0 10px; height: 30px; right: 10%"
           >搜索</el-button>
-          
+          <div v-for="message in searchMessages" :key="message" style="margin:20px">
+            {{ message }}
+          </div>
         </el-drawer>
         <div>
             <vue-advanced-chat height="calc(90vh - 20px)" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
@@ -54,7 +56,7 @@ export default {
     },
     data() {
         return {
-            searchMessages: [],
+            searchMessages: ['1','2'],
             drawer: ref(false),
             currentUserId: '1',
             roomId: '1', //默认进入的id
@@ -264,6 +266,14 @@ export default {
             this.requestData(this.selectedRoom)
 
         },
+        searchData(bool) {
+            if(bool){
+                console.log('bbb')
+                const msg = JSON.parse(this.messages)
+                const searchMessage = this.inputVal.toLowerCase(); // 将搜索查询转换为小写以进行不区分大小写的匹配
+                this.searchMessages = this.msg.filter(messages => messages.message.toLowerCase().includes(searchMessage));
+            }
+        },
         async getTeams() {
             try {
                 const { data: res } = await axios.get(`http://www.aamofe.top/api/team/all_teams/`,
@@ -354,6 +364,9 @@ export default {
                         ...this.messages,
                         message
                     ]
+                    this.sockets[this.selectedRoom].send(JSON.stringify({
+                        clean : 'clean'
+                    }))
                 }
             }
             if (parsedData.type === 'chat_status') {
@@ -363,9 +376,11 @@ export default {
                         room.lastMessage.username = parsedData.username;
                         room.lastMessage.timestamp = parsedData.time;
                         room.unreadCount = parsedData.unread_count;
+                        room.index = parsedData.index
                         if (this.selectedRoom == parsedData.team_id) {
                             room.unreadCount = 0;
                         }
+                        console.log(room.index)
                         break; // 如果 roomId 是唯一的，找到后就跳出循环
                     }
                 }
@@ -465,7 +480,7 @@ export default {
                 const dataStr = JSON.stringify(data);
                 this.sockets[roomId].send(dataStr);
                 const containsAt = data.message.includes("@");
-                const containsAtAll = message.includes("@所有人");
+                const containsAtAll = data.message.includes("@所有人");
 
                 if(containsAt){
                     if(containsAtAll){
