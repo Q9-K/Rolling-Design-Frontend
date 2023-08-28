@@ -6,35 +6,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-<<<<<<< HEAD
     component: HomeView
-=======
-    // component: () => import('../App.vue')
-    redirect: '/chat'
-  },
-  // {
-  //   path: '/fileEdit',
-  //   name: 'fileEdit',
-  //   component: () => import('../views/FileEditor.vue')
-  // },
-  // {
-  //   path: '/test',
-  //   name: 'test',
-  //   component: () => import('../views/Test.vue')
-  // },
-  {
-    path: '/tiptap/:id',
-    name: 'tiptap',
-    component: () => import('../views/TipTap.vue')
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/others/AboutView.vue')
->>>>>>> wzw
   },
   /*相当于主页*/
   {
