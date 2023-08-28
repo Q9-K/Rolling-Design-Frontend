@@ -8,14 +8,21 @@ import tippy from 'tippy.js'
 import { reactive, ref, inject } from 'vue'
 import MentionList from '../components/MentionList.vue'
 const axios = inject('axios')
-
+import { authStore } from "../store/index.js"
 
 export default {
-    items: ({ query }) => {
-
+    items: async ({ query }) => {
+        // let res = await axios.get('/team/all_members/', {
+        //     headers: {
+        //         Authorization: authStore().token
+        //     }
+        // })
         // setTimeout(() => {
-        let array = [{ name: '张三', id: 1 }, { name: '我是大傻逼', id: 2 }]
-        return array.filter(item => (item != '我是') && item.name.toLowerCase().startsWith(query.toLowerCase()))
+        // console.log(res.data)
+        const array = authStore().team_members
+        const userId = authStore().userId
+        console.log('我是傻逼', array)
+        return array.filter(item => (item.username.toLowerCase().startsWith(query.toLowerCase())))
         // }, 2000);
     },
 

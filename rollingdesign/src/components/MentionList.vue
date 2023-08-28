@@ -4,9 +4,8 @@
             <div class="item" :class="{ 'is-selected': index === selectedIndex }" v-for="(item, index) in items"
                 :key="index" @click="selectItem(index)">
                 <div class="userInfo">
-                    <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" :size="20"
-                        shape="square"></el-avatar>
-                    <span style="text-indent: 5px;">{{ item.name }}</span>
+                    <el-avatar :src="item.avatar_url" :size="20" shape="square"></el-avatar>
+                    <span style="text-indent: 5px;">{{ item.username }}</span>
                 </div>
             </div>
         </template>
@@ -21,8 +20,11 @@
   
 <script>
 import qs from 'qs'
+import { authStore } from "../store/index.js"
 import { UserFilled } from '@element-plus/icons-vue'
 import { useSocketStore } from '../stores/useSocketStore'
+// import { useRoute } from 'vue-router'
+
 const socketStore = useSocketStore()
 export default {
     props: {
@@ -81,32 +83,38 @@ export default {
             this.selectItem(this.selectedIndex)
         },
 
-        async selectItem(index) {
+        selectItem(index) {
             // console.log(this.items[index])
-            const item = this.items[index].name
+            const item = this.items[index]
 
-            if (item) {
-                try {
-                    // let res = axios.post('/api接口')
-                    // TODO:完成发送消息
-                    const socket = socketStore.socket
-                    // console.log(socket.readyState)
-                    if (socket.readyState == socket.OPEN) {
-                        socket.send(JSON.stringify({
-                            user_id: '1',
-                            url: 'www.baidu.com',
-                            file_id: '1'
-                        }))
-                        console.log(`@ user_name 成功`)
-                    }
-                    else {
-                        console.log('已断开共享文档连接')
-                    }
-                } catch (err) {
-                    console.error(err)
-                }
-                this.command({ id: item })
+            // try {
+            // let res = axios.post('/api接口')
+            // TODO:完成发送消息
+            // console.log(this.$route)
+            let socket = socketStore.socket
+
+            // console.log(socket.readyState)
+            if (socket.readyState != 1) {
+                socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+                socketStore.socket = socket
             }
+            // } catch (err) {
+            //     console.error(err)
+            // }
+            setTimeout(() => {
+                socketStore.socket = socket
+                console.log(socket.readyState)
+                socket.send(JSON.stringify({
+                    'type': 'file',
+                    'user_id': '4',
+                    'url': 'www.baidu.com',
+                    'file_id': `${this.$route.params.id}`,
+                    // 'text': '我是傻逼'
+                }))
+                console.log(`@user_name 成功`)
+            }, 2000)
+            this.command({ id: item.username })
+
         },
     },
 }

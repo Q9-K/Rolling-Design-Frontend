@@ -221,8 +221,8 @@ const switchToTeam = async (team_id) => {
     let formData = new FormData();
     formData.append("team_id", team_id);
     console.log(authStore().token);
-    // formData.append("Authorization", authStore().token);
-    formData.append("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1OTM2NDEsImlkIjoxfQ.-I7TVwdZw17TzANbN702KW7Uh6_a9otODi6T4Vo5_fA");
+    formData.append("Authorization", authStore().token);
+    // formData.append("Authorization", Authorization: authStore().token);
     axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify(
         {
             team_id: team_id
@@ -294,7 +294,6 @@ const jumpToTeam = (team_id) => {
 
 const fetchTeamlistData = () => {
     let Headers = { 'Authorization': authStore().token };
-    // let Headers1 = { 'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NDg0OTQsImlkIjoxfQ.HIgCyImqu4gytXnLAeE_7qkYd0INgcHeh6NHL_W3dMQ"};
     teamList = ref([]);
 
     axios.get('http://www.aamofe.top/api/team/all_teams/', { headers: Headers })

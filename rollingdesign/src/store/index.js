@@ -10,8 +10,9 @@ export const authStore = defineStore({
     userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : '',//当前登录者的id
     isLogin: localStorage.getItem('isLogin') ? localStorage.getItem('isLogin') : false,
     token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
+    team_members: {},
     // nickName: '',
-    // avatar: '',
+    avatar_url: '',
     // // username: '',
     // // password: '',
     // // account: 'passenger',

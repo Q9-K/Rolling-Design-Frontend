@@ -340,14 +340,21 @@ const projectPopoverRef = ref()
 const projectOut = () => {
   // console.log(logmyButton.value.textContent)
   console.log(projectPopoverRef)
-  console.log( unref(projectPopoverRef))
+  console.log(unref(projectPopoverRef))
   unref(projectPopoverRef).popperRef?.delayHide?.()
 }
 
 const invideLink = ref();
 /*获取邀请链接*/
 const getLink = () => {
-  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
+  axios.get('http://www.aamofe.top/api/team/get_invitation/', {
+    params: {
+      team_id: 1
+    },
+    headers: {
+      Authorization: authStore().token
+    }
+  })
     .then(res => {
       // 处理响应数据
       console.log(res);

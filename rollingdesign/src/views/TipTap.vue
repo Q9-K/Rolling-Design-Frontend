@@ -54,7 +54,12 @@
                     {{  }}
                 </div> -->
                 <div class="selfAvatars">
-                    <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
+                    <template v-if="authStore().isLogin">
+                        <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
+                    </template>
+                    <template v-else>
+                        <el-avatar :size="40" style="font-size: 30px;"></el-avatar>
+                    </template>
                 </div>
             </div>
         </div>
@@ -121,8 +126,9 @@ import * as Y from 'yjs'
 import Mention from '@tiptap/extension-mention'
 import suggestion from '../utils/suggestion.js'
 import Button from '../components/Button.vue';
-
-
+import { useSocketStore } from '../stores/useSocketStore'
+import { authStore } from "../store/index.js"
+const socketStore = useSocketStore()
 const axios = inject('axios')
 
 const ydoc = new Y.Doc();
@@ -142,7 +148,7 @@ const route = useRoute()
 const title = ref('Rolling Document')
 const editor = ref(null)
 const content = ref()
-const editAble = ref(false)
+const editAble = ref(true)
 const dataLoaded = ref(false)
 // const lock = ref(false)
 
@@ -224,25 +230,42 @@ const beforeunloadHandler = async (e) => {
 //     // window.confirm('are you sure to leave?')
 // }
 onMounted(async () => {
+    let socket = socketStore.socket
+    if (socket == null || socket.readyState != 1) {
+        socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+        socketStore.socket = socket
+    }
     window.addEventListener('beforeunload', e => beforeunloadHandler(e))
+    const route = useRoute()
+    // console.log('id', route.params.id)
     // window.addEventListener('unload', e => unloadHandler(e))
-    let res = await axios.get('/document/view_document/3/', {
-        // headers: {
-        //     //TODO:通过pinia全局获取本地token
-        //     // Authorization: '2023rolling'
-        // }
+    let res = await axios.get(`/document/view_document/${route.params.id}`, {
+        headers: {
+            //TODO:通过pinia全局获取本地token
+            Authorization: authStore().token
+        }
     })
-    console.log('锁', res.data.document.is_locked)
     const document = res.data.document
-
-    dataLoaded.value = true
     title.value = document.title
     const lock = document.is_locked
     const time = document.modified_at.replace("T", " ").replace("Z", " ")
     lastEditTime.value = new Date(time).toLocaleString()
+    editAble.value = document.editable
+    res = await axios.get('/team/all_members/', {
+        headers: {
+            Authorization: authStore().token
+        }
+    })
+    authStore().team_members = res.data.members
+    // console.log('team_members', res.data.members)
+    // console.log('锁', res.data.document.is_locked)
+
+    // editAble.value = true
+    dataLoaded.value = true
+
 
     // UserName = document.
-    editAble.value = document.editable
+
 
     // needToChangeLock = true
 
@@ -374,7 +397,7 @@ const generateLink = async () => {
         editable: 1
     }), {
         headers: {
-            Authorization: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NTc5NTgsImlkIjoxfQ.aaiRhWBxuwx9fqUjez-DnstfWy-N5iw5Tw5_pLly7mo'
+            Authorization: authStore().token
         }
     })
     // console.log(res.data.data[0])
@@ -397,7 +420,7 @@ const copyLink = () => {
 
 const onCreate = ({ editor }) => {
     // editor.isFocused = true
-    console.log(editor)
+    // console.log(editor)
 }
 
 </script>
