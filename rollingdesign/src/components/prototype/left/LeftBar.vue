@@ -5,8 +5,9 @@ import buttonWidgetIcon from '@/assets/icon/buttonWidgetIcon.png'
 import inputWidgetIcon from '@/assets/icon/inputWidgetIcon.png'
 import choiceWidgetIcon from '@/assets/icon/choiceWidgetIcon.png'
 import rectWidgetIcon from '@/assets/icon/rectWidgetIcon.png'
-import {ref, toRefs, watch, provide} from "vue";
 import WidgetConfig from "@/components/prototype/left/widgetConfig/WidgetConfig.vue";
+
+import {ref, toRefs, watch, provide} from "vue";
 
 const props = defineProps([
   'setGraphSize',
