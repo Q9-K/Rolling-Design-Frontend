@@ -1,8 +1,9 @@
+<!--
+ * @Date: 2023-08-28 08:13:16
+ * @Author: Q9K
+ * @Description: 
+-->
 <template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav> -->
   <router-view />
 </template>
 
@@ -15,25 +16,4 @@ const axiosInstance = axios.create({
 provide('axios', axiosInstance)
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>

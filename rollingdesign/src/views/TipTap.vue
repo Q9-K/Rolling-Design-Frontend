@@ -4,12 +4,12 @@
  * @Description: 协同编辑器的基本实现，使用了element-tiptap和yjs
 -->
 <template>
-    <div class="box">
+    <div class="box2">
         <div class=" header">
             <div class="actions1">
                 <div class="backToCenter">
                     <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
-                        <i class="iconfont icon-shouye" @click="router.push('/home')"></i>
+                        <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
                     </el-tooltip>
                 </div>
                 <!-- <div class="select"></div> -->
@@ -58,16 +58,16 @@
                 </div>
             </div>
         </div>
-        <template v-if="dataLoaded">
-            <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
-                placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" />
-        </template>
+        <!-- <template v-if="dataLoaded"> -->
+        <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
+            placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
+            :readonly="!editAble" @onCreate="onCreate" />
+        <!-- </template>
         <template v-else>
             <div>
                 请稍等
             </div>
-        </template>
+        </template> -->
 
     </div>
 </template>
@@ -142,7 +142,7 @@ const route = useRoute()
 const title = ref('Rolling Document')
 const editor = ref(null)
 const content = ref()
-const editAble = ref(true)
+const editAble = ref(false)
 const dataLoaded = ref(false)
 // const lock = ref(false)
 
@@ -208,7 +208,6 @@ const beforeunloadHandler = async (e) => {
     }))
     console.log('out', res.data)
 
-
 }
 
 // const unloadHandler = async (e) => {
@@ -243,7 +242,7 @@ onMounted(async () => {
     lastEditTime.value = new Date(time).toLocaleString()
 
     // UserName = document.
-    // editAble.value = document.editable
+    editAble.value = document.editable
 
     // needToChangeLock = true
 
@@ -253,7 +252,7 @@ onMounted(async () => {
     }))
     console.log(response.data)
     if (lock > 0) {
-        content.value = null
+        content.value = ''
         console.log('next open')
         // await nextTick()
     }
@@ -397,7 +396,7 @@ const copyLink = () => {
 }
 
 const onCreate = ({ editor }) => {
-    editor.isFocused = true
+    // editor.isFocused = true
     console.log(editor)
 }
 
@@ -405,7 +404,7 @@ const onCreate = ({ editor }) => {
 
 
 <style lang="scss">
-.box {
+.box2 {
     height: 100%;
     display: flex;
     flex-direction: column;

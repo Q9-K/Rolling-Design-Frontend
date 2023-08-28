@@ -170,8 +170,8 @@
 <script setup>
 import qs from 'qs'
 import axios from 'axios'
-import { ref, unref } from 'vue'
-import { useRoute } from 'vue-router';
+import { ref, unref, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
@@ -211,9 +211,13 @@ const teamOutside = () => {
     unref(popoverTeam).popoverTeam?.delayHide?.()
 }
 
-const switchToTeam = (team_id) => {
+const switchToTeam = async (team_id) => {
 
     console.log(team_id);
+    nowTeam.teamId = team_id
+    await nextTick()
+    // const router = useRouter()
+    location.reload()
     let formData = new FormData();
     formData.append("team_id", team_id);
     console.log(authStore().token);
@@ -237,6 +241,7 @@ const switchToTeam = (team_id) => {
                 fetchNowTeam();
                 fetchTeamlistData();
                 fetchProjectData();
+
                 console.log(teamList.value);
                 return;
             }
@@ -249,6 +254,7 @@ const switchToTeam = (team_id) => {
             // 处理请求错误
             console.error(error);
         });
+
 }
 // const getNowTeam = (team_id) => {
 //   console.log('hhhh' + team_id);
@@ -414,9 +420,9 @@ const buildNewTeam = () => {
     let formData = new FormData();
     formData.append("team_name", addTeamIntroductionInput.value);
     formData.append("Authorization", authStore().token);
-
+    console.log(222, addTeamNameInput.value)
     axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({
-        team_name: addTeamIntroductionInput.value
+        team_name: addTeamNameInput.value
     }), {
         headers: {
             Authorization: authStore().token

@@ -52,7 +52,7 @@
 
 
                         <div>
-                            <el-table :data="memberList" style="width: 60%">
+                            <el-table :data="memberList" style="width: 100%">
                                 <el-table-column prop="nickname" label="昵称" width="180" />
                                 <el-table-column prop="username" label="真实姓名" width="180" />
                                 <el-table-column prop="email" label="邮箱" width="300" />
