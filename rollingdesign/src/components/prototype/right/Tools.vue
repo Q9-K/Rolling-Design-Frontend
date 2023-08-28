@@ -2,7 +2,11 @@
 import exportPNGIcon from '@/assets/icon/exportPNG.png'
 import exportHTMLIcon from '@/assets/icon/exportHTML.png'
 import saveGraphIcon from '@/assets/icon/saveGraph.png'
+import quitPrototypeIcon from '@/assets/icon/quitPrototype.png'
 import {inject, ref, watch} from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 const props = defineProps([
   'saveGraph',
@@ -54,11 +58,25 @@ const changeCurrentColor = (value) => {
   props.currentElement.attrs.fill = value
 }
 
+const quitPrototype = () => {
+  sessionStorage.removeItem('stageStringify')
+  router.push('/index')
+}
+
 </script>
 
 <template>
   <div class="right-tools">
     <div style="width: 100%; height: 2vh"></div>
+    <div class="single-tool">
+      <el-tooltip
+        content="退出"
+        effect="light"
+        placement="right"
+      >
+        <img @click="quitPrototype" class="tool-icon" :src="quitPrototypeIcon" alt="退出">
+      </el-tooltip>
+    </div>
     <div class="single-tool">
       <el-tooltip
         content="保存"

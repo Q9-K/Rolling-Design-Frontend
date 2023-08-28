@@ -7,7 +7,7 @@ const props = defineProps([
 ])
 
 const currentText = ref(null)
-const textSize = ref(12)
+const textSize = ref(24)
 
 if (props.currentElement) {
   currentText.value = props.currentElement
@@ -25,26 +25,25 @@ watch(
 )
 
 const changeTextSize = (value) => {
-  console.log(value)
-  // currentText.value.attrs.fontSize = value
+  // console.log(value)
+  currentText.value.attrs.fontSize = value
 }
 </script>
 
 <template>
   <div class="config-outer">
     <div class="config-box">
-      <!--
       <div class="config-title">
         字号
       </div>
-      <el-slider
+      <el-input-number
         v-model="textSize"
         min="2"
         max="30"
         class="config-setter"
-        @input="value => changeTextSize(value)"
+        style="height: 80%"
+        @change="value => changeTextSize(value)"
       />
-      -->
     </div>
   </div>
 </template>

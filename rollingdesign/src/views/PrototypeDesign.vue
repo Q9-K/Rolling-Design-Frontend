@@ -7,12 +7,20 @@ import Tools from "../components/prototype/right/Tools.vue";
 import KonvaInput from "../components/prototype/konvaWidget/KonvaInput";
 import KonvaButton from "../components/prototype/konvaWidget/KonvaButton";
 import KonvaRatio from "../components/prototype/konvaWidget/KonvaRatio";
+import {authStore} from "../store/index";
+import axios, {get} from "axios";
 // import drawGrids from "@/components/prototype/grid/drawGrids";
 // import Grid from "@/components/prototype/grid/Grid.vue";
 // import { provide } from "vue";
 // import axios from "axios";
 // import qs from 'qs'
 // import {prefixUrl} from "@/main";
+
+import { useRoute } from 'vue-router';
+import qs from "qs";
+
+const route = useRoute();
+const designId = route.params.id;
 
 let stage, layer
 let isGroup
@@ -22,6 +30,7 @@ let currentElement = ref(null)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
+const prototypeTitle = ref(null)
 
 const groups = []
 
@@ -31,6 +40,7 @@ onMounted(() => {
 
   console.log(stageStringify)
 
+  // 本地有从本地拿
   if (stageStringify) {
     // TODO 重新打开插入的图片
     /*
@@ -42,25 +52,148 @@ onMounted(() => {
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
     sessionStorage.removeItem('stageStringify')
   }
+  // 本地没有从服务端拿
   else {
-    stage = new Konva.default.Stage({
-      container: 'canvasContainer',
-      width: 950.4,
-      // width: 1920,
-      height: 534.6,
-      // height: 1080
-    });
+    let Headers = { 'Authorization': authStore().token };
 
-    const bgLayer = new Konva.default.Layer();
-    stage.add(bgLayer);
+    let formerContent = ''
 
-    // 创建一个背景矩形
-    const backgroundRect = new Konva.default.Rect({
-      width: stage.width(),
-      height: stage.height(),
-      fill: 'white', // 设置背景颜色
-    });
-    bgLayer.add(backgroundRect);
+    axios.get('http://www.aamofe.top/api/document/view_prototype/', {
+      headers: Headers,
+      params: {
+        prototype_id: designId
+      }
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data)
+
+          formerContent = response.data.prototype.content
+          prototypeTitle.value = response.data.prototype.title
+
+          if (formerContent) {
+            const stageJSON = JSON.parse(formerContent)
+            stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            sessionStorage.removeItem('stageStringify')
+          }
+          else {
+            stage = new Konva.default.Stage({
+              container: 'canvasContainer',
+              width: 950.4,
+              // width: 1920,
+              height: 534.6,
+              // height: 1080
+            });
+
+            const bgLayer = new Konva.default.Layer();
+            stage.add(bgLayer);
+
+            // 创建一个背景矩形
+            const backgroundRect = new Konva.default.Rect({
+              width: stage.width(),
+              height: stage.height(),
+              fill: 'white', // 设置背景颜色
+            });
+            bgLayer.add(backgroundRect);
+          }
+
+          layer = new Konva.default.Layer();
+          stage.add(layer);
+
+          stage.on('click tap', function (e) {
+
+            const isBackgroundLayer = () => {
+              const layerWidth = e.target.attrs.width
+              const layerHeight = e.target.attrs.height
+              const stageWidth = e.currentTarget.attrs.width
+              const stageHeight = e.currentTarget.attrs.height
+              return layerHeight === stageHeight && layerWidth === stageWidth;
+            }
+
+            console.log(e)
+            // if click on empty area - remove all transformers
+            if (e.target === stage || isBackgroundLayer()) {
+              stage.find('Transformer').forEach(tr => tr.destroy());
+              layer.draw();
+              return;
+            }
+            // remove old transformers
+            stage.find('Transformer').forEach(tr => tr.destroy());
+
+            // create new transformer
+            const tr = new Konva.default.Transformer({
+              ignoreStroke: true,
+              padding: 5
+            });
+            layer.add(tr);
+            tr.attachTo(e.target);
+          });
+
+          // 创建一个右键菜单图层
+          const contextMenuLayer = new Konva.Layer();
+          stage.add(contextMenuLayer);
+
+
+          // 监听全局鼠标右键点击事件，设置右键菜单的位置和选中项
+          window.addEventListener('contextmenu', (e) => {
+            console.log(e)
+            e.preventDefault();
+            const stageBox = stage.container().getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            contextMenuPosition.value = {
+              x: mouseX,
+              y: mouseY
+            }
+
+            const inStageX = e.clientX - stageBox.left
+            const inStageY = e.clientY - stageBox.top
+
+            let clickedGroup = null;
+
+            // 遍历所有组来寻找包含点击坐标的组
+            for (const group of groups) {
+              const groupBoundingBox = group.getClientRect();
+              if (
+                inStageX >= groupBoundingBox.x &&
+                inStageX <= groupBoundingBox.x + groupBoundingBox.width &&
+                inStageY >= groupBoundingBox.y &&
+                inStageY <= groupBoundingBox.y + groupBoundingBox.height
+              ) {
+                clickedGroup = group;
+                break; // 找到后立即退出循环
+              }
+            }
+
+            if (clickedGroup) {
+              isGroup = true
+              selectedItem.value = clickedGroup
+            }
+            else {
+              isGroup = false
+              selectedItem.value = stage.getIntersection({
+                x: inStageX,
+                y: inStageY
+              });
+            }
+
+            showContextMenu.value = selectedItem.value !== null;
+            contextMenuLayer.draw();
+          });
+
+          // 监听全局点击事件，隐藏右键菜单
+          window.addEventListener('click', () => {
+            showContextMenu.value = false;
+            contextMenuLayer.draw();
+          });
+
+          // 每隔0.1秒钟重新绘制
+          setInterval(() => {
+            layer.batchDraw();
+          }, 100);
+        }
+      })
   }
 
   /*
@@ -77,100 +210,7 @@ onMounted(() => {
 
    */
 
-  layer = new Konva.default.Layer();
-  stage.add(layer);
 
-  stage.on('click tap', function (e) {
-
-    const isBackgroundLayer = () => {
-      const layerWidth = e.target.attrs.width
-      const layerHeight = e.target.attrs.height
-      const stageWidth = e.currentTarget.attrs.width
-      const stageHeight = e.currentTarget.attrs.height
-      return layerHeight === stageHeight && layerWidth === stageWidth;
-    }
-
-    console.log(e)
-    // if click on empty area - remove all transformers
-    if (e.target === stage || isBackgroundLayer()) {
-      stage.find('Transformer').forEach(tr => tr.destroy());
-      layer.draw();
-      return;
-    }
-    // remove old transformers
-    stage.find('Transformer').forEach(tr => tr.destroy());
-
-    // create new transformer
-    const tr = new Konva.default.Transformer({
-      ignoreStroke: true,
-      padding: 5
-    });
-    layer.add(tr);
-    tr.attachTo(e.target);
-  });
-
-  // 创建一个右键菜单图层
-  const contextMenuLayer = new Konva.Layer();
-  stage.add(contextMenuLayer);
-
-  // 监听全局鼠标右键点击事件，设置右键菜单的位置和选中项
-  window.addEventListener('contextmenu', (e) => {
-    console.log(e)
-    e.preventDefault();
-    const stageBox = stage.container().getBoundingClientRect();
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-
-    contextMenuPosition.value = {
-      x: mouseX,
-      y: mouseY
-    }
-
-    const inStageX = e.clientX - stageBox.left
-    const inStageY = e.clientY - stageBox.top
-
-    let clickedGroup = null;
-
-    // 遍历所有组来寻找包含点击坐标的组
-    for (const group of groups) {
-      const groupBoundingBox = group.getClientRect();
-      if (
-        inStageX >= groupBoundingBox.x &&
-        inStageX <= groupBoundingBox.x + groupBoundingBox.width &&
-        inStageY >= groupBoundingBox.y &&
-        inStageY <= groupBoundingBox.y + groupBoundingBox.height
-      ) {
-        clickedGroup = group;
-        break; // 找到后立即退出循环
-      }
-    }
-
-    if (clickedGroup) {
-      isGroup = true
-      selectedItem.value = clickedGroup
-    }
-    else {
-      isGroup = false
-      selectedItem.value = stage.getIntersection({
-        x: inStageX,
-        y: inStageY
-      });
-    }
-
-    showContextMenu.value = selectedItem.value !== null;
-    contextMenuLayer.draw();
-  });
-
-  // 监听全局点击事件，隐藏右键菜单
-  window.addEventListener('click', () => {
-    showContextMenu.value = false;
-    contextMenuLayer.draw();
-  });
-
-  // 每隔0.1秒钟重新绘制
-  setInterval(() => {
-    layer.batchDraw();
-  }, 100);
 })
 
 const deleteSelectedItem = () => {
@@ -253,14 +293,13 @@ const saveGraph = () => {
   sessionStorage.setItem('stageStringify', stageStringify)
 
   // TODO 向后端发送保存原型设计的接口
-  /*
-  axios.post('http://www.aamofe.top' + '/api/document/save_prototype/', qs.stringify({
-    prototype_id: 2,
+  axios.post('http://www.aamofe.top/api/document/save_prototype/', qs.stringify({
+    prototype_id: designId,
     content: stageStringify,
     title:prototypeName
   }),{
     headers:{
-      Authorization: authStore().token;
+      Authorization: authStore().token
     }
   })
     .then((response) => {
@@ -268,8 +307,6 @@ const saveGraph = () => {
         console.log(response.data)
       }
     })
-
-   */
 }
 
 const addText = () => {
@@ -457,8 +494,17 @@ const setGraphSize = ({ width, height }) => {
 <template>
   <div class="prototype-design">
     <div class="left-bar-outer">
-      <LeftBar :set-graph-size="setGraphSize" :add-text="addText" :add-image="addImage" :add-button="addButton"
-        :add-input="addInput" :add-radio="addRadio" :add-rect="addRect" :current-element="currentElement" />
+      <LeftBar
+        :set-graph-size="setGraphSize"
+        :add-text="addText"
+        :add-image="addImage"
+        :add-button="addButton"
+        :add-input="addInput"
+        :add-radio="addRadio"
+        :add-rect="addRect"
+        :current-element="currentElement"
+        :prototype-title="prototypeTitle"
+      />
     </div>
     <div class="middle-and-bottom">
       <div class="middle-draw-outer">
@@ -493,8 +539,8 @@ const setGraphSize = ({ width, height }) => {
 <style scoped lang="scss">
 .prototype-design {
   position: fixed;
-  top: 15vh;
-  height: 100vh;
+  top: 5vh;
+  height: 95vh;
   width: 100%;
   display: flex;
   flex-wrap: nowrap;

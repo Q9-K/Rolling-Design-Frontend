@@ -5,8 +5,9 @@ import buttonWidgetIcon from '@/assets/icon/buttonWidgetIcon.png'
 import inputWidgetIcon from '@/assets/icon/inputWidgetIcon.png'
 import choiceWidgetIcon from '@/assets/icon/choiceWidgetIcon.png'
 import rectWidgetIcon from '@/assets/icon/rectWidgetIcon.png'
-import {ref, toRefs, watch, provide} from "vue";
 import WidgetConfig from "@/components/prototype/left/widgetConfig/WidgetConfig.vue";
+
+import {ref, toRefs, watch, provide} from "vue";
 
 const props = defineProps([
   'setGraphSize',
@@ -16,7 +17,8 @@ const props = defineProps([
   'addInput',
   'addRadio',
   'addRect',
-  'currentElement'
+  'currentElement',
+  'prototypeTitle',
 ])
 
 const widgets = [
@@ -69,6 +71,17 @@ watch(
     // 在这里可以执行响应的操作，比如重新渲染子组件内容
     if (newValue) {
       activeNames.value = ['widget-config']
+    }
+  }
+);
+
+watch(
+  () => props.prototypeTitle,
+  (newValue, oldValue) => {
+    console.log('子组件接收到的属性发生变化：', newValue, oldValue);
+    // 在这里可以执行响应的操作，比如重新渲染子组件内容
+    if (newValue) {
+      prototypeName.value = props.prototypeTitle
     }
   }
 );
