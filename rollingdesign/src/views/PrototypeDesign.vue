@@ -299,7 +299,7 @@ const saveGraph = () => {
     title:prototypeName
   }),{
     headers:{
-      Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTM1NzIxMDcsImlkIjoxfQ.s_KA3ZahGx3_mKOhHfPj-a2N0YZ3O5xi_iDf4-tR_WY'
+      Authorization: authStore().token
     }
   })
     .then((response) => {

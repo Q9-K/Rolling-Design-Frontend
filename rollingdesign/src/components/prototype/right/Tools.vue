@@ -59,6 +59,7 @@ const changeCurrentColor = (value) => {
 }
 
 const quitPrototype = () => {
+  sessionStorage.removeItem('stageStringify')
   router.push('/index')
 }
 
