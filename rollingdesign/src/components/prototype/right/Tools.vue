@@ -70,7 +70,7 @@ const quitPrototype = () => {
     <div style="width: 100%; height: 2vh"></div>
     <div class="single-tool">
       <el-tooltip
-        content="推出"
+        content="退出"
         effect="light"
         placement="right"
       >
