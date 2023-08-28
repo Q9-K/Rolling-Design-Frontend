@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
-    "@element-plus/icons-vue": "^2.1.0",
     "@hocuspocus/provider": "^2.4.0",
     "@tiptap/extension-collaboration": "^2.1.7",
     "@tiptap/extension-collaboration-cursor": "^2.1.7",
@@ -18,7 +17,6 @@
     "@tiptap/starter-kit": "^2.1.7",
     "@tiptap/vue-3": "^2.1.7",
     "axios": "^1.4.0",
-    "clipboard": "^2.0.11",
     "clipboard": "^2.0.11",
     "core-js": "^3.8.3",
     "element-plus": "^2.3.9",
@@ -39,8 +37,6 @@
     "yjs": "^13.6.7"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.22.10",
-    "@babel/preset-typescript": "^7.22.5",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-typescript": "^7.22.5",
     "@vue/cli": "^5.0.8",

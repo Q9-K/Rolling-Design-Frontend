@@ -494,7 +494,7 @@ const setGraphSize = ({ width, height }) => {
 .prototype-design {
   position: fixed;
   top: 15vh;
-  height: 85vh;
+  height: 100vh;
   width: 100%;
   display: flex;
   flex-wrap: nowrap;

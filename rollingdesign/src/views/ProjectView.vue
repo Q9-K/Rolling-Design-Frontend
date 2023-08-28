@@ -128,27 +128,27 @@
                             </el-row>
                             <!--原型封面图-->
                             <!--如果有原型-->
-                            <el-row v-if="nowProject.projectNum">
+                            <el-row v-if="nowProject.docNum">
                                 <div class="designBlock" v-for="(item, index) in docList" :key="index">
                                     <div style="width:100%">
                                         <img class="round designImg" src="@/assets/projectImage.png"
-                                            style="width:90%;height:150px" />
+                                            style="width:90%;height:150px" @click="jumpToDoc(item.id)" />
                                     </div>
                                     <div style="display:flex;justify-content: space-between;width:90%">
                                         <span class="designName" style="padding-left:4px;display: flex;">
-                                            {{ item.tiele }}
+                                            {{ item.title }}
                                         </span>
                                         <span class="rightContent">
-                                            <el-icon ref="docMoreOp" v-click-outside="docOpOut">
+                                            <el-icon>
                                                 <More />
                                             </el-icon>
                                         </span>
                                     </div>
 
-                                    <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click"
+                                    <!-- <el-popover ref="decPopoverOp" :virtual-ref="docMoreOp" trigger="click"
                                         title="With title" virtual-triggering>
                                         <span> Some content </span>
-                                    </el-popover>
+                                    </el-popover> -->
 
                                 </div>
                             </el-row>
@@ -209,6 +209,12 @@ const designNameInput = ref('')
 import { reactive, toRefs } from 'vue'
 import router from '@/router';
 
+const jumpToDoc = (id) => {
+    //this.$router.push('/video/'+video_id);
+    // console.log(111, id)
+    const path_url = '/tiptap/' + id;
+    window.open(path_url, '_self');
+}
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
     console.log(key, keyPath)
@@ -337,6 +343,7 @@ const fetchDesignListData = () => {
                     // if()
                     designList.value.push(design);/*【这样写】*/
                 })
+                designList.value.pop()
                 // designNum=response.data.prototype.
                 console.log(designList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
             }
@@ -352,16 +359,17 @@ const fetchDesignListData = () => {
 const docList = ref([]);
 const fetchDocListData = () => {
     let Headers = { 'Authorization': authStore().token };
-    axios.get('http://www.aamofe.top/api/document/all_prototype/' + route.params.id + '/', { headers: Headers })
+    axios.get('http://www.aamofe.top/api/document/all_documents/' + route.params.id + '/', { headers: Headers })
         .then((response) => {
-            console.log(response);
-
+            // console.log(response);
+            console.log(111, response.data)
             if (response.data.errno == 0) {  //所有团队信息
                 response.data.documents.forEach((doc, index) => {
                     //op字段为当前登录者可以对该
                     // if()
                     docList.value.push(doc);/*【这样写】*/
                 })
+                docList.value.pop()
                 console.log(docList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
             }
             else {
@@ -384,7 +392,7 @@ onMounted(() => {
 
 
 const newDesign = () => {
-    if (!(designInput)) {
+    if (!(designNameInput.value)) {
         console.log('不能为空');
         ElMessage.warning('请输入名称');
         return;
@@ -409,8 +417,8 @@ const newDesign = () => {
             if (res.data.errno == 0)//成功
             {
                 ElMessage.success(res.data.msg);
-                designDialogVisible = false;
-                designNameInput = '';
+                designDialogVisible.value = false;
+                designNameInput.value = '';
                 return;
             }
             else {//失败
@@ -436,7 +444,7 @@ const newDoc = () => {
     formData.append("Authorization", authStore().token);
 
     axios.post('http://www.aamofe.top/api/document/create_document/' + nowProject.projectId + '/', qs.stringify(
-        { title: 'Rolling Design Document' }
+        { title: '大傻逼' }
     ),
         {
             headers: {
