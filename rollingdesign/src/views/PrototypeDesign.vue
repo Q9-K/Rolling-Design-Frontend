@@ -7,12 +7,20 @@ import Tools from "../components/prototype/right/Tools.vue";
 import KonvaInput from "../components/prototype/konvaWidget/KonvaInput";
 import KonvaButton from "../components/prototype/konvaWidget/KonvaButton";
 import KonvaRatio from "../components/prototype/konvaWidget/KonvaRatio";
+import {authStore} from "../store/index";
+import axios, {get} from "axios";
 // import drawGrids from "@/components/prototype/grid/drawGrids";
 // import Grid from "@/components/prototype/grid/Grid.vue";
 // import { provide } from "vue";
 // import axios from "axios";
 // import qs from 'qs'
 // import {prefixUrl} from "@/main";
+
+import { useRoute } from 'vue-router';
+import qs from "qs";
+
+const route = useRoute();
+const designId = route.params.id;
 
 let stage, layer
 let isGroup
@@ -22,6 +30,7 @@ let currentElement = ref(null)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
+const prototypeTitle = ref(null)
 
 const groups = []
 
@@ -31,6 +40,7 @@ onMounted(() => {
 
   console.log(stageStringify)
 
+  // 本地有从本地拿
   if (stageStringify) {
     // TODO 重新打开插入的图片
     /*
@@ -42,25 +52,52 @@ onMounted(() => {
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
     sessionStorage.removeItem('stageStringify')
   }
+  // 本地没有从服务端拿
   else {
-    stage = new Konva.default.Stage({
-      container: 'canvasContainer',
-      width: 950.4,
-      // width: 1920,
-      height: 534.6,
-      // height: 1080
-    });
+    let Headers = { 'Authorization': authStore().token };
 
-    const bgLayer = new Konva.default.Layer();
-    stage.add(bgLayer);
+    let formerContent = ''
 
-    // 创建一个背景矩形
-    const backgroundRect = new Konva.default.Rect({
-      width: stage.width(),
-      height: stage.height(),
-      fill: 'white', // 设置背景颜色
-    });
-    bgLayer.add(backgroundRect);
+    axios.get('http://www.aamofe.top/api/document/view_prototype/', {
+      headers: Headers,
+      params: {
+        prototype_id: designId
+      }
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data)
+
+          formerContent = response.data.prototype.content
+          prototypeTitle.value = response.data.prototype.title
+
+          if (formerContent) {
+            const stageJSON = JSON.parse(formerContent)
+            stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            sessionStorage.removeItem('stageStringify')
+          }
+          else {
+            stage = new Konva.default.Stage({
+              container: 'canvasContainer',
+              width: 950.4,
+              // width: 1920,
+              height: 534.6,
+              // height: 1080
+            });
+
+            const bgLayer = new Konva.default.Layer();
+            stage.add(bgLayer);
+
+            // 创建一个背景矩形
+            const backgroundRect = new Konva.default.Rect({
+              width: stage.width(),
+              height: stage.height(),
+              fill: 'white', // 设置背景颜色
+            });
+            bgLayer.add(backgroundRect);
+          }
+        }
+      })
   }
 
   /*
@@ -253,9 +290,8 @@ const saveGraph = () => {
   sessionStorage.setItem('stageStringify', stageStringify)
 
   // TODO 向后端发送保存原型设计的接口
-  /*
-  axios.post('http://www.aamofe.top' + '/api/document/save_prototype/', qs.stringify({
-    prototype_id: 2,
+  axios.post('http://www.aamofe.top/api/document/save_prototype/', qs.stringify({
+    prototype_id: designId,
     content: stageStringify,
     title:prototypeName
   }),{
@@ -268,8 +304,6 @@ const saveGraph = () => {
         console.log(response.data)
       }
     })
-
-   */
 }
 
 const addText = () => {
@@ -494,7 +528,7 @@ const setGraphSize = ({ width, height }) => {
 .prototype-design {
   position: fixed;
   top: 15vh;
-  height: 85vh;
+  height: 100vh;
   width: 100%;
   display: flex;
   flex-wrap: nowrap;

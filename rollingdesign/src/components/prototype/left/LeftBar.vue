@@ -16,7 +16,8 @@ const props = defineProps([
   'addInput',
   'addRadio',
   'addRect',
-  'currentElement'
+  'currentElement',
+  'prototypeTitle',
 ])
 
 const widgets = [
@@ -69,6 +70,17 @@ watch(
     // 在这里可以执行响应的操作，比如重新渲染子组件内容
     if (newValue) {
       activeNames.value = ['widget-config']
+    }
+  }
+);
+
+watch(
+  () => props.prototypeTitle,
+  (newValue, oldValue) => {
+    console.log('子组件接收到的属性发生变化：', newValue, oldValue);
+    // 在这里可以执行响应的操作，比如重新渲染子组件内容
+    if (newValue) {
+      prototypeName.value = props.prototypeTitle
     }
   }
 );
