@@ -426,8 +426,13 @@ const onCreate = ({ editor }) => {
 </script>
 
 
+<<<<<<< HEAD
 <style lang="scss">
 .box2 {
+=======
+<style lang="scss" scoped>
+.box {
+>>>>>>> wzw
     height: 100%;
     display: flex;
     flex-direction: column;
