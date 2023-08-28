@@ -438,9 +438,10 @@ const newDesign = () => {
     let formData = new FormData();
     formData.append("team_name", addTeamIntroductionInput.value);
     formData.append("Authorization", authStore().token);
+    // nowProject.projectId 
 
-    axios.post('http://www.aamofe.top/api/document/create_prototype/' + nowProject.projectId + '/', qs.stringify({
-        title: designNameInput.value
+    axios.post('http://www.aamofe.top/api/team/create_project/' + nowProject.projectId + '/', qs.stringify({
+        project_name: designNameInput.value
     }), {
         headers: {
             Authorization: authStore().token
@@ -448,19 +449,19 @@ const newDesign = () => {
     })
         .then(res => {
             // 处理响应数据
-            console.log(formData);
-            console.log(res);
-
-            if (res.data.errno == 0)//成功
+            // console.log(formData);
+            // console.log(res);
+            console.log(res.data.errno)
+            if (res.data.errno === 0)//成功
             {
                 ElMessage.success(res.data.msg);
                 designDialogVisible.value = false;
                 designNameInput.value = '';
-                return;
+                // return;
             }
             else {//失败
                 ElMessage.error(res.data.msg);
-                return;
+                // return;
             }
         })
         .catch(error => {

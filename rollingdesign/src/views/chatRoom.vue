@@ -43,6 +43,7 @@ import { Search } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { ref } from 'vue';
 import { register } from 'vue-advanced-chat'
+import { authStore } from "../store/index.js"
 register()
 export default {
     watch: {
@@ -222,36 +223,46 @@ export default {
         }
     },
    async created() {
-        this.getTeams();
+        await this.getTeams();
         // this.createWebsocket();
         //this.initWebSocket()
     },
-   async mounted() {
-        //this.initWebSocket();
-        //this.createWebsocket();
-        console.log("111")
-        this.createWebsocket();
-        console.log('222'+this.sockets)
-        this.init();
+   mounted() {
+       setTimeout(()=>{
+           this.createWebsocket();
+
+           console.log('11111'+this.sockets)
+           //this.initWebSocket();
+           //this.createWebsocket();
+           this.currentUserId = authStore().userId
+           console.log('wzw'+this.currentUserId)
+           console.log("111")
+           console.log('222'+this.sockets)
+           this.init();
+        },2000)
     },
     methods: {
         async init() {
-            try {
-                const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/1`);
-                console.log(`获取到的消息` + res);
-                this.rooms = ref([...res.rooms]);
-                console.log(res.rooms)
-                console.log(this.rooms);
-            }
-            catch (error) {
-                console.log(error);
-            }
-            for (let room of this.rooms) {
-                if (room.roomId == this.selectedRoom) {
-                    room.users = room.users.filter(user => user._id != this.currentUserId);
-                    room.unreadCount = 0;
-                    console.log(room.users);
-                    const hasUserWithId = room.users.some(user => user._id == 9999);
+            this.requestData(this.selectedRoom)
+            setTimeout(async ()=>{
+
+                try {
+                    const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/`+this.currentUserId);
+                    // console.log(`获取到的消息` + res);
+                    this.rooms = ref([...res.rooms]);
+                    // await this.$nextTick
+                    console.log(res.rooms)
+                    console.log(this.rooms);
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                for (let room of this.rooms) {
+                    if (room.roomId == this.selectedRoom) {
+                        room.users = room.users.filter(user => user._id != this.currentUserId);
+                        room.unreadCount = 0;
+                        console.log(room.users);
+                        const hasUserWithId = room.users.some(user => user._id == 9999);
                             if(!hasUserWithId){
                                 let all = {
                                     username: '所有人',
@@ -263,7 +274,7 @@ export default {
                     break; // 如果 roomId 是唯一的，找到后就跳出循环
                 }
             }
-            this.requestData(this.selectedRoom)
+        },0)
 
         },
         searchData(bool) {
@@ -276,9 +287,9 @@ export default {
         },
         async getTeams() {
             try {
-                const { data: res } = await axios.get(`http://www.aamofe.top/api/team/all_teams/`,
+                const { data: res } = await axios.get('http://www.aamofe.top/api/team/all_teams/',
                     {headers: {
-                        Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1MTY5MjMsImlkIjoxfQ.BOEseWYXJyhOnyWV08qP50yniKX5TsRuYdhORA9O1TA"
+                        Authorization: authStore().token
                     }
                     }
                 );
@@ -322,13 +333,13 @@ export default {
             };
         },
          createWebsocket() {
-          setTimeout(()=>{
-            console.log(444,this.teams)
-            this.teams.forEach(team => {
-                console.log(333,team)
-                const url = `ws://101.43.159.45:8001/${team}/chat/${this.currentUserId}`;
-                console.log(url)
-                const ws = new WebSocket(url);
+             console.log(444,this.teams)
+             setTimeout(()=>{
+                 this.teams.forEach(team => {
+                     const url = `ws://101.43.159.45:8001/${team}/chat/${this.currentUserId}`;
+                     const ws = new WebSocket(url);
+                 console.log(333,team)
+                 console.log(url)
                 ws.onopen = () => {
                     console.log(`${team}Connected to the websocket server`);
                 };
@@ -342,7 +353,7 @@ export default {
                 // 将 WebSocket 实例添加到 sockets 数组中
                 this.sockets[team] = ws
             });
-          },3000)  
+          },0)  
             
         },
         onMessageReceived(event) {

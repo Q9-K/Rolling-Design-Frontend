@@ -461,7 +461,7 @@ const createNewProject = () => {
             // console.log(formData);
             console.log(res.data);
 
-            if (res.data.errno == 1)//成功
+            if (res.data.errno == 0)//成功
             {
                 ElMessage.success(res.data.msg);
                 newProjectDialog.value = false;
