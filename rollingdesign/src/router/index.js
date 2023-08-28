@@ -10,8 +10,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../App.vue')
-    // redirect: '/tiptap/3'
+    // component: () => import('../App.vue')
+    redirect: '/chat'
   },
   // {
   //   path: '/fileEdit',
