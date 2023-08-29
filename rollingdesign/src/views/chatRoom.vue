@@ -112,7 +112,7 @@ export default {
             drawer: ref(false),
             currentUserId: '1',
             roomId: '1', //默认进入的id
-            selectedRoom: '13', //当前选中的群聊id
+            selectedRoom: '13', //当前选中群聊id
             messageSelectionActions: [{ name: 'deleteMessages', title: 'Delete' }],
             startRooms: null,
             endRooms: null,
