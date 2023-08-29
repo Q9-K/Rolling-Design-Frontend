@@ -8,41 +8,27 @@ const routes = [
     name: 'home',
     component: HomeView
   },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/others/AboutView.vue')
-  },
   /*相当于主页*/
   {
     path: '/index',
     name: 'index',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/IndexView.vue'),
     meta: { index: 'index' }
   },
   // 项目展示页
   {
-    // path: '/video/:id',/*注意这里*/
+
     path: '/project/:id',
     name: 'project',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+
     component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
-    // meta: { index: 'project:id' }
-    // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
     meta: { index: 'project' }
   },
   {
     // path: '/video/:id',/*注意这里*/
     path: '/design/:id',
     name: '/design',
+    component: () => import('../views/PrototypeDesign.vue')
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -52,8 +38,9 @@ const routes = [
   },
   {
     // path: '/video/:id',/*注意这里*/
-    path: '/doc/:id',
-    name: '/doc',
+    path: '/tiptap/:id',
+    name: '/tiptap',
+    component: () => import('../views/TipTap.vue')
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -123,12 +110,22 @@ const routes = [
     meta: { index: 'message' }
   },
   {
-    path: '/test',
-    name: 'test',
+    path: '/about',
+    name: 'about',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue')
+  },
+  {
+    path:"/chat",
+    name:'chat',
+    component:()=>import('../views/chatRoom.vue')
+  },
+  {
+    path: '/team/:token',
+    name: 'invite',
+    component: () => import('../views/Invite.vue')
   }
 ]
 

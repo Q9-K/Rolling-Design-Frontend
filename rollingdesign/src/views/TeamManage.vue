@@ -25,12 +25,18 @@
             <!--团队信息-->
             <el-row class="block" style="display: flex;align-items: center;margin-bottom: 30px;">
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:larger;font-weight: 800;">{{  }}</span>
+              <span style="font-size:larger;font-weight: 800;">{{ }}</span>
 
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
+                <!--
                 <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
-                <el-button type="primary" >新建项目</el-button>
+                -->
+                <!--
+                  TODO now-team
+                -->
+<!--                <InviteMemberButton />-->
+                <el-button type="primary">新建项目</el-button>
               </div>
             </el-row>
 
@@ -130,6 +136,7 @@ import {
   Comment,
   Grid,
 } from '@element-plus/icons-vue'
+import InviteMemberButton from "@/components/InviteMemberButton.vue";
 const route = useRoute()
 const activeTab = ref('tab1'); // 设置默认激活的标签页
 
@@ -144,6 +151,8 @@ const jumpTo = (path) => {
 // import { ref } from 'vue'
 const centerDialogVisible = ref(false) /*邀请对话框*/
 const input = ref('')/*邀请成员时，输入框*/
+
+
 
 /*成员列表*/
 const tableData = [
@@ -163,8 +172,7 @@ const tableData = [
   },
 ]
 
-const fetchData=()=>
-{
+const fetchData = () => {
   // console.log(route.meta.index);
 
   // http://www.aamofe.top/api/team/get_current_team/

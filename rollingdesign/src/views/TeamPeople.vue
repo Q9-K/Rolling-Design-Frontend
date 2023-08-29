@@ -1,31 +1,31 @@
 <template>
-  <div class="common-layout">
-    <el-container>
-      <!--侧边-->
-      <el-aside width="15%">
-        <!--侧栏-->
-        <GuideAside></GuideAside>
-      </el-aside>
+    <div class="common-layout">
+        <el-container>
+            <!--侧边-->
+            <el-aside width="15%">
+                <!--侧栏-->
+                <GuideAside></GuideAside>
+            </el-aside>
 
-      <el-container>
-        <!--顶部-->
-        <el-header style="padding-top:13px">
-          <Header />
-        </el-header>
-        <el-divider />
+            <el-container>
+                <!--顶部-->
+                <el-header style="padding-top:13px">
+                    <Header />
+                </el-header>
+                <el-divider />
 
-        <!--主页面，不同的地方-->
-        <el-main>
-          <div class="page" style="width:98%;margin-left: 1%;">
+                <!--主页面，不同的地方-->
+                <el-main>
+                    <div class="page" style="width:98%;margin-left: 1%;">
 
-            <el-row style="margin-top:0;margin-bottom: 30px;">
-              <span style="font-size:large;font-weight: 500;">团队成员</span>
-            </el-row>
+                        <el-row style="margin-top:0;margin-bottom: 30px;">
+                            <span style="font-size:large;font-weight: 500;">团队成员</span>
+                        </el-row>
 
-            <!--团队信息-->
-            <el-row class="block" style="display: flex;align-items: center;margin-bottom: 30px;">
-              <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
+                        <!--团队信息-->
+                        <el-row class="block" style="display: flex;align-items: center;margin-bottom: 30px;">
+                            <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
+                            <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
 
               <div v-if="roleOperation == 'all' || roleOperation == 'admin'"
                 style="display: flex;flex: 1;justify-content: flex-end;">
@@ -144,11 +144,11 @@
             </div>
 
 
-          </div>
-        </el-main>
-      </el-container>
-    </el-container>
-  </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
 </template>
 
 <script setup>
@@ -165,33 +165,50 @@ import { reactive, toRefs } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import {
-  More,
-  ArrowDown,
-  Select,
-  DeleteFilled
+    More,
+    ArrowDown,
+    Select,
+    DeleteFilled
 } from '@element-plus/icons-vue'
 import { now } from '@vueuse/shared'
+import InviteMemberButton from "@/components/InviteMemberButton.vue";
 const route = useRoute()
 const highlightedIndex = ref(-1);
 
 /*跳转对应页*/
 const jumpTo = (path) => {
-  //this.$router.push('/video/'+video_id);
-  const path_url = '/' + path;
-  window.open(path_url, '_self');
+    //this.$router.push('/video/'+video_id);
+    const path_url = '/' + path;
+    window.open(path_url, '_self');
 }
 /*邀请成员*/
 const centerDialogVisible = ref(false) /*邀请对话框*/
 const input = ref('')/*邀请成员时，输入框*/
+
+const link = ref('')
+const generateLink = async () => {
+
+    let Headers = { 'Authorization': authStore().token }
+
+    let res = await axios.get('http://www.aamofe.top/api/team/get_invitation/', {
+        headers: Headers,
+        params: {
+            team_id: nowTeam.teamId,
+        }
+    })
+    console.log(res.data)
+    link.value = res.data.invatation
+}
+
 const memberList = ref([])//!!!
 /*成员列表*/
 /*main*/
 const nowTeam = reactive({
-  teamId: '',
-  name: '',
-  createTime: '',
-  creator: '',
-  roleString: '',
+    teamId: '',
+    name: '',
+    createTime: '',
+    creator: '',
+    roleString: '',
 })
 
 let roleOperation = ref('');
@@ -215,20 +232,53 @@ const fetchData = () => {
           .then((response) => {
             console.log(response);
 
-            if (response.data.errno == 0) {  //所有团队信息
-              response.data.members.forEach((member, index) => {
-                //op字段为当前登录者可以对该
-                // if()
+            if (response.data.errno == 0) {  //获取信息
+                nowTeam.teamId = response.data.team.id;
+                nowTeam.name = response.data.team.name;
+                nowTeam.createTime = response.data.team.created_at;
+                nowTeam.creator = response.data.team.creator;
+                nowTeam.role = response.data.team.role;
+                nowTeam.roleString = response.data.team.role_string;
 
-                memberList.value.push(member);/*【这样写】*/
-                return;
-              })
-              console.log(memberList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+                //执行获取团队所有成员
+                axios.get('http://www.aamofe.top/api/team/all_members/', { params: { team_id: nowTeam.teamId }, headers: Headers })
+                    .then((response) => {
+                        console.log(response);
+
+                        if (response.data.errno == 0) {  //所有团队信息
+                            response.data.members.forEach((member, index) => {
+                                //op字段为当前登录者可以对该
+                                // if()
+
+                                memberList.value.push(member);/*【这样写】*/
+                                return;
+                            })
+                            console.log(memberList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+                        }
+                        else {
+                            ElMessage.warning(response.data.msg);
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                    })
+
+                console.log(nowTeam.roleString);
+                if (nowTeam.roleString === "CR") {
+                    roleOperation = "all";
+                    // console.log(12);
+                }
+                else if (nowTeam.roleString === "MR") { //管理员
+                    roleOperation = "admin";
+                }
+                else if (nowTeam.roleString === "MB") { //普通成员
+                    roleOperation = "formal";
+                }
+                console.log('roleOperation' + roleOperation);
             }
             else {
-              ElMessage.warning(response.data.msg);
+                ElMessage.warning(response.data.msg);
             }
-          }).catch(error => {
+        }).catch(error => {
             console.log(error);
           })
 
@@ -254,7 +304,7 @@ const fetchData = () => {
 }
 
 onMounted(() => {
-  fetchData();
+    fetchData();
 })
 
 const updateRole = (user_id, newRole) => {
@@ -278,7 +328,9 @@ const updateRole = (user_id, newRole) => {
               console.log(memberList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
             }
             else {
-              ElMessage.warning(response.data.msg);
+                /*投诉不成功，对话框不关闭*/
+                ElMessage.warning(response.data.msg);/*弹窗显示报错*/
+                return;
             }
           }).catch(error => {
             console.log(error);
@@ -329,23 +381,23 @@ const print = (content) => {
 }
 
 .hintText {
-  color: gray;
-  font-size: small;
-  font-weight: 600;
+    color: gray;
+    font-size: small;
+    font-weight: 600;
 }
 
 .borderBlock {
-  /* border: 1px solid rgba(176, 170, 170, 0.703);
-  border-radius: 4px; */
-  border: 2px solid #d0dcdc9a;
-  border-radius: 10px;
-  padding: 10px 0 10px 0;
-  box-shadow: 0 .5px 0 .5px#e7f6f69a;
+    /* border: 1px solid rgba(176, 170, 170, 0.703);
+    border-radius: 4px; */
+    border: 2px solid #d0dcdc9a;
+    border-radius: 10px;
+    padding: 10px 0 10px 0;
+    box-shadow: 0 .5px 0 .5px#e7f6f69a;
 }
 
 .popover-customer {
-  background-color: #0084ff !important;
-  /* 设置背景颜色 */
+    background-color: #0084ff !important;
+    /* 设置背景颜色 */
 }
 
 /*对话框圆角*/
@@ -357,18 +409,18 @@ const print = (content) => {
 
 /*card*/
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .my-divider {
-  height: 1px;
-  /* 设置横线的高度 */
-  background-color: rgb(234, 232, 232);
-  /* 设置横线的颜色 */
-  margin: 10px 0;
-  /* 可选：设置横线上下的间距 */
+    height: 1px;
+    /* 设置横线的高度 */
+    background-color: rgb(234, 232, 232);
+    /* 设置横线的颜色 */
+    margin: 10px 0;
+    /* 可选：设置横线上下的间距 */
 }
 
 .creator-row {

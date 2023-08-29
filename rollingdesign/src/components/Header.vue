@@ -4,11 +4,8 @@
     <!--顶部-->
     <el-row style="display: flex;justify-content: flex-end;">
       <!--通知-->
-      <div style="display: flex;align-items: center;">
-        <el-icon style="font-size:30px">
-          <Bell />
-        </el-icon>
-      </div>
+      <div @click="this.$router.push('/chat')">聊天</div>
+      <receiveMessage></receiveMessage>
 
       <!--顶部的头像-->
       <div style="margin-left:2%">
@@ -188,6 +185,7 @@
 <script setup>
 import qs from 'qs'
 // import { UserFiled } from 'element-plus/'
+import receiveMessage from './prototype/receiveMessage.vue'
 import { UserFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { reactive, toRefs } from 'vue'
