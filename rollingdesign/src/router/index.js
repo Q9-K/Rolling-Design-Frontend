@@ -121,6 +121,11 @@ const routes = [
     path:"/chat",
     name:'chat',
     component:()=>import('../views/chatRoom.vue')
+  },
+  {
+    path: '/team/:token',
+    name: 'invite',
+    component: () => import('../views/Invite.vue')
   }
 ]
 
