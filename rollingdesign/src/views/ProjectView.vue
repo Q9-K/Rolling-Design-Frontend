@@ -440,8 +440,8 @@ const newDesign = () => {
     formData.append("Authorization", authStore().token);
     // nowProject.projectId 
 
-    axios.post('http://www.aamofe.top/api/team/create_project/' + nowProject.projectId + '/', qs.stringify({
-        project_name: designNameInput.value
+    axios.post('http://www.aamofe.top/api/document/create_prototype/' + nowProject.projectId + '/', qs.stringify({
+        title: designNameInput.value
     }), {
         headers: {
             Authorization: authStore().token

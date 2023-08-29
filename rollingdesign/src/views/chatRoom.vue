@@ -1,6 +1,64 @@
 <template>
-    <div>        
-        <el-button type="primary" style="position: fixed; right: 3%; top: 94px; z-index:1000" @click="drawer = true">
+    <div>
+        <div class=" header">
+            <div class="actions1">
+                <div class="backToCenter">
+                    <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
+                        <i class="iconfont icon-shouye" @click="this.$router.push('/index')"></i>
+                    </el-tooltip>
+                </div>
+                <!-- <div class="select"></div> -->
+            </div>
+            <div class="fileinfo">
+                <Title v-model="title" @keyup.enter="changeTitle(title)"></Title>
+                <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
+                 box-sizing: border-box; ">Last Modified: {{ lastEditTime }}</span>
+            </div>
+            <div class="actions2">
+                <Button @click="downloadFile()">
+                    下载
+                </Button>
+                <Button @click="updateFileAndInform()">
+                    同步
+                </Button>
+                <el-popover :width="300" trigger="click" ref='popper'
+                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                    <template #reference>
+                        <Button @click="generateLink()">
+                            分享
+                        </Button>
+                        <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
+                    </template>
+                    <template #default>
+                        <div disabled style="text-align: center;">
+                            <el-input v-model="link" disabled></el-input>
+                            <div style="color: #d2d3d7;text-align: left;
+                            margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
+                            </div>
+                        </div>
+                        <button @click="copyLink" class="copyLink"
+                            style="text-align: center; 
+                            background-color: #3671ff;
+                            outline: none;
+                        margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
+                    </template>
+                </el-popover>
+            </div>
+            <div class="userAvatars">
+                <!-- <div v-for="">
+                    {{  }}
+                </div> -->
+                <div class="selfAvatars">
+                    <!-- <template v-if="authStore().isLogin"> -->
+                        <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
+                    <!-- </template> -->
+                    <!-- <template v-else> -->
+                        <!-- <el-avatar :size="40" style="font-size: 30px;"></el-avatar> -->
+                    <!-- </template> -->
+                </div>
+            </div>
+        </div>        
+        <el-button type="primary" style="position: fixed; right: 50px; top: 64px; z-index:1000" @click="drawer = true">
             搜索消息
         </el-button>
         <el-drawer v-model="drawer" title="I am the title" :with-header="false">
@@ -23,7 +81,7 @@
           </div>
         </el-drawer>
         <div>
-            <vue-advanced-chat height="calc(90vh - 20px)" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
+            <vue-advanced-chat height="calc(100vh )" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
                 :rooms-loaded="true" :loading-rooms="loadingRooms" :load-first-room="loadFirst" :room-id="roomId"
                 :messages="JSON.stringify(messages)" :messages-loaded="messagesLoaded" :single-room="single"
                 :user-tags-enabled="tag" :show-add-room="addRoom" :username-options="usernameOptions"
@@ -39,7 +97,9 @@
 </template>
   
 <script>
+import Button from '../components/Button.vue';
 import { Search } from '@element-plus/icons-vue'
+//import { authStore } from "../store/index.js"
 import axios from 'axios'
 import { ref } from 'vue';
 import { register } from 'vue-advanced-chat'

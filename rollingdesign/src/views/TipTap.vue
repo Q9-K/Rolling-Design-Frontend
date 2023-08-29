@@ -250,7 +250,7 @@ onMounted(async () => {
     const lock = document.is_locked
     const time = document.modified_at.replace("T", " ").replace("Z", " ")
     lastEditTime.value = new Date(time).toLocaleString()
-    editAble.value = document.editable
+    // editAble.value = document.editable
     res = await axios.get('/team/all_members/', {
         headers: {
             Authorization: authStore().token
@@ -426,8 +426,8 @@ const onCreate = ({ editor }) => {
 </script>
 
 
-<style lang="scss" scoped>
-.box {
+<style lang="scss">
+.box2 {
     height: 100%;
     display: flex;
     flex-direction: column;
