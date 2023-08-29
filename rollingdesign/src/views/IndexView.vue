@@ -28,22 +28,30 @@
                 </el-row>
               </el-col>
 
+              <!--功能按钮-->
               <el-col :span="8">
                 <div style="display: flex;flex:1;justify-content: flex-end;">
                   <el-button type="primary" @click="newProjectDialog = true">新建项目</el-button>
-
                   <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                  <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
+                  <!--邀请成员的框-->
+                  <el-popover placement="bottom" :width="300" trigger="click">
+                    <template #reference>
+                      <el-button v-if="(nowTeam.role_string==='CR'||nowTeam.role_string==='MG')&&nowTeam.name!='个人空间'" type="primary">邀请成员</el-button>
+                    </template>
+                    <div class="link-block" style="margin-bottom: 12px;">
+                      <div>{{ inviteLink }}</div>
+                    </div>
+
+                    <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                  </el-popover>
                 </div>
               </el-col>
             </el-row>
 
-
+            <!--创建新项目的对话框-->
             <el-dialog v-model="newProjectDialog" title="创建新项目" width="26%" center>
               <span>
-                <!--输入信息，查找-->
                 <el-input v-model="newProjectNameInput" placeholder="请输入项目名称" />
-                <!--通过链接-->
               </span>
               <template #footer>
                 <span class="dialog-footer">
@@ -54,22 +62,6 @@
               </template>
             </el-dialog>
 
-
-            <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
-              <span>
-                <!--输入信息，查找-->
-                <el-input v-model="input" placeholder="Please input" />
-                <!--通过链接-->
-              </span>
-              <template #footer>
-                <span class="dialog-footer">
-                  <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                  <el-button type="primary" @click="centerDialogVisible = false">
-                    Confirm
-                  </el-button>
-                </span>
-              </template>
-            </el-dialog>
             <!--团队信息结束-->
 
             <el-row style="margin-top:40px;margin-bottom:30px;">
@@ -144,7 +136,6 @@
             <!-- <el-tab-pane label="团队项目" name="tab1"> -->
             <!--项目部分-->
             <div style="margin-top:20px">
-              <!-- <ProjectDisplay /> -->
               <el-row style="margin-top:40px;margin-bottom: 30px;">
                 <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
                   项目
@@ -170,21 +161,49 @@
                             <More />
                           </el-icon>
                         </template>
-                        <div sytle="margin-bottom:10px" @click="renameProject(projectItem.id)">重命名</div>
-                        <div @click="deleteProject(projectItem.id)">删除</div>
+                        <div @mouseover="highlightRow(1)" @mouseleave="resetRow(1)"
+                          :class="{ 'highlighted-row': highlightedIndex === 1 }" class="in-center round-choice"
+                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="jumpToProject(projectItem.id)">
+                          <el-icon style="margin-right:3px;">
+                            <FolderOpened />
+                          </el-icon>打开
+                        </div>
+                        <div @mouseover="highlightRow(2)" @mouseleave="resetRow(2)"
+                          :class="{ 'highlighted-row': highlightedIndex === 2 }" class="in-center round-choice"
+                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="renameProjectDialog = true"><el-icon
+                            style="margin-right:3px;">
+                            <EditPen />
+                          </el-icon>重命名</div>
+                        <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
+                          :class="{ 'highlighted-row': highlightedIndex === 3 }" class="in-center round-choice"
+                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="deleteProject(projectItem.id)">
+                          <el-icon style="margin-right:3px;">
+                            <FolderDelete />
+                          </el-icon>删除</div>
+
+                        <el-dialog v-model="renameProjectDialog" title="重命名项目" width="20%" center>
+                          <el-input v-model="renameProjectInput" placeholder="请输入项目名称" />
+                          <template #footer>
+                            <span class="dialog-footer">
+                              <el-button type="primary" @click="renameProject(index, projectItem.id)">
+                                确认
+                              </el-button>
+                            </span>
+                          </template>
+                        </el-dialog>
                       </el-popover>
                     </span>
 
-                    <el-dialog v-model="renameProjectDialog" title="重命名项目" width="30%" :before-close="handleClose">
-                      <el-input v-model="newProjectNameInput" placeholder="请输入项目名称" />
+                    <!-- <el-dialog v-model="renameProjectDialog" title="重命名项目" width="20%" center>
+                      <el-input v-model="renameProjectInput" placeholder="请输入项目名称" />
                       <template #footer>
                         <span class="dialog-footer">
-                          <el-button type="primary" @click="renameProject(projectItem.id)">
+                          <el-button type="primary" @click="renameProject(index, projectItem.id)">
                             确认
                           </el-button>
                         </span>
                       </template>
-                    </el-dialog>
+                    </el-dialog> -->
                   </div>
                 </div>
               </el-row>
@@ -226,7 +245,6 @@ import qs from 'qs'
 import axios from 'axios'
 import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
-const route = useRoute()
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
 import { reactive, toRefs } from 'vue'
@@ -234,87 +252,33 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
+import Clipboard from 'clipboard';
+import {
+  Menu as IconMenu,
+  ArrowDown,
+  ArrowRight,
+  Plus,
+  EditPen,
+  FolderDelete,
+  FolderOpened,
+  HomeFilled,
+  DeleteFilled,
+  Grid,
+} from '@element-plus/icons-vue'
+const route = useRoute()
 
-/*侧栏*/
+//变量
 const activeTab = ref('tab1'); // 设置默认激活的标签页
+const highlightedIndex = ref(-1);
 
+const newProjectDialog = ref(false)
+const newProjectNameInput = ref('');
+const renameProjectDialog = ref(false);
+const renameProjectInput = ref('');
+/*邀请成员*/
+const inviteLink = ref('');
+inviteLink.value = "hhahahah";//【】
 
-
-
-/*进入账户设置*/
-const personMsgDialog = ref(false)
-const nickNameConfig = ref(false)
-const nickNameConfigInput = ref('')
-const avatarConfig = ref(false)
-const pwdConfig = ref(false)
-const pwdConfigTitle = ref('修改密码')
-const pwdConfigInput = ref('')
-const pwdSureInput = ref('')
-
-const handleRemove = (file, uploadFiles) => {
-  console.log(file, uploadFiles)
-}
-
-const handlePreview = (uploadFile) => {
-  console.log(uploadFile)
-}
-const renameProjectDialog=ref(false);
-const renameProjectInput=ref('');
-const renameProject = (projectId) => {
-  if (!(renameProjectInput)) {
-    console.log('不能为空');
-    ElMessage.warning('请输入名称');
-    return;
-  }
-
-  axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
-    name: renameProjectInput.value,project_id:projectId
-  }), {
-    headers: {
-      Authorization: authStore().token
-    }
-  })
-    .then(res => {
-      // 处理响应数据
-      console.log(res);
-
-      if (res.data.errno == 0)//成功
-      {
-        ElMessage.success(res.data.msg);
-        renameProjectDialog.value = false;
-        renameProjectInput.value = '';
-        return;
-      }
-      else {//失败
-        ElMessage.error(res.data.msg);
-        return;
-      }
-    })
-    .catch(error => {
-      // 处理请求错误
-      console.error(error);
-    });
-}
-
-const deleteProject=()=>{
-  axios.post('http://www.aamofe.top/api/team/api/team/update_project/',)
-}
-
-const handleExceed = (files, uploadFiles) => {
-  ElMessage.warning(
-    `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
-    } totally`
-  )
-}
-
-const beforeRemove = (uploadFile, uploadFiles) => {
-  return ElMessageBox.confirm(
-    `Cancel the transfer of ${uploadFile.name} ?`
-  ).then(
-    () => true,
-    () => false
-  )
-}
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -331,29 +295,30 @@ const jumpToProject = (id) => {
   const path_url = '/project/' + id;
   window.open(path_url, '_self');
 }
-/*侧栏导航栏结束*/
-
-/*邀请成员*/
-// import { ref } from 'vue'
-const centerDialogVisible = ref(false) /*邀请对话框*/
-const input = ref('')/*邀请成员时，输入框*/
 
 /*main*/
-const nowTeam = reactive({
+let nowTeam = reactive({
   teamId: '',
   name: '',
   logo: '',
   createTime: '',
   creator: '',
+  memberNum: '',
+  projectNum: '',
+  role_string: '',
 })
 
 const projectNum = ref();
 const projectList = ref([]);
+
+onMounted(() => {
+  fetchNowTeam();
+  fetchProjectData();
+})
+
+//获取当前团队
 const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
-  console.log(Headers);
-  console.log(authStore().userId)
-
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
       console.log(response);
@@ -363,8 +328,16 @@ const fetchNowTeam = () => {
         nowTeam.name = response.data.team.name;
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
-        // nowTeam. = response.data.team.team_num;
-        console.log(nowTeam.name);
+        nowTeam.role_string = response.data.team.role_string;
+        if((nowTeam.role_string==='CR'||nowTeam.role_string==='MG')&&nowTeam.name!="个人空间")
+        {
+          getInviteLink();
+        }
+        localStorage.setItem('teamId', response.data.team.id);
+        localStorage.setItem('teamName', response.data.team.name);
+
+        if (response.data.team.role_string === "CR" || response.data.team.role_string === "MR") { localStorage.setItem('isAdmin', true); }
+        else { localStorage.setItem('isAdmin', false); }
         return;
       }
       else {
@@ -373,31 +346,41 @@ const fetchNowTeam = () => {
     }).catch(error => {
       console.log(error);
     })
-
 }
 
-onMounted(() => {
-  fetchNowTeam();
-  fetchProjectData();
-})
+const fetchProjectData = () => {
+  let Headers = { 'Authorization': authStore().token };
 
-const newProjectDialog = ref(false)
-const newProjectNameInput = ref('');
+  axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.projects.forEach((project, index) => {
+          projectList.value.push(project);/*【这样写】*/
+        })
+        // console.log(projectList.value);
+
+        projectNum.value = response.data.projects.length;
+        // console.log(response.data.projects.length)
+        // console.log(projectNum);
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+}
+
 //创建新项目
 const createNewProject = () => {
-  let Headers = { 'Authorization': authStore().token };
-  // axios.post('',)
-  //....
-
-  if (!(newProjectNameInput)) {
+  if (!(newProjectNameInput.value)) {
     console.log('不能为空');
     ElMessage.warning('请输入名称');
     return;
   }
-
-  let formData = new FormData();
-  // formData.append("team_name", addTeamIntroductionInput.value);
-  formData.append("Authorization", authStore().token);
 
   axios.post('http://www.aamofe.top/api/team/create_project/' + nowTeam.teamId + '/', qs.stringify({
     project_name: newProjectNameInput.value
@@ -408,14 +391,16 @@ const createNewProject = () => {
   })
     .then(res => {
       // 处理响应数据
-      console.log(formData);
       console.log(res);
 
-      if (res.data.errno == 1)//成功
+      if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
-        newProjectDialog = false;
-        newProjectNameInput = '';
+        newProjectDialog.value = false;
+        projectList.value.push({ "id": res.data.project.id, "name": newProjectNameInput.value })
+        projectNum.value++;
+        newProjectNameInput.value = '';
+        // window.location.reload();
         return;
       }
       else {//失败
@@ -429,24 +414,82 @@ const createNewProject = () => {
     });
 }
 
-const fetchProjectData = () => {
-  let Headers = { 'Authorization': authStore().token };
+const renameProject = (index, projectId) => {
+  if (!(renameProjectInput.value)) {
+    console.log('不能为空');
+    ElMessage.warning('请输入名称');
+    return;
+  }
+  axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
+    name: renameProjectInput.value, project_id: projectId
+  }), {
+    headers: {
+      Authorization: authStore().token
+    }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
 
-  axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        renameProjectDialog.value = false;
+        projectList.value[index - 1] = { "name": renameProjectInput.value, "id": projectId };
+
+        renameProjectInput.value = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+const deleteProject = (projectId) => {
+  console.log(projectId);
+  axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: projectId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+      console.log(projectId);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        if (index >= 0 && index < projectList.value.length) {
+          projectList.value.splice(index, 1);
+        }//【】
+      }
+      else {//失败
+        console.log(projectId);
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+//邀请别人加入团队
+const getInviteLink = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: nowTeam.teamId }, headers: Headers })
     .then((response) => {
-      // console.log(authStore().token);
       console.log(response);
 
-      if (response.data.errno == 0) {  //所有团队信息
-        response.data.projects.forEach((project, index) => {
-          projectList.value.push(project);/*【这样写】*/
-        })
-        console.log(projectList.value);
-
-        projectNum.value = response.data.projects.length;
-        console.log(response.data.projects.length)
-        // console.log(projectNum);
-        // console.log('hhh');
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        inviteLink.value = response.data.invatation;
         return;
       }
       else {
@@ -457,13 +500,55 @@ const fetchProjectData = () => {
     })
 }
 
-//邀请别人加入团队
-const invite=()=>{
+const copyLink = () => {
+  // 创建 Clipboard 实例，指定要复制的文本
+  const clipboard = new Clipboard('.copy-button', {
+    text: () => inviteLink.value,
+  });
 
+  // 复制成功时的处理
+  clipboard.on('success', (e) => {
+    console.log('复制成功', e);
+    e.clearSelection(); // 清除选中状态
+    clipboard.destroy(); // 销毁 clipboard 实例
+  });
+
+  // 复制失败时的处理
+  clipboard.on('error', (e) => {
+    console.error('复制失败', e);
+    clipboard.destroy(); // 销毁 clipboard 实例
+  });
+
+  // 触发点击事件，开始复制
+  clipboard.onClick({
+    // 触发点击事件的元素，这里使用按钮
+    delegateTarget: () => $refs.copyButton,
+  });
 }
+
+const highlightRow = (index) => {
+  highlightedIndex.value = index;
+};
+
+const resetRow = (index) => {
+  highlightedIndex.value = -1;
+};
 </script>
 
 <style scoped>
+.in-center {
+  display: flex;
+  align-items: center;
+}
+
+.highlighted-row {
+  background-color: rgb(237, 237, 237);
+}
+
+.round-choice {
+  border-radius: 5px;
+}
+
 .hintText {
   color: gray;
   font-size: small;
@@ -483,6 +568,7 @@ const invite=()=>{
   border-radius: 10px;
   /* 设置边框圆角半径，根据需要调整 */
 }
+
 
 .designImg {
   margin-bottom: 5px;
@@ -523,6 +609,23 @@ const invite=()=>{
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
 }
 
+.link-block {
+  border: 2px solid #d0dcdc9a;
+  border-radius: 10px;
+  padding: 10px 0 10px 0;
+  box-shadow: 0 .5px 0 .5px#e7f6f69a;
+
+  background-color: #f3f1f1fe;
+}
+
+.link-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .popover-customer {
   background-color: #0084ff !important;
   /* 设置背景颜色 */
@@ -545,27 +648,5 @@ const invite=()=>{
   width: 178px;
   height: 178px;
   display: block;
-}
-</style>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
 }
 </style>

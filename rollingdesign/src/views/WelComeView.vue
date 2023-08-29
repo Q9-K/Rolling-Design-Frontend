@@ -5,11 +5,8 @@
       <el-header>
         <!--如果已经登录-->
         <div v-if="userStore.isLogin">
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;">
-            <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;">
-
-            <!-- <img alt="web logo" src="@/assets/logo.svg" style="padding-top: 10px;margin-right: 30px;height:140px;"> -->
-
+          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 10px;">
+            <img alt="web logo" src="@/assets/webLogo.png" style="width:10%;margin-right: 30px;">
             <span style="margin-right:30px">
               主页
             </span>
@@ -124,21 +121,6 @@
                   <el-input v-model="registerPwdConfrimInput" type="password" placeholder="请再次输入密码" show-password />
                 </el-col>
               </el-row>
-
-              <!-- <el-row style="margin-top:25px;justify-items: flex-start;width: 90%;margin-left: 5%;">
-          <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">验证码2分钟内有效</el-col>
-          <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="15">
-                <el-input v-model="registerCode" placeholder="验证码" />
-              </el-col>
-              <el-col :span="4">
-                <el-button plain @click="sendCode">获取验证码</el-button>
-              </el-col>
-              <el-col :span="5"></el-col>
-            </el-row>
-          </el-col>
-        </el-row> -->
 
               <div style="margin-top:25px;width: 100%;">
                 <el-button type="primary" style="width:90%" @click="register">注册</el-button>
@@ -337,23 +319,12 @@ const jumpTo = (path) => {
 /*欢迎页的退出登录*/
 const logout = () => {
   userStore.isLogin = false;
-  userStore.isAdmin = false;
-  userStore.userAvatar = '';
   userStore.token = '';
   userStore.userId = '';
-  userStore.teamId = '';
-  userStore.teamName = '';
-  userStore.peojectList = [];
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
   localStorage.removeItem('userId');
-  localStorage.removeItem('userAvatar');
-  localStorage.removeItem('isAdmin');
-
-  localStorage.removeItem('teamId');
-  localStorage.removeItem('teamName');
-  localStorage.removeItem('projectList');
 
   console.log(userStore.isLogin);
   console.log('token' + userStore.token);

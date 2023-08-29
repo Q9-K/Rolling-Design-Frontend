@@ -27,10 +27,12 @@
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
               <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
 
-              <div style="display: flex;flex: 1;justify-content: flex-end;">
+              <div v-if="roleOperation == 'all' || roleOperation == 'admin'"
+                style="display: flex;flex: 1;justify-content: flex-end;">
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
                 <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
               </div>
+
             </el-row>
 
             <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
@@ -48,103 +50,95 @@
                 </span>
               </template>
             </el-dialog>
-
-
-
             <div>
-              <el-table :data="memberList" style="width: 60%">
-                <el-table-column prop="nickname" label="昵称" width="180" />
-                <el-table-column prop="username" label="真实姓名" width="180" />
-                <el-table-column prop="email" label="邮箱" width="300"/>
+              <el-table :data="memberList" style="width: 90%">
+                <el-table-column prop="nickname" label="昵称" width="400">
+                  <template #default="scope">
+                    <span class="in-center" style="height:58px">
+                      <el-avatar :size="50" :src="scope.row.avatar_url" style="margin-right: 8px;"/>
+                      {{ scope.row.nickname }}
+                      <el-tag v-if="scope.row.id == authStore().userId" size="small" style="margin-left: 10px;">我</el-tag>
+                    </span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="username" label="真实姓名" width="300" />
+                <el-table-column prop="email" label="邮箱" width="400" />
                 <!-- <el-table-column prop="role" label="身份" /> -->
 
                 <el-table-column label="身份">
-
                   <template #default="scope">
-                    <!--如果该栏是创建者 或者 目前登录者身份是普通成员-->
-                    <div v-if="scope.row.role_string === 'CR' || roleOperation === 'formal'">
-                      <span style="color:gray">{{ scope.row.role }}</span>
-                    </div>
+                    {{ scope.row.role }}
+
+                    <!--如果该栏是创建者 或者 目前登录者身份是普通成员，就什么都做不了-->
+                    <span v-if="scope.row.role_string === 'CR' || roleOperation === 'formal'">
+                    </span>
                     <!--到这，说明该栏肯定不是创建者 目前登录者身份也不是普通成员-->
                     <!--目前登录者身份是创建者-->
-                    <div v-else-if="roleOperation === 'all'">
-                      <!--该栏为管理员-->
-                      <div v-if="scope.row.role_string === 'MR'">
-                        {{ scope.row.role }}
-                      </div>
-                      <!--该栏为普通成员-->
-                      <div v-else-if="scope.row.role_string === 'MB'">
-                        {{ scope.row.role }}
-                      </div>
-                    </div>
-
+                    <span v-else-if="roleOperation === 'all'">
+                      <!--判断该栏人员的身份-->
+                      <el-popover effect="light" trigger="click" placement="bottom" width="auto">
+                        <template #default>
+                          <!--当前这一栏是什么-->
+                          <div @click="updateRole(scope.row.id, 'MG')" @mouseover="highlightRow(1)"
+                            @mouseleave="resetRow(1)" :class="{ 'highlighted-row': highlightedIndex === 1 }"
+                            class="in-center round-choice">管理员
+                            <span v-if="scope.row.role_string === 'MG'">
+                              <el-icon style="margin-left:3px;"><Select /></el-icon></span>
+                          </div>
+                          <div @mouseover="highlightRow(2)" @mouseleave="resetRow(2)"
+                            :class="{ 'highlighted-row': highlightedIndex === 2 }" @click="updateRole(scope.row.id, 'MB')"
+                            class="in-center round-choice">协作者<span v-if="scope.row.role_string === 'MB'"><el-icon
+                                style="margin-left:3px;"><Select /></el-icon></span></div>
+                          <div class="my-divider"></div>
+                          <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
+                            :class="{ 'highlighted-row': highlightedIndex === 3 }" @click="updateRole(scope.row.id, 'DE')"
+                            class="in-center round-choice">移除成员<el-icon style="margin-left:3px;">
+                              <DeleteFilled />
+                            </el-icon></div>
+                        </template>
+                        <template #reference>
+                          <el-icon>
+                            <ArrowDown />
+                          </el-icon>
+                        </template>
+                      </el-popover>
+                    </span>
                     <!--目前登录者身份是管理员-->
-                    <div v-else-if="roleOperation === 'admin'">
-                      <div v-if="scope.row.role_string === 'MR'">
-                        <span style="color:gray">{{ scope.row.role }}</span>
-                      </div>
-                      <div v-if="scope.row.role_string === 'MB'">
-                        {{ scope.row.role }}
-                      </div>
-                    </div>
+                    <span v-else-if="roleOperation === 'admin'">
+                      <!--当前登录者为管理员 且 该栏为普通成员-->
+                      <el-popover v-if="scope.row.role_string === 'MB'" effect="light" trigger="click" placement="bottom"
+                        width="auto">
+                        <template #default>
+                          <div @mouseover="highlightRow(1)" @mouseleave="resetRow(1)"
+                            :class="{ 'highlighted-row': highlightedIndex === 1 }" @click="updateRole(scope.row.id, 'MG')"
+                            class="in-center round-choice"> <span>管理员</span>
+                          </div>
+                          <div @mouseover="highlightRow(2)" @mouseleave="resetRow(2)"
+                            :class="{ 'highlighted-row': highlightedIndex === 2 }" class="in-center round-choice">协作者
+                            <span>
+                              <el-icon style="margin-left:3px;"><Select /></el-icon></span>
+                          </div>
 
+                          <div class="my-divider"></div>
+                          <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
+                            :class="{ 'highlighted-row': highlightedIndex === 3 }" @click="updateRole(scope.row.id, 'DE')"
+                            class="in-center round-choice">移除成员
+                            <el-icon style="margin-left:3px;">
+                              <DeleteFilled />
+                            </el-icon>
+                          </div>
+                        </template>
+                        <template #reference>
+                          <el-icon>
+                            <ArrowDown />
+                          </el-icon>
+                        </template>
+                      </el-popover>
 
-
-                    <!--到这，说明该栏肯定不是创建者-->
-
-                    <!--当前登录者为创建者-->
-                    <el-popover
-                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'all'"
-                      effect="light" trigger="click" placement="bottom" width="auto">
-                      <template #default>
-                        <!--当前这一栏是什么-->
-                        <div @click="updateRole(scope.row.id, 'MR')">管理员<span
-                            v-if="scope.row.role_string === 'MR'"><el-icon><Select /></el-icon></span></div>
-                        <div @click="updateRole(scope.row.id, 'MB')">普通成员<span
-                            v-if="scope.row.role_string === 'MB'"><el-icon><Select /></el-icon></span></div>
-                        <div class="my-divider"></div>
-                        <div @click="updateRole(scope.row.id, 'DE')">移除成员<el-icon>
-                            <DeleteFilled />
-                          </el-icon></div>
-                      </template>
-
-                      <template #reference>
-                        <el-icon>
-                          <ArrowDown />
-                        </el-icon>
-                      </template>
-                    </el-popover>
-
-                    <!--当前登录者为管理员 且 该栏为普通成员-->
-                    <el-popover
-                      v-if="(!(scope.row.role_string === 'CR' || roleOperation === 'formal')) && roleOperation === 'admin' && scope.row.role_string === 'MR'"
-                      effect="light" trigger="click" placement="bottom" width="auto">
-                      <template #default>
-                        <div @click="updateRole(scope.row.id, 'MR')"> <span>管理员</span></div>
-                        <div>普通成员<span><el-icon><Select /></el-icon></span></div>
-                        <div class="my-divider"></div>
-                        <div @click="updateRole(scope.row.id, 'DE')">移除成员<el-icon>
-                            <DeleteFilled />
-                          </el-icon></div>
-                      </template>
-
-                      <template #reference>
-                        <el-icon>
-                          <ArrowDown />
-                        </el-icon>
-                      </template>
-                    </el-popover>
+                    </span>
 
                   </template>
                 </el-table-column>
-
-                <!--如果登录者是创建者-->
-                <!-- <el-table-column prop="op" label="操作">
-                    <template #default>
-                      <el-button link type="primary" size="small">Detail</el-button>
-                      <el-button link type="primary" size="small">Edit</el-button>
-                    </template>
-                  </el-table-column> -->
               </el-table>
 
             </div>
@@ -158,9 +152,9 @@
 </template>
 
 <script setup>
+import qs from 'qs'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
-import ProjectDisplay from '@/components/ProjectDisplay.vue'
 import axios from 'axios'
 import { ref, unref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
@@ -178,6 +172,7 @@ import {
 } from '@element-plus/icons-vue'
 import { now } from '@vueuse/shared'
 const route = useRoute()
+const highlightedIndex = ref(-1);
 
 /*跳转对应页*/
 const jumpTo = (path) => {
@@ -190,23 +185,6 @@ const centerDialogVisible = ref(false) /*邀请对话框*/
 const input = ref('')/*邀请成员时，输入框*/
 const memberList = ref([])//!!!
 /*成员列表*/
-const tableData = [
-  {
-    nickName: '哈哈哈哈',
-    name: 'Tom',
-    email: '11324@qq.com',
-    role: '创建者',
-    op: '',
-  },
-  {
-    nickName: '哈哈哈哈',
-    name: 'Tom',
-    email: '11324@qq.com',
-    role: '创建者',
-    op: '',
-  },
-]
-
 /*main*/
 const nowTeam = reactive({
   teamId: '',
@@ -222,7 +200,7 @@ const fetchData = () => {
   //获取当前团队
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
-      console.log(response);
+      // console.log(response);
 
       if (response.data.errno == 0) {  //获取信息
         nowTeam.teamId = response.data.team.id;
@@ -254,18 +232,17 @@ const fetchData = () => {
             console.log(error);
           })
 
-        console.log(nowTeam.roleString);
+        // console.log(nowTeam.roleString);
         if (nowTeam.roleString === "CR") {
           roleOperation = "all";
-          // console.log(12);
         }
-        else if (nowTeam.roleString === "MR") { //管理员
+        else if (nowTeam.roleString === "MG") { //管理员
           roleOperation = "admin";
         }
         else if (nowTeam.roleString === "MB") { //普通成员
           roleOperation = "formal";
         }
-        console.log('roleOperation' + roleOperation);
+        // console.log('roleOperation' + roleOperation);
       }
       else {
         ElMessage.warning(response.data.msg);
@@ -281,28 +258,20 @@ onMounted(() => {
 })
 
 const updateRole = (user_id, newRole) => {
-  let formData = new FormData();
-  formData.append("choice", newRole);
-  formData.append("user_id", user_id);
-  formData.append("Authorization", authStore().token);
-  console.log('http://www.aamofe.top/api/team/update_permisson/' + nowTeam.teamId + '/');
-  axios.post('http://www.aamofe.top/api/team/update_permisson/' + nowTeam.teamId + '/', formData)
+  axios.post('http://www.aamofe.top/api/team/update_permisson/' + nowTeam.teamId + '/',
+    qs.stringify({ choice: newRole, user_id: user_id }), { headers: { Authorization: authStore().token } })
     .then(response => {
-      // console.log(formData);
       console.log(response);
 
       if (response.data.errno == 0) {
-        // this.$message.success('投诉视频成功');
-        axios.get('http://www.aamofe.top/api/team/all_members/', { params: { team_id: nowTeam.teamId }, headers: Headers })
+        let Headers = { 'Authorization': authStore().token };
+        axios.get('http://www.aamofe.top/api/team/all_members/', { headers: Headers })
           .then((response) => {
             console.log(response);
 
             if (response.data.errno == 0) {  //所有团队信息
-              memberList=ref([]);//!!!
+              memberList.value = [];//!!!
               response.data.members.forEach((member, index) => {
-                //op字段为当前登录者可以对该
-                // if()
-
                 memberList.value.push(member);/*【这样写】*/
                 return;
               })
@@ -323,12 +292,42 @@ const updateRole = (user_id, newRole) => {
     })
     .catch(error => {
       console.log('Error: ' + error);
-      ElMessage.warning('发生错误，投诉视频失败');
     });
+}
+
+const highlightRow = (index) => {
+  highlightedIndex.value = index;
+};
+
+const resetRow = (index) => {
+  highlightedIndex.value = -1;
+};
+
+const print = (content) => {
+  console.log(content);
 }
 </script>
 
 <style scoped>
+.in-center {
+  display: flex;
+  align-items: center;
+}
+
+.highlighted-row {
+  background-color: rgb(237, 237, 237);
+}
+
+.round-choice {
+  border-radius: 5px;
+  margin-bottom: 6px;
+  padding: 3px 0 3px 5px;
+}
+
+.el-table {
+  border: none; /* 隐藏表格的所有边框，包括横向分割线 */
+}
+
 .hintText {
   color: gray;
   font-size: small;
@@ -349,27 +348,8 @@ const updateRole = (user_id, newRole) => {
   /* 设置背景颜色 */
 }
 
-.example-showcase .el-dropdown-link {
-  cursor: pointer;
-  color: var(--el-color-primary);
-  display: flex;
-  align-items: center;
-}
-
-.el-dialog__title {
-  font-size: 20px;
-  /* 设置字体大小 */
-  text-align: left;
-  /* 设置文本居中 */
-}
-
-.dialog-with-background {
-  background: rgba(163, 55, 55, 0.5);
-  /* 设置背景颜色，这里是半透明黑色背景 */
-}
-
 /*对话框圆角*/
-.rounded-dialog {
+.round {
   border-radius: 10px;
   /* 设置边框圆角半径，根据需要调整 */
 }
@@ -391,33 +371,17 @@ const updateRole = (user_id, newRole) => {
   /* 可选：设置横线上下的间距 */
 }
 
-
-/*上传团队封面*/
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+.creator-row {
+  background-color: #ffcccc;
+  /* 设置背景色为红色 */
 }
 
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+.admin-row {
+  background-color: #ccffcc;
+  /* 设置背景色为绿色 */
 }
 
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
-}
-</style>
+.form-row {
+  background-color: #ccffcc;
+  /* 设置背景色为绿色 */
+}</style>
