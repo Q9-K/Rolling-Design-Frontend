@@ -223,9 +223,6 @@ import InviteMemberButton from "@/components/InviteMemberButton.vue";
 /*侧栏*/
 const activeTab = ref('tab1'); // 设置默认激活的标签页
 
-
-
-
 /*进入账户设置*/
 const personMsgDialog = ref(false)
 const nickNameConfig = ref(false)
