@@ -5,6 +5,7 @@
       <el-menu :default-active="guideIndex" width="100%" style="height:100vh" class="el-menu-vertical-demo side-guide"
         @open="handleOpen" @close="handleClose">
         <!--logo图标-->
+        <!-- <img alt="web logo" src="@/assets/logo.svg" style="width:100%;margin-bottom: 10px;"> -->
         <img alt="web logo" src="@/assets/webLogo.png" style="width:100%;margin-bottom: 10px;">
 
         <!--团队信息-->

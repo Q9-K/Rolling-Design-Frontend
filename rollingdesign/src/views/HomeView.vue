@@ -6,9 +6,9 @@
         <!--如果已经登录-->
         <div v-if="userStore.isLogin">
           <div class="head" style=" display: flex;align-items: center;justify-content: center;">
-            <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;">
+            <!-- <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;"> -->
 
-            <!-- <img alt="web logo" src="@/assets/logo.svg" style="padding-top: 10px;margin-right: 30px;height:140px;"> -->
+            <img alt="web logo" src="@/assets/logo.svg" style=";margin-right: 30px;height:100px;">
 
             <span style="margin-right:30px">
               主页
@@ -25,10 +25,12 @@
             <span>
               消息中心
             </span>
-
-            <el-button color="#626aef" style="margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
-            <el-button color="#626aef" style="margin-left:1%" size="large" @click="logout()">退出登录</el-button>
-
+            <!-- <div style="display: flex;"> -->
+              
+              <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
+              <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
+            <!-- </div> -->
+              
             <!-- <a href=" " target="_blank">备案号：</a>
         <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
           </div>
@@ -40,7 +42,8 @@
         <!--未登录-->
         <div v-else>
           <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
-            <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
+            <!-- <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;"> -->
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-24px;left:22%; height:150px;">
             <span style="margin-right:30px" @click="jumpTo('/index')">
               主页
             </span>
@@ -56,8 +59,8 @@
             </span>
 
             <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
-            <el-button color="#626aef" style="margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
-            <el-button color="#626aef" style="margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
 
 
             <!-- <a href=" " target="_blank">备案号：</a>
