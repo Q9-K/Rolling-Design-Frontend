@@ -26,11 +26,12 @@
               消息中心
             </span>
             <!-- <div style="display: flex;"> -->
-              
-              <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
-              <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
+
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="jumpTo('index')">进入工作区</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
             <!-- </div> -->
-              
+
             <!-- <a href=" " target="_blank">备案号：</a>
         <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
           </div>
@@ -59,8 +60,10 @@
             </span>
 
             <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
-            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
-            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="loginDialog = true">登录</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large"
+              @click="registerDialog = true">注册</el-button>
 
 
             <!-- <a href=" " target="_blank">备案号：</a>
@@ -296,6 +299,7 @@ const login = () => {
         localStorage.setItem('token', res.data.user_info.token);
         localStorage.setItem('isLogin', true);
         localStorage.setItem('userId', res.data.user_info.user_id);
+        // localStorage.setItem('userAvatar', res.data.user_info.avatar_url)
         //id
         userStore.userId = res.data.user_info.user_id;
         //token

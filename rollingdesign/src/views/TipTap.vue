@@ -50,35 +50,37 @@
                 </el-popover>
             </div>
             <div class="userAvatars">
-                <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members" :key="item.id"></el-avatar>
+                <div class="team_members">
+                    <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members" :key="item.id"></el-avatar>
+                </div>
                 <div class="selfAvatars">
                     <template v-if="authStore().isLogin">
-                        <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
+                        <el-avatar :size="40" :src='authStore().userAvatar' style="font-size: 30px;"></el-avatar>
+
                     </template>
                     <template v-else>
-                        <el-avatar :size="40" style="font-size: 30px; src = "></el-avatar>
+                        <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
                     </template>
                 </div>
             </div>
         </div>
-        <!-- <template v-if="dataLoaded"> -->
-        <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
-            placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-            :readonly="!editAble" @onCreate="onCreate" />
-        <!-- </template>
+        <template v-if="dataLoaded">
+            <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
+                placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
+                :readonly="!editAble" @onCreate="onCreate" />
+        </template>
         <template v-else>
             <div>
                 请稍等
             </div>
-        </template> -->
-
+        </template>
     </div>
 </template>
   
 <script setup>
 import qs from 'qs'
 import { UserFilled } from '@element-plus/icons-vue'
-import { ElNotification } from 'element-plus'
+import { ElLoading, ElNotification } from 'element-plus'
 import { ref, watch, onUnmounted, onMounted, onBeforeUnmount, onUpdated, onBeforeMount, nextTick, inject, reactive } from 'vue';
 import { ArrowLeftBold, Download } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router';
@@ -131,8 +133,8 @@ const axios = inject('axios')
 
 const ydoc = new Y.Doc();
 const provider = new HocuspocusProvider({
-    url: 'ws://101.43.159.45:1234',
-    // url: 'ws://localhost:1234',
+    // url: 'ws://101.43.159.45:1234',
+    url: 'ws://localhost:1234',
     name: 'rolling-cowork-document',
     document: ydoc,
 })
@@ -209,54 +211,45 @@ const beforeunloadHandler = async (e) => {
     console.log('out', res.data)
 
 }
-
-// const unloadHandler = async (e) => {
-//     e.preventDefault()
-//     e.returnValue = ""
-//     // console.log('刷新页面')
-//     if (needToChangeLock) {
-//         needToChangeLock = false
-//         let res = await axios.post('/document/change_lock/', qs.stringify({
-//             document_id: 3
-//         }))
-//         console.log(1, res.data)
-//     }
-//     // window.confirm('are you sure to leave?')
-// }
 const team_members = ref('')
 onMounted(async () => {
+    // authStore().userAvatar
+    // console.log("🚀 ~ file: TipTap.vue:230 ~ onMounted ~ authStore().userAvatar:", authStore().userAvatar)
     let socket = socketStore.socket
     if (socket == null || socket.readyState != 1) {
         socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
         socketStore.socket = socket
     }
-    window.addEventListener('beforeunload', e => beforeunloadHandler(e))
+    // window.addEventListener('beforeunload', e => beforeunloadHandler(e))
     const route = useRoute()
     // console.log('id', route.params.id)
     // window.addEventListener('unload', e => unloadHandler(e))
-    let res = await axios.get(`/document/view_document/${route.params.id}`, {
+
+    const res = await axios.get(`/document/view_document/${route.params.id}`, {
         headers: {
             //TODO:通过pinia全局获取本地token
             Authorization: authStore().token
         }
     })
+
     const document = res.data.document
     title.value = document.title
     const lock = document.is_locked
-    const time = document.modified_at.replace("T", " ").replace("Z", " ")
-    lastEditTime.value = new Date(time).toLocaleString()
+    const time = document.modified_at
+    lastEditTime.value = new Date(time).toLocaleString().replace("T", " ").replace("Z", " ")
     // editAble.value = document.editable
-    res = await axios.get('/team/all_members/', {
+    const res2 = await axios.get('/team/all_members/', {
         headers: {
             Authorization: authStore().token
         }
     })
-    authStore().team_members = res.data.members
+    authStore().team_members = res2.data.members
     team_members.value = authStore().team_members
     // console.log('team_members', res.data.members)
     // console.log('锁', res.data.document.is_locked)
 
-    // editAble.value = true
+    editAble.value = false
+    await nextTick()
     dataLoaded.value = true
 
 
@@ -371,7 +364,7 @@ const extensions = [
         provider: provider,
         user: {
             //TODO:通过状态管理获取用户名
-            name: authStore().userID,
+            name: authStore().username,
             color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
         },
     }),

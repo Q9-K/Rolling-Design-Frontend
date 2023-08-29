@@ -24,9 +24,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(ElementTiptapPlugin)
 app.use(router).use(ElementPlus).use(pinia).mount('#app')
 
-const axiosInstance = axios.create({
-  baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
-});
-provide('axios', axiosInstance)
 
 
