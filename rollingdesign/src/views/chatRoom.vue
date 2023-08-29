@@ -284,13 +284,15 @@ export default {
         }
     },
    async created() {
-        await this.getTeams();
-        // this.createWebsocket();
+        setTimeout(()=>{
+            this.getTeams();
+        },0) 
+        this.createWebsocket();
         //this.initWebSocket()
     },
    mounted() {
        setTimeout(()=>{
-           this.createWebsocket();
+        //    this.createWebsocket();
            console.log('11111'+this.sockets)
            //this.initWebSocket();
            //this.createWebsocket();
@@ -303,7 +305,6 @@ export default {
     },
     methods: {
         async init() {
-            this.requestData(this.selectedRoom)
             setTimeout(async ()=>{
 
                 try {
@@ -335,6 +336,9 @@ export default {
                 }
             }
         },0)
+        this.roomId = '2'
+        this.selectedRoom = this.roomId
+        this.requestData(this.selectedRoom)
 
         },
         searchData(bool) {
@@ -486,28 +490,6 @@ export default {
                     messages.push(message);
                 }
                 this.messages = messages
-            }
-        },
-        requestDataDemo(roomId) {
-            if (roomId == 1) {
-                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    const messageData = {
-                        all: '1',
-                        user_id: this.currentUserId
-                    };
-                    this.ws.send(JSON.stringify(messageData))
-                    console.log('请求数据')
-                }
-            }
-            else if (roomId == 2) {
-                if (this.ws2 && this.ws2.readyState === WebSocket.OPEN) {
-                    const messageData = {
-                        all: '1',
-                        user_id: "2"
-                    };
-                    this.ws2.send(JSON.stringify(messageData))
-                    console.log('请求数据')
-                }
             }
         },
         requestData(selectedRoom) {
