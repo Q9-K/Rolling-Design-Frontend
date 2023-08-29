@@ -50,35 +50,24 @@
                 </div> -->
                 <div class="selfAvatars">
                     <!-- <template v-if="authStore().isLogin"> -->
-                        <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
+                    <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
                     <!-- </template> -->
                     <!-- <template v-else> -->
-                        <!-- <el-avatar :size="40" style="font-size: 30px;"></el-avatar> -->
+                    <!-- <el-avatar :size="40" style="font-size: 30px;"></el-avatar> -->
                     <!-- </template> -->
                 </div>
             </div>
-        </div>        
-        <el-button type="primary" style="position: fixed; right: 50px; top: 64px; z-index:1000" @click="drawer = true">
+        </div>
+        <el-button type="primary" style="position: fixed; right: 50px; top: 14px; z-index:1000" @click="drawer = true">
             搜索消息
         </el-button>
         <el-drawer v-model="drawer" title="I am the title" :with-header="false">
-            <el-input
-            placeholder="请输入"
-            v-model="inputVal"
-            clearable
-            size="big"
-            style="margin:2px"
-          ></el-input>
-          <el-button
-            :icon="Search"
-            type="primary"
-            size="big"
-            @click="searchData(true)"
-            style="margin: 5px 10px 0 10px; height: 30px; right: 10%"
-          >搜索</el-button>
-          <div v-for="message in searchMessages" :key="message" style="margin:20px">
-            {{ message }}
-          </div>
+            <el-input placeholder="请输入" v-model="inputVal" clearable size="big" style="margin:2px"></el-input>
+            <el-button :icon="Search" type="primary" size="big" @click="searchData(true)"
+                style="margin: 5px 10px 0 10px; height: 30px; right: 10%">搜索</el-button>
+            <div v-for="message in searchMessages" :key="message" style="margin:20px">
+                {{ message }}
+            </div>
         </el-drawer>
         <div>
             <vue-advanced-chat height="calc(100vh )" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
@@ -104,20 +93,22 @@ import axios from 'axios'
 import { ref } from 'vue';
 import { register } from 'vue-advanced-chat'
 import { authStore } from "../store/index.js"
+import { useTransitionFallthroughEmits } from 'element-plus';
 register()
 export default {
     watch: {
         inputVal(newValue) {
-        if (newValue) {
-            this.searchData(true);
-        } else {
-            this.searchData(false);
-        }
+            if (newValue) {
+                this.searchData(true);
+            } else {
+                this.searchData(false);
+            }
         },
     },
     data() {
         return {
-            searchMessages: ['1','2'],
+            currentTeam: '',
+            searchMessages: ['1', '2'],
             drawer: ref(false),
             currentUserId: '1',
             roomId: '1', //默认进入的id
@@ -177,141 +168,45 @@ export default {
             //             // }
             //         ],
             //     },
-            //     {
-            //         roomId: '2',
-            //         roomName: 'Room 2',
-            //         avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-            //         unreadCount: 3,
-            //         index: 3,
-            //         lastMessage: {
-            //             content: 'Last message received',
-            //             username: 'John Doe',
-            //             timestamp: '10:20',
-            //             saved: true,
-            //             distributed: false,
-            //             seen: true,
-            //             new: true
-            //         },
-            //         users: [
-            //             {
-            //                 _id: '2',
-            //                 username: 'John Doe',
-            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-            //                 status: {
-            //                     state: 'offline',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             },
-            //             {
-            //                 _id: '4321',
-            //                 username: 'John Snow',
-            //                 avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-            //                 status: {
-            //                     state: 'online',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             },
-            //             {
-            //                 _id: '1111',
-            //                 username: 'John Mike',
-            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-            //                 status: {
-            //                     state: 'online',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             }
-            //         ],
-            //         typingUsers: [4321],
-            //     },
-            //     {
-            //         roomId: '3',
-            //         roomName: 'Room 3',
-            //         avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-            //         unreadCount: 5,
-            //         index: 1,
-            //         lastMessage: {
-            //             content: 'Last message received',
-            //             username: 'John Doe',
-            //             timestamp: '10:20',
-            //             saved: true,
-            //             new: true
-            //         },
-            //         users: [
-            //             {
-            //                 _id: '2',
-            //                 username: 'John Doe',
-            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-            //                 status: {
-            //                     state: 'offline',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             },
-            //             {
-            //                 _id: '4321',
-            //                 username: 'John Snow',
-            //                 avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-            //                 status: {
-            //                     state: 'online',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             },
-            //             {
-            //                 _id: '1111',
-            //                 username: 'John Mike',
-            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-            //                 status: {
-            //                     state: 'online',
-            //                     lastChanged: '14 July, 20:00'
-            //                 }
-            //             },
-            //             // { 
-            //             // 	_id: '9999', 
-            //             // 	username: '所有人', 
-            //             // }
-            //         ]
-            //     }
-            // ],
+            // ]   
             messages: [
-                // {
-                // 	_id: '1',
-                // 	content: 'Hello, John!',
-                // 	senderId: '4321',
-                // 	avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                // 	timestamp: '10:20'
-                // }
             ],
             messagesLoaded: false
         }
     },
-   async created() {
+    async created() {
+        this.getTeams()
+        this.getCurrentTeam()
+        this.currentUserId = authStore().userId
         setTimeout(()=>{
-            this.getTeams();
-        },0) 
-        this.createWebsocket();
-        //this.initWebSocket()
+            this.createWebsocket()
+            console.log('当前用户id'+this.currentUserId)
+            this.roomId = this.currentTeam
+            this.selectedRoom = this.roomId
+            console.log('现在所在的群聊'+this.selectedRoom) 
+        },500) 
     },
-   mounted() {
-       setTimeout(()=>{
-        //    this.createWebsocket();
-           console.log('11111'+this.sockets)
-           //this.initWebSocket();
-           //this.createWebsocket();
-           this.currentUserId = authStore().userId
-           console.log('wzw'+this.currentUserId)
-           console.log("111")
-           console.log('222'+this.sockets)
-           this.init();
-        },0)
+    mounted() {
+        setTimeout(() => {
+            console.log('11111' + this.sockets)
+            this.currentUserId = authStore().userId
+            console.log('当前用户id'+this.currentUserId)
+            this.init();
+        }, 500)
+        setTimeout(()=>{
+            this.requestData(this.selectedRoom)
+        },1000) 
     },
     methods: {
         async init() {
-            setTimeout(async ()=>{
-
+            setTimeout(async () => {
                 try {
-                    const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/`+this.currentUserId);
+                    const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId);
+                    console.log(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId)
                     // console.log(`获取到的消息` + res);
                     this.rooms = ref([...res.rooms]);
                     // await this.$nextTick
+                    console.log('所有群聊')
                     console.log(res.rooms)
                     console.log(this.rooms);
                 }
@@ -324,25 +219,21 @@ export default {
                         room.unreadCount = 0;
                         console.log(room.users);
                         const hasUserWithId = room.users.some(user => user._id == 9999);
-                            if(!hasUserWithId){
-                                let all = {
-                                    username: '所有人',
-                                    _id: '9999',
-                                }
-                                room.users.push(all)
+                        if (!hasUserWithId) {
+                            let all = {
+                                username: '所有人',
+                                _id: '9999',
                             }
-                    console.log(room.users)
-                    break; // 如果 roomId 是唯一的，找到后就跳出循环
+                            room.users.push(all)
+                        }
+                        console.log(room.users)
+                        break; // 如果 roomId 是唯一的，找到后就跳出循环
+                    }
                 }
-            }
-        },0)
-        this.roomId = '2'
-        this.selectedRoom = this.roomId
-        this.requestData(this.selectedRoom)
-
+            }, 0)
         },
         searchData(bool) {
-            if(bool){
+            if (bool) {
                 console.log('bbb')
                 const msg = JSON.parse(this.messages)
                 const searchMessage = this.inputVal.toLowerCase(); // 将搜索查询转换为小写以进行不区分大小写的匹配
@@ -352,12 +243,13 @@ export default {
         async getTeams() {
             try {
                 const { data: res } = await axios.get('http://www.aamofe.top/api/team/all_teams/',
-                    {headers: {
-                        Authorization: authStore().token
-                    }
+                    {
+                        headers: {
+                            Authorization: authStore().token
+                        }
                     }
                 );
-                console.log('获取的teams'+res)
+                console.log('获取的teams' + res)
                 this.teams = res.teams.map(team => team.id);
                 console.log(this.teams)
             }
@@ -365,60 +257,46 @@ export default {
                 console.log(error);
             }
         },
-        initWebSocket() {
-            console.log(this.selectedRoom)
-            this.ws = new WebSocket("ws://101.43.159.45:8001/1/chat/2");
-            this.ws2 = new WebSocket("ws://101.43.159.45:8001/2/chat/2");
-            this.ws.onopen = () => {
-                console.log("1Connected to the websocket server");
-            };
-            this.ws.onmessage = this.onMessageReceived;
-            this.ws.onclose = (event) => {
-                console.log("Disconnected from the websocket server", event);
-                setTimeout(() => {
-                    //this.initWebSocket();
-                }, 1000);  // 在连接关闭后尝试重新连接
-            };
-            this.ws.onerror = (error) => {
-                console.error("WebSocket Error: ", error);
-            };
-            this.ws2.onopen = () => {
-                console.log("2Connected to the websocket server");
-            };
-            this.ws2.onmessage = this.onMessageReceived;
-            this.ws2.onclose = (event) => {
-                console.log("Disconnected from the websocket server", event);
-                setTimeout(() => {
-                    //this.initWebSocket();
-                }, 1000);  // 在连接关闭后尝试重新连接
-            };
-            this.ws2.onerror = (error) => {
-                console.error("WebSocket Error: ", error);
-            };
+        async getCurrentTeam(){
+            try {
+                const { data: res } = await axios.get('http://www.aamofe.top/api/team/get_current_team/',
+                    {
+                        headers: {
+                            Authorization: authStore().token
+                        }
+                    }
+                );
+                console.log(res)
+                this.currentTeam = res.team.id
+                console.log('当前所在的团队'+this.currentTeam)
+            }
+            catch (error) {
+                console.log(error);
+            }
         },
-         createWebsocket() {
-             console.log(444,this.teams)
-             setTimeout(()=>{
-                 this.teams.forEach(team => {
-                     const url = `ws://101.43.159.45:8001/${team}/chat/${this.currentUserId}`;
-                     const ws = new WebSocket(url);
-                 console.log(333,team)
-                 console.log(url)
-                ws.onopen = () => {
-                    console.log(`${team}Connected to the websocket server`);
-                };
-                ws.onerror = (error) => {
-                    console.error(`WebSocket for team ${team} encountered an error:`, error);
-                };
-                ws.onmessage = this.onMessageReceived;
-                ws.onclose = (event) => {
-                    console.log(`WebSocket for team ${team} is closed.`+event);
-                };
-                // 将 WebSocket 实例添加到 sockets 数组中
-                this.sockets[team] = ws
-            });
-          },0)  
-            
+        createWebsocket() {
+            console.log('需要获取的群聊', this.teams)
+            setTimeout(() => {
+                this.teams.forEach(team => {
+                    const url = `ws://101.43.159.45:8001/${team}/chat/${this.currentUserId}`;
+                    const ws = new WebSocket(url);
+                    console.log(333, team)
+                    console.log(url)
+                    ws.onopen = () => {
+                        console.log(`${team}Connected to the websocket server`);
+                    };
+                    ws.onerror = (error) => {
+                        console.error(`WebSocket for team ${team} encountered an error:`, error);
+                    };
+                    ws.onmessage = this.onMessageReceived;
+                    ws.onclose = (event) => {
+                        console.log(`WebSocket for team ${team} is closed.` + event);
+                    };
+                    // 将 WebSocket 实例添加到 sockets 数组中
+                    this.sockets[team] = ws
+                });
+            }, 0)
+
         },
         onMessageReceived(event) {
             console.log('Message received from server:', event.data);
@@ -440,7 +318,7 @@ export default {
                         message
                     ]
                     this.sockets[this.selectedRoom].send(JSON.stringify({
-                        clean : 'clean'
+                        clean: 'clean'
                     }))
                 }
             }
@@ -461,23 +339,8 @@ export default {
                 }
             }
             if (!('type' in parsedData)) {
-                // const message = {
-                // 	senderId: parsedData.user_id,
-                // 	content: parsedData.message,
-                // 	timestamp: parsedData.time,
-                // 	avatar: parsedData.avatar_url,
-                // 	_id: this.messages.length,
-                //   username: parsedData.username,
-                // }
-                //this.messages = parsedData.messages
                 const messages = []
                 for (let i = 0; i < parsedData.messages.length; i++) {
-                    // let filesString = parsedData.messages[i].files;
-                    // let filesObject;
-                    // Replace single quotes with double quotes
-                    // filesString = filesString.replace(/'/g, '"');
-                    // filesObject = JSON.parse(filesString);
-                    // console.log(filesObject)
                     let message = {
                         senderId: parsedData.messages[i].user_id,
                         content: parsedData.messages[i].message,
@@ -499,7 +362,7 @@ export default {
                     user_id: this.currentUserId
                 };
                 this.sockets[selectedRoom].send(JSON.stringify(messageData))
-                console.log('请求数据')
+                console.log('请求群聊消息发送成功')
             }
         },
         sendDataToServerTest(data, roomId) {
@@ -535,8 +398,8 @@ export default {
                 const containsAt = data.message.includes("@");
                 const containsAtAll = data.message.includes("@所有人");
 
-                if(containsAt){
-                    if(containsAtAll){
+                if (containsAt) {
+                    if (containsAtAll) {
                         this.sockets[roomId].send(JSON.stringify({
                             type: 'chat',
                             range: 'all',
@@ -544,7 +407,7 @@ export default {
                             url: 'http://localhost:8081/chat',
                         }));
                     }
-                    else{
+                    else {
                         const user = this.rooms[Id].users.find(user => user.username === username);
                         this.sockets[roomId].send(JSON.stringify({
                             type: 'chat',
@@ -656,7 +519,7 @@ export default {
                             room.unreadCount = 0;
                             console.log(room.users);
                             const hasUserWithId = room.users.some(user => user._id == 9999);
-                            if(!hasUserWithId){
+                            if (!hasUserWithId) {
                                 let all = {
                                     username: '所有人',
                                     _id: '9999',
@@ -806,23 +669,23 @@ export default {
             window.open(file.file.url, '_blank')
         },
         // 右上角搜索框--模糊查询
-    searchData(bool) {
-      this.currentPage = 1;
-      if (bool) {
-        // 前端实现模糊查询--不用对接口
-        let newListData = []; // 用于存放搜索出来数据的新数组
-        if (this.inputVal) {
-          this.monitorData.filter((item) => {
-            if (item.name.indexOf(this.inputVal) !== -1) {
-              newListData.push(item);
+        searchData(bool) {
+            this.currentPage = 1;
+            if (bool) {
+                // 前端实现模糊查询--不用对接口
+                let newListData = []; // 用于存放搜索出来数据的新数组
+                if (this.inputVal) {
+                    this.monitorData.filter((item) => {
+                        if (item.name.indexOf(this.inputVal) !== -1) {
+                            newListData.push(item);
+                        }
+                    });
+                }
+                this.monitorData = newListData;
+            } else {
+                this.refreshData(); //刷新页面，即点击搜索框的清除会回到原始页面
             }
-          });
-        }
-        this.monitorData = newListData;
-      } else {
-        this.refreshData(); //刷新页面，即点击搜索框的清除会回到原始页面
-      }
-    },
+        },
         // menuActionHandler({ action }) {
         // 	switch (action.name) {
         // 		case 'inviteUser':
@@ -837,59 +700,60 @@ export default {
 body {
     font-family: 'Quicksand', sans-serif;
 }
+
 .header {
-	height: 56px;
-	background-color: #f9fafb;
-	padding: 0 4px;
-	border-bottom: 2px solid #3671ff;
-	display: flex;
-	align-items: center;
+    height: 56px;
+    background-color: #f9fafb;
+    padding: 0 4px;
+    border-bottom: 2px solid #3671ff;
+    display: flex;
+    align-items: center;
 
-	justify-content: space-around;
+    justify-content: space-around;
 
-	.actions1 {
-		width: 120px;
-		background: red;
-		background: transparent;
-		margin-left: -50px;
-		outline: none;
-		// background: red;
-		width: 120px;
+    .actions1 {
+        width: 120px;
+        background: red;
+        background: transparent;
+        margin-left: -50px;
+        outline: none;
+        // background: red;
+        width: 120px;
 
-		.backToCenter {
-			// height: 80px;
-			// background-color: red;
-			margin-left: -130px;
-			text-align: center;
-			// font-size: 20px;
+        .backToCenter {
+            // height: 80px;
+            // background-color: red;
+            margin-left: -130px;
+            text-align: center;
+            // font-size: 20px;
 
-			i {
-				font-size: 25px;
-				cursor: pointer;
-				opacity: 0.8;
+            i {
+                font-size: 25px;
+                cursor: pointer;
+                opacity: 0.8;
 
-				&:hover {
-					color: #3671ff;
-				}
-			}
-		}
+                &:hover {
+                    color: #3671ff;
+                }
+            }
+        }
 
-	}
+    }
 
-	.fileinfo {
-		width: 500px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+    .fileinfo {
+        width: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-	}
+    }
 
-	.actions2 {
-		display: flex;
-		width: 200px;
-		align-items: center;
-		justify-content: space-between;
-	}
+    .actions2 {
+        display: flex;
+        width: 200px;
+        align-items: center;
+        justify-content: space-between;
+    }
 }
 </style>
   
