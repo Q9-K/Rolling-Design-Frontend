@@ -1,5 +1,32 @@
-import { createApp } from 'vue'
+/*
+ * @Date: 2023-08-28 05:58:10
+ * @Author: Q9K
+ * @Description:
+ */
+import { createApp, provide, ref } from 'vue'
 import App from './App.vue'
 import router from './router'
+import ElementPlus from 'element-plus'
+import { ElementTiptapPlugin } from 'element-tiptap';
+import 'element-plus/dist/index.css'
+import 'element-tiptap/lib/style.css';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import axios from 'axios';
+import { createPinia } from 'pinia';
+import './assets/css/main.css'
+import './assets/icons/iconfont.css'
 
-createApp(App).use(router).mount('#app')
+const pinia = createPinia();
+const app = createApp(App)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+app.use(ElementTiptapPlugin)
+app.use(router).use(ElementPlus).use(pinia).mount('#app')
+
+const axiosInstance = axios.create({
+  baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+});
+provide('axios', axiosInstance)
+
+
