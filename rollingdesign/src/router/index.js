@@ -1,19 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+// import HomeView from '../views/HomeView.vue'
 
 const routes = [
   /*登录页面*/
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('../views/HomeView.vue')
   },
   /*相当于主页*/
   {
     path: '/index',
     name: 'index',
     component: () => import(/* webpackChunkName: "about" */ '../views/IndexView.vue'),
-    meta: { index: 'index' }
+    meta: {
+      index: 'index',
+      requireAuth: true
+    }
   },
   // 项目展示页
   {
@@ -22,13 +25,19 @@ const routes = [
     name: 'project',
 
     component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
-    meta: { index: 'project' }
+    meta: {
+      index: 'project',
+      requireAuth: true
+    }
   },
   {
     // path: '/video/:id',/*注意这里*/
     path: '/design/:id',
     name: '/design',
-    component: () => import('../views/PrototypeDesign.vue')
+    component: () => import('../views/PrototypeDesign.vue'),
+    meta: {
+      requireAuth: false
+    }
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -40,7 +49,10 @@ const routes = [
     // path: '/video/:id',/*注意这里*/
     path: '/tiptap/:id',
     name: '/tiptap',
-    component: () => import('../views/TipTap.vue')
+    component: () => import('../views/TipTap.vue'),
+    meta: {
+      requireAuth: false
+    }
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -55,7 +67,10 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/TeamPeople.vue'),
     // meta: { index: 'team:id' }/*--------*/
     // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
-    meta: { index: 'teamPeople' }
+    meta: {
+      index: 'teamPeople',
+      requireAuth: true
+    }
   },
   // 管理团队中的成员
   {
@@ -67,29 +82,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/TeamManage.vue'),
     // meta: { index: 'team:id' }/*--------*/
     // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
-    meta: { index: 'teamManage' }
+    meta: {
+      index: 'teamManage',
+      requireAuth: true
+    }
   },
-  // 分享
-  // {
-  //   path: '/share',
-  //   name: 'share',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/ShareView.vue'),
-  //   meta: { index: 'share' }
-  // },
-  // // 草稿箱
-  // {
-  //   path: '/draft',
-  //   name: 'draft',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/DraftView.vue'),
-  //   meta: { index: 'draft' }
-  // },
-  // 回收站
   {
     path: '/recover',
     name: 'recover',
@@ -97,7 +94,10 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/RecoverView.vue'),
-    meta: { index: 'recover' }
+    meta: {
+      index: 'recover',
+      requireAuth: true
+    }
   },
   // 消息
   {
@@ -107,7 +107,10 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
-    meta: { index: 'message' }
+    meta: {
+      index: 'message',
+      requireAuth: true
+    }
   },
   {
     path: '/about',
@@ -115,17 +118,31 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
+    meta: {
+      requireAuth: true
+    }
   },
   {
-    path:"/chat",
-    name:'chat',
-    component:()=>import('../views/chatRoom.vue')
+    path: "/chat",
+    name: 'chat',
+    component: () => import('../views/chatRoom.vue'),
+    meta: {
+      requireAuth: true
+    }
   },
   {
     path: '/team/:token',
     name: 'invite',
-    component: () => import('../views/Invite.vue')
+    component: () => import('../views/Invite.vue'),
+    meta: {
+      requireAuth: false
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notFound',
+    component: () => import('../views/404.vue')
   }
 ]
 
@@ -133,5 +150,14 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    next('/home')
+  }
+  else {
+    next()
+  }
+})
+
 
 export default router
