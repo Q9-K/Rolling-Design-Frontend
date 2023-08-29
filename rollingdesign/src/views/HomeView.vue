@@ -174,10 +174,10 @@
 import { useRouter } from 'vue-router'
 import { ref, unref, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { authStore } from "../store/index.js"
 // import { isDark } from '~/composables/dark'
 import { reactive, toRefs } from 'vue'
 import axios from 'axios'
-import { authStore } from "../store/index.js"
 // const axios = inject('axios')
 
 
@@ -329,6 +329,12 @@ console.log('hhh' + userStore.isLogin);
 /*跳转对应页*/
 const jumpTo = (path) => {
   //this.$router.push('/video/'+video_id);
+  console.log(1);
+  if (authStore().isLogin === false) {
+    loginDialog.value = true;
+    return;
+  }
+  console.log(3);
   const path_url = '/' + path;
   window.open(path_url, '_self');
 }
@@ -391,6 +397,19 @@ onMounted(() => {
 
 
 ::v-deep .loginPage {
+  /* --el-bg-color: #000741 !important; */
+  /* height: 100vh; */
+  /* width: 100%; */
+  /* height: 100%; */
+  overflow: hidden;
+  background-image: url('../assets/login_bg.png');
+  /* background-size: cover;  */
+  background-size: 100% 100%;
+  opacity: 0.85;
+  background-repeat: no-repeat;
+}
+
+::v-deep .registerPage {
   /* --el-bg-color: #000741 !important; */
   /* height: 100vh; */
   /* width: 100%; */
