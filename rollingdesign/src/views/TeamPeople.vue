@@ -32,47 +32,9 @@
                                 <!--
                                 <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
                                 -->
-                                <el-popover :width="300" trigger="click" ref='popper'
-                                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                                    <template #reference>
-                                        <el-button type="primary" @click="generateLink()">邀请成员</el-button>
-                                        <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
-                                    </template>
-                                    <template #default>
-                                        <div disabled style="text-align: center;">
-                                            <el-input v-model="link" disabled></el-input>
-                                            <div style="color: #d2d3d7;text-align: left;
-                            margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
-                                            </div>
-                                        </div>
-                                        <button @click="copyLink" class="copyLink"
-                                            style="text-align: center; 
-                            background-color: #3671ff;
-                            outline: none;
-                        margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
-                                    </template>
-                                </el-popover>
+                                <InviteMemberButton :now-team="nowTeam" />
                             </div>
                         </el-row>
-
-                        <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
-                            <span>
-                                <!--输入信息，查找-->
-                                <el-input v-model="input" placeholder="Please input" />
-                                <!--通过链接-->
-                            </span>
-                            <template #footer>
-                                <span class="dialog-footer">
-                                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                                    <el-button type="primary" @click="centerDialogVisible = false">
-                                        Confirm
-                                    </el-button>
-                                </span>
-                            </template>
-                        </el-dialog>
-
-
-
                         <div>
                             <el-table :data="memberList" style="width: 100%">
                                 <el-table-column prop="nickname" label="昵称" width="180" />
@@ -180,7 +142,7 @@
         </el-container>
     </div>
 </template>
-  
+
 <script setup>
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
@@ -201,6 +163,7 @@ import {
     DeleteFilled
 } from '@element-plus/icons-vue'
 import { now } from '@vueuse/shared'
+import InviteMemberButton from "@/components/InviteMemberButton.vue";
 const route = useRoute()
 
 /*跳转对应页*/
@@ -367,7 +330,7 @@ const updateRole = (user_id, newRole) => {
         });
 }
 </script>
-  
+
 <style scoped>
 .hintText {
     color: gray;
