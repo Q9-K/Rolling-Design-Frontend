@@ -50,15 +50,15 @@
                 </el-popover>
             </div>
             <div class="userAvatars">
-                <!-- <div v-for="">
+                <div v-for="">
                     {{  }}
-                </div> -->
+                </div>
                 <div class="selfAvatars">
                     <template v-if="authStore().isLogin">
                         <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
                     </template>
                     <template v-else>
-                        <el-avatar :size="40" style="font-size: 30px;"></el-avatar>
+                        <el-avatar :size="40" style="font-size: 30px; src = "></el-avatar>
                     </template>
                 </div>
             </div>
@@ -138,10 +138,6 @@ const provider = new HocuspocusProvider({
     name: 'rolling-cowork-document',
     document: ydoc,
 })
-
-
-
-
 
 const router = useRouter()
 const route = useRoute()
