@@ -144,132 +144,133 @@ export default {
             // 	{ name: 'inviteUser', title: 'Invite User' }
             // ],
             //群聊
-            rooms: [
-                {
-                    roomId: '1',
-                    roomName: 'Room 1',
-                    avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                    unreadCount: 4,
-                    index: 2,
-                    lastMessage: {
-                        content: 'Last message received',
-                        username: 'John Doe',
-                        timestamp: '10:20',
-                    },
-                    users: [
-                        {
-                            _id: '4321',
-                            username: 'John Snow',
-                            avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-                        },
-                        {
-                            _id: '1111',
-                            username: 'John Mike',
-                            avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            rooms: [],
+            // rooms: [
+            //     {
+            //         roomId: '1',
+            //         roomName: 'Room 1',
+            //         avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //         unreadCount: 4,
+            //         index: 2,
+            //         lastMessage: {
+            //             content: 'Last message received',
+            //             username: 'John Doe',
+            //             timestamp: '10:20',
+            //         },
+            //         users: [
+            //             {
+            //                 _id: '4321',
+            //                 username: 'John Snow',
+            //                 avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
+            //             },
+            //             {
+            //                 _id: '1111',
+            //                 username: 'John Mike',
+            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
 
-                        },
-                        // { 
-                        // 	_id: '9999', 
-                        // 	username: '所有人', 
-                        // 	avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //             },
+            //             // { 
+            //             // 	_id: '9999', 
+            //             // 	username: '所有人', 
+            //             // 	avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
 
-                        // }
-                    ],
-                },
-                {
-                    roomId: '2',
-                    roomName: 'Room 2',
-                    avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-                    unreadCount: 3,
-                    index: 3,
-                    lastMessage: {
-                        content: 'Last message received',
-                        username: 'John Doe',
-                        timestamp: '10:20',
-                        saved: true,
-                        distributed: false,
-                        seen: true,
-                        new: true
-                    },
-                    users: [
-                        {
-                            _id: '2',
-                            username: 'John Doe',
-                            avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                            status: {
-                                state: 'offline',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        },
-                        {
-                            _id: '4321',
-                            username: 'John Snow',
-                            avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-                            status: {
-                                state: 'online',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        },
-                        {
-                            _id: '1111',
-                            username: 'John Mike',
-                            avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                            status: {
-                                state: 'online',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        }
-                    ],
-                    typingUsers: [4321],
-                },
-                {
-                    roomId: '3',
-                    roomName: 'Room 3',
-                    avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-                    unreadCount: 5,
-                    index: 1,
-                    lastMessage: {
-                        content: 'Last message received',
-                        username: 'John Doe',
-                        timestamp: '10:20',
-                        saved: true,
-                        new: true
-                    },
-                    users: [
-                        {
-                            _id: '2',
-                            username: 'John Doe',
-                            avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                            status: {
-                                state: 'offline',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        },
-                        {
-                            _id: '4321',
-                            username: 'John Snow',
-                            avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
-                            status: {
-                                state: 'online',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        },
-                        {
-                            _id: '1111',
-                            username: 'John Mike',
-                            avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-                            status: {
-                                state: 'online',
-                                lastChanged: '14 July, 20:00'
-                            }
-                        },
-                        // { 
-                        // 	_id: '9999', 
-                        // 	username: '所有人', 
-                        // }
-                    ]
-                }
-            ],
+            //             // }
+            //         ],
+            //     },
+            //     {
+            //         roomId: '2',
+            //         roomName: 'Room 2',
+            //         avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
+            //         unreadCount: 3,
+            //         index: 3,
+            //         lastMessage: {
+            //             content: 'Last message received',
+            //             username: 'John Doe',
+            //             timestamp: '10:20',
+            //             saved: true,
+            //             distributed: false,
+            //             seen: true,
+            //             new: true
+            //         },
+            //         users: [
+            //             {
+            //                 _id: '2',
+            //                 username: 'John Doe',
+            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //                 status: {
+            //                     state: 'offline',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             },
+            //             {
+            //                 _id: '4321',
+            //                 username: 'John Snow',
+            //                 avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
+            //                 status: {
+            //                     state: 'online',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             },
+            //             {
+            //                 _id: '1111',
+            //                 username: 'John Mike',
+            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //                 status: {
+            //                     state: 'online',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             }
+            //         ],
+            //         typingUsers: [4321],
+            //     },
+            //     {
+            //         roomId: '3',
+            //         roomName: 'Room 3',
+            //         avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
+            //         unreadCount: 5,
+            //         index: 1,
+            //         lastMessage: {
+            //             content: 'Last message received',
+            //             username: 'John Doe',
+            //             timestamp: '10:20',
+            //             saved: true,
+            //             new: true
+            //         },
+            //         users: [
+            //             {
+            //                 _id: '2',
+            //                 username: 'John Doe',
+            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //                 status: {
+            //                     state: 'offline',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             },
+            //             {
+            //                 _id: '4321',
+            //                 username: 'John Snow',
+            //                 avatar: 'https://pic1.zhimg.com/v2-d58ce10bf4e01f5086c604a9cfed29f3_r.jpg?source=1940ef5c',
+            //                 status: {
+            //                     state: 'online',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             },
+            //             {
+            //                 _id: '1111',
+            //                 username: 'John Mike',
+            //                 avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
+            //                 status: {
+            //                     state: 'online',
+            //                     lastChanged: '14 July, 20:00'
+            //                 }
+            //             },
+            //             // { 
+            //             // 	_id: '9999', 
+            //             // 	username: '所有人', 
+            //             // }
+            //         ]
+            //     }
+            // ],
             messages: [
                 // {
                 // 	_id: '1',
@@ -290,7 +291,6 @@ export default {
    mounted() {
        setTimeout(()=>{
            this.createWebsocket();
-
            console.log('11111'+this.sockets)
            //this.initWebSocket();
            //this.createWebsocket();
@@ -299,7 +299,7 @@ export default {
            console.log("111")
            console.log('222'+this.sockets)
            this.init();
-        },2000)
+        },0)
     },
     methods: {
         async init() {
@@ -493,7 +493,7 @@ export default {
                 if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                     const messageData = {
                         all: '1',
-                        user_id: "2"
+                        user_id: this.currentUserId
                     };
                     this.ws.send(JSON.stringify(messageData))
                     console.log('请求数据')
@@ -514,7 +514,7 @@ export default {
             if (this.sockets[selectedRoom] && this.sockets[selectedRoom].readyState === WebSocket.OPEN) {
                 const messageData = {
                     all: '1',
-                    user_id: "2"
+                    user_id: this.currentUserId
                 };
                 this.sockets[selectedRoom].send(JSON.stringify(messageData))
                 console.log('请求数据')
