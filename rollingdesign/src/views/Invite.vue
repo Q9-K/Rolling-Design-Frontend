@@ -1,119 +1,207 @@
-<!--
- * @Date: 2023-08-28 03:58:55
- * @Author: Q9K
- * @Description:
--->
 <template>
-    <div class="container">
-      <div class="wrapper">
-        <div class="center">
-          <div class="logo">
-          </div>
-          <div class="items1">
-            <span>{{ invitor }}</span>
-            在<span>Rolling Design</span>
-            邀请你加入团队
-          </div>
-          <div style="width: 100%; height: 7vh">
-          </div>
-          <template v-if="isLogined">
-            <el-button type="primary" class="joinButton">
-              加入团队
-            </el-button>
-          </template>
-          <template v-else>
-            <div style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 100%"
-            >
-              <el-button type="primary" class="joinButton">
-                登录/注册
-              </el-button>
-            </div>
-  
-          </template>
-          <div style="width: 100%; height: 6vh">
-          </div>
-          <div class="link">
-            <div style="display: flex; flex-wrap: wrap; align-items: center">
-              <a style="width: 100%; display: flex; justify-content: center" href="www.aamofe.top">
-                Rolling Design
-              </a>
-              <div style="width: 100%; height: 2vh"></div>
-              <span style="width: 100%; display: flex; justify-content: center; color: #8c8f8f">
-                天机流转一回头，览镜何须空自羞。雪尽草生春意好，人心不解漫间愁
-              </span>
-            </div>
-            <div style="position: relative; top: 10vh; display: flex; align-items: center; justify-content: center">
-              www.aamofe.top
-            </div>
-          </div>
+  <div class="invite-outer">
+    <div class="invite">
+      <div style="width: 100%; height: 16%"></div>
+      <div class="logo-outer">
+        <img class="logo" :src="logo">
+      </div>
+      <div style="width: 100%; height: 2%"></div>
+      <div class="invite-information-outer">
+        <p class="invite-information-person">
+          {{ inviterPerson }}&nbsp;&nbsp;
+        </p>
+        <p class="invite-information">
+          邀请你加入团队
+        </p>
+        <p class="invite-information-team">
+          &nbsp;&nbsp;{{ inviterTeam }}
+        </p>
+      </div>
+      <div class="invite-button-outer">
+        <el-button v-if="haveLoggedIn" class="invite-button" type="primary" @click="handleToIndex">
+          加入团队
+        </el-button>
+        <el-button v-else class="invite-button" type="primary" @click="handleToLogin">
+          登录/注册
+        </el-button>
+      </div>
+      <div style="width: 100%; height: 8%"></div>
+      <div class="slogan-outer">
+        <div class="slogan-title-outer">
+          <p class="slogan-title">
+            流转设计
+          </p>
+        </div>
+        <div class="slogan-information-outer">
+          <p class="slogan-information">
+            天机流转一回头，览镜何须空自羞。雪尽草生春意好，人心不解漫间愁
+          </p>
         </div>
       </div>
+      <div style="width: 100%; height: 7%"></div>
+      <div class="link-outer">
+        <p class="link">
+          www.aamofe.top
+        </p>
+      </div>
     </div>
-    <el-dialog></el-dialog>
-  </template>
-  
-  <script setup>
-  import { provide, onMounted, onBeforeMount } from 'vue'
-  import axios from 'axios'
-  // const axiosInstance = axios.create({
-  //   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
-  // });
-  // provide('axios', axiosInstance)
-  // // onMounted(async () => {
-  // let res = await axios.get('http://www.aamofe.top/api/team/all_teams', {
-  //   headers: {
-  //     Authorization: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NDg0OTQsImlkIjoxfQ.HIgCyImqu4gytXnLAeE_7qkYd0INgcHeh6NHL_W3dMQ'
-  //   }
-  // })
-  // console.log(res.data)
-  
-  //   console.log(res.data)
-  // })
-  
-  // provide('test', 'test')
-  </script>
-  
-  <style scoped lang="scss">
-  .container {
+  </div>
+  <el-dialog></el-dialog>
+</template>
+
+<script setup>
+import logo from '../assets/logo.png'
+import {authStore} from "@/store";
+import {useRoute, useRouter} from "vue-router";
+import {onMounted, ref} from "vue";
+import axios from "axios";
+
+let haveLoggedIn = false
+
+const inviterPerson = ref('大傻逼')
+const inviterTeam = ref('傻逼之家')
+
+const route = useRoute()
+const router = useRouter()
+// 邀请加入的团队的token
+const teamToken = route.params.token;
+
+onMounted(() => {
+
+  let Headers = { 'Authorization': authStore().token }
+
+  axios.get('http://www.aamofe.top/api/team/team_name/' + teamToken, {
+    headers: Headers
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        if (response.data.errno === 0) {
+          inviterPerson.value = response.data.invite_info.inviter
+          inviterTeam.value = response.data.invite_info.team_name
+        }
+      }
+    })
+})
+
+if (authStore().token) {
+  haveLoggedIn = true
+}
+else {
+  haveLoggedIn = false
+}
+
+console.log(authStore().token)
+
+const handleToLogin = () => {
+  router.push('/')
+}
+
+const handleToIndex = () => {
+  router.push('/index')
+}
+
+</script>
+
+<style scoped lang="scss">
+.invite-outer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  .invite {
     height: 100%;
-    .wrapper {
-      height: 100%;
-      background: #f7f9fc;
+    width: 50%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: start;
+    .logo-outer {
+      width: 100%;
+      height: 25%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .logo {
+        height: 100%;
+      }
+    }
+    .invite-information-outer {
+      width: 100%;
+      height: 14%;
       display: flex;
       justify-content: center;
       align-items: center;
-      .center {
-        height: 600px;
-        padding: 15px;
-        .logo {
-          height: 300px;
-          background: url(./assets/logo.png);
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: contain;
-          opacity: 0.5;
+      .invite-information-person {
+        font-family: "STFangsong";
+        display: flex;
+        text-align: center;
+        font-size: 25px;
+      }
+      .invite-information {
+        font-family: "Arial";
+        text-align: center;
+        font-size: 25px;
+      }
+      .invite-information-team {
+        font-family: "STFangsong";
+        text-align: center;
+        font-size: 25px;
+      }
+    }
+    .invite-button-outer {
+      width: 100%;
+      display: flex;
+      height: 10%;
+      justify-content: center;
+      align-items: center;
+      .invite-button {
+        height: 50%;
+        width: 30%;
+      }
+    }
+    .slogan-outer {
+      width: 100%;
+      height: 10%;
+      display: flex;
+      flex-wrap: wrap;
+      .slogan-title-outer {
+        height: 40%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .slogan-title {
+          width: 100%;
+          text-align: center;
+          color: #27398d;
+          font-family: STZhongsong;
         }
-        .items1 {
-          font-family: "fantasy";
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 25px;
-        }
-        .joinButton {}
-        .link {
-  
-          a {
-            text-decoration: none;
-            color: #3671ff;
-          }
+      }
+      .slogan-information-outer {
+        height: 60%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .slogan-information {
+          width: 100%;
+          text-align: center;
+          color: #8c939d;
+          font-family: "STXinwei";
         }
       }
     }
+    .link-outer {
+      width: 100%;
+      height: 8%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .link {
+        width: 100%;
+        text-align: center;
+      }
+    }
   }
-  </style>
-  
+}
+</style>

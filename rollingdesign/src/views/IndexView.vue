@@ -30,29 +30,7 @@
 
                             <el-col :span="8">
                                 <div style="display: flex;flex:1;justify-content: flex-end;">
-                                    <el-button type="primary" @click="newProjectDialog = true">新建项目</el-button>
-
-                                    <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                                    <el-popover :width="300" trigger="click" ref='popper'
-                                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                                        <template #reference>
-                                            <el-button type="primary" @click="generateLink()">邀请成员</el-button>
-                                            <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
-                                        </template>
-                                        <template #default>
-                                            <div disabled style="text-align: center;">
-                                                <el-input v-model="link" disabled></el-input>
-                                                <div style="color: #d2d3d7;text-align: left;
-                            margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
-                                                </div>
-                                            </div>
-                                            <button @click="copyLink" class="copyLink"
-                                                style="text-align: center; 
-                            background-color: #3671ff;
-                            outline: none;
-                        margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
-                                        </template>
-                                    </el-popover>
+                                    <InviteMemberButton :now-team="nowTeam" />
                                 </div>
                             </el-col>
                         </el-row>
@@ -73,91 +51,75 @@
                             </template>
                         </el-dialog>
 
-
-                        <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
-                            <span>
-                                <!--输入信息，查找-->
-                                <el-input v-model="input" placeholder="Please input" />
-                                <!--通过链接-->
-                            </span>
-                            <template #footer>
-                                <span class="dialog-footer">
-                                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                                    <el-button type="primary" @click="centerDialogVisible = false">
-                                        Confirm
-                                    </el-button>
-                                </span>
-                            </template>
-                        </el-dialog>
                         <!--团队信息结束-->
 
                         <el-row style="margin-top:40px;margin-bottom:30px;">
                             <span style="font-size: 23px;font-weight: 900;">主页</span>
                         </el-row>
 
-                        <!-- <div class="draftFiles" style="margin-top:20px">
-                <el-row style="margin-top:20px;margin-bottom: 30px;">
-                  <el-col :span="24">
-                    <el-row class="blockHeader" style="display:flex">
-                      <el-col :span="14" class="blockTitle"
-                        style="font-size:large;font-weight: 600;text-align: left;">草稿箱</el-col>
-                      <el-col :span="10" class="rightTitle" style="">查看更多</el-col>
-                    </el-row>
-                  </el-col>
-  
-  
-                  <el-col :span="12">
-                    <div style="margin-left:24px">
-                      <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                        原型
-                      </div>
-                      <el-col :span="4">
-                        <div style="width:100%;">
-                          <div>
-                            <img src="@/assets/projectImage.png" style="width:170px;height:120px" />
-                          </div>
-                          <div style="text-align: left;font-size: 14px;margin-bottom: 14px;">
-                            文档名字
-                          </div>
-                        </div>
-                      </el-col>
-                    </div>
-                  </el-col>
-  
-                  <el-divider direction="vertical" style="height: 170px;"></el-divider>
-                  <el-col :span="11">
-                    <div style="margin-left:24px">
-                      <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                        文档
-                      </div>
-                      <el-col :span="4">
-                        <div style="width:100%;">
-                          <div>
-                            <img src="@/assets/projectImage.png" style="width:170px;height:120px" />
-                          </div>
-                          <div>
-                            文档名字
-                          </div>
-                        </div>
-                      </el-col>
-                    </div>
-                  </el-col>
-                </el-row>
-              </div> -->
+<!--                        <div class="draftFiles" style="margin-top:20px">-->
+<!--                <el-row style="margin-top:20px;margin-bottom: 30px;">-->
+<!--                  <el-col :span="24">-->
+<!--                    <el-row class="blockHeader" style="display:flex">-->
+<!--                      <el-col :span="14" class="blockTitle"-->
+<!--                        style="font-size:large;font-weight: 600;text-align: left;">草稿箱</el-col>-->
+<!--                      <el-col :span="10" class="rightTitle" style="">查看更多</el-col>-->
+<!--                    </el-row>-->
+<!--                  </el-col>-->
 
-                        <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;">项目</span>
-              </el-row>
-              <el-row :gutter="25">
-                <el-col :span="4" style="margin-bottom:40px">
-                  <div>
-                    <div style="width:100%">
-                      <img src="@/assets/projectImage.png" style="width:200px;height:150px" />
-                    </div>
-                    项目名字
-                  </div>
-                </el-col>
-              </el-row> -->
+
+<!--                  <el-col :span="12">-->
+<!--                    <div style="margin-left:24px">-->
+<!--                      <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">-->
+<!--                        原型-->
+<!--                      </div>-->
+<!--                      <el-col :span="4">-->
+<!--                        <div style="width:100%;">-->
+<!--                          <div>-->
+<!--                            <img src="@/assets/projectImage.png" style="width:170px;height:120px" />-->
+<!--                          </div>-->
+<!--                          <div style="text-align: left;font-size: 14px;margin-bottom: 14px;">-->
+<!--                            文档名字-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </el-col>-->
+<!--                    </div>-->
+<!--                  </el-col>-->
+
+<!--                  <el-divider direction="vertical" style="height: 170px;"></el-divider>-->
+<!--                  <el-col :span="11">-->
+<!--                    <div style="margin-left:24px">-->
+<!--                      <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">-->
+<!--                        文档-->
+<!--                      </div>-->
+<!--                      <el-col :span="4">-->
+<!--                        <div style="width:100%;">-->
+<!--                          <div>-->
+<!--                            <img src="@/assets/projectImage.png" style="width:170px;height:120px" />-->
+<!--                          </div>-->
+<!--                          <div>-->
+<!--                            文档名字-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </el-col>-->
+<!--                    </div>-->
+<!--                  </el-col>-->
+<!--                </el-row>-->
+<!--              </div>-->
+
+<!--                        <el-row style="margin-top:40px;margin-bottom: 30px;">-->
+<!--                <span style="font-size:large;font-weight: 500;">项目</span>-->
+<!--              </el-row>-->
+<!--              <el-row :gutter="25">-->
+<!--                <el-col :span="4" style="margin-bottom:40px">-->
+<!--                  <div>-->
+<!--                    <div style="width:100%">-->
+<!--                      <img src="@/assets/projectImage.png" style="width:200px;height:150px" />-->
+<!--                    </div>-->
+<!--                    项目名字-->
+<!--                  </div>-->
+<!--                </el-col>-->
+<!--              </el-row>-->
 
                         <!-- <el-tabs v-model="activeTab"> -->
                         <!-- <el-tab-pane label="团队项目" name="tab1"> -->
@@ -241,7 +203,7 @@
         </el-container>
     </div>
 </template>
-  
+
 <script setup>
 import qs from 'qs'
 import axios from 'axios'
@@ -256,6 +218,7 @@ import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import { ElNotification } from 'element-plus'
+import InviteMemberButton from "@/components/InviteMemberButton.vue";
 
 /*侧栏*/
 const activeTab = ref('tab1'); // 设置默认激活的标签页
@@ -272,20 +235,6 @@ const pwdConfig = ref(false)
 const pwdConfigTitle = ref('修改密码')
 const pwdConfigInput = ref('')
 const pwdSureInput = ref('')
-
-const copyLink = () => {
-    navigator.clipboard.writeText(link.value)
-
-    // popper.value.hide()
-    // console.log(popper.value)
-
-    ElNotification({
-        title: 'Success',
-        message: '复制成功',
-        type: 'success',
-        duration: 1000
-    })
-}
 
 const handleRemove = (file, uploadFiles) => {
     console.log(file, uploadFiles)
@@ -334,20 +283,6 @@ const renameProject = (projectId) => {
 
 // deleteProject
 
-const link = ref('')
-const generateLink = async () => {
-
-    let Headers = { 'Authorization': authStore().token }
-
-    let res = await axios.get('http://www.aamofe.top/api/team/get_invitation/', {
-        headers: Headers,
-        params: {
-            team_id: nowTeam.teamId,
-        }
-    })
-    console.log(res.data)
-    link.value = res.data.invatation
-}
 
 
 const handleExceed = (files, uploadFiles) => {
@@ -507,7 +442,7 @@ const fetchProjectData = () => {
         })
 }
 </script>
-  
+
 <style scoped>
 .hintText {
     color: gray;

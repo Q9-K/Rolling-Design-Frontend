@@ -23,29 +23,32 @@
             <el-row class="block" style="display: flex;align-items: center;">
               <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" />
               <span style="font-size:larger;font-weight: 800;">xxx的团队</span>
-
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                <el-button type="primary" @click="centerDialogVisible = true; getLink()">邀请成员</el-button>
+<!--                <el-button type="primary" @click="centerDialogVisible = true; getLink()">邀请成员</el-button>-->
+                <!--
+                TODO now-team
+                -->
+<!--                <InviteMemberButton />-->
               </div>
             </el-row>
 
-            <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
-              <span>
-                <!--输入信息，查找-->
-                <!-- <el-input v-model="input" placeholder="Please input" /> -->
-                link: {{ invideLink }}
-                <!--通过链接-->
-              </span>
-              <template #footer>
-                <span class="dialog-footer">
-                  <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                  <el-button type="primary" @click="centerDialogVisible = false">
-                    Confirm
-                  </el-button>
-                </span>
-              </template>
-            </el-dialog>
+<!--            <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>-->
+<!--              <span>-->
+<!--                &lt;!&ndash;输入信息，查找&ndash;&gt;-->
+<!--                &lt;!&ndash; <el-input v-model="input" placeholder="Please input" /> &ndash;&gt;-->
+<!--                link: {{ invideLink }}-->
+<!--                &lt;!&ndash;通过链接&ndash;&gt;-->
+<!--              </span>-->
+<!--              <template #footer>-->
+<!--                <span class="dialog-footer">-->
+<!--                  <el-button @click="centerDialogVisible = false">Cancel</el-button>-->
+<!--                  <el-button type="primary" @click="centerDialogVisible = false">-->
+<!--                    Confirm-->
+<!--                  </el-button>-->
+<!--                </span>-->
+<!--              </template>-->
+<!--            </el-dialog>-->
             <!--团队信息结束-->
 
             <el-row style="margin-top:40px;margin-bottom: 30px;">
@@ -225,6 +228,7 @@ import {
   MoreFilled,
   More,
 } from '@element-plus/icons-vue'
+import InviteMemberButton from "@/components/InviteMemberButton.vue";
 /*侧栏*/
 
 /*切换团队*/
