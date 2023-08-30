@@ -238,7 +238,7 @@ const setPrototypeName = (value) => {
         .select-size {
           height: 100%;
           width: 70%;
-          padding-right: 5%;
+          margin-right: 5%;
           display: flex;
           justify-content: center;
           align-items: center
