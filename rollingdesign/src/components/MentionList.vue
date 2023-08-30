@@ -22,7 +22,7 @@
 import qs from 'qs'
 import { authStore } from "../store/index.js"
 import { UserFilled } from '@element-plus/icons-vue'
-import { useSocketStore } from '../stores/useSocketStore'
+import { useSocketStore } from '../store/useSocketStore'
 // import { useRoute } from 'vue-router'
 
 const socketStore = useSocketStore()

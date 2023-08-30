@@ -1,6 +1,7 @@
 <script setup>
 import {ref, watch} from "vue";
 import './widgetTypeConfig.scss'
+import ConfigColor from "@/components/prototype/left/configDetail/ConfigColor.vue";
 
 const props = defineProps([
   'currentElement'
@@ -43,6 +44,12 @@ const changeRectStrokeColor = (value) => {
 
 <template>
   <div class="config-outer">
+    <div class="config-box">
+      <div class="config-title">
+        颜色
+      </div>
+      <ConfigColor class="config-setter" :current-element="currentRect"/>
+    </div>
     <div class="config-box">
       <div class="config-title">
         圆角

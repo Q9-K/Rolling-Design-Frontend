@@ -284,9 +284,12 @@ const fetchUserData = () => {
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         user.userId = response.data.user_info.id;
         user.name = response.data.user_info.username;
+        localStorage.setItem('username', user.name);
         user.nickName = response.data.user_info.nickname;
-        nickNameConfigInput.value=user.nickName;
-        user.userAvatar = response.data.user_info.avatar_url;   //这是头像
+        nickNameConfigInput.value = user.nickName;
+        user.userAvatar = response.data.user_info.avatar_url;
+        localStorage.setItem('userAvatar', user.userAvatar)  //这是头像
+        console.log("🚀 ~ file: Header.vue:291 ~ .then ~ authStore().userAvatar:", authStore().userAvatar)
         user.email = response.data.user_info.email;
         return;
       }
@@ -362,8 +365,8 @@ const pwdConfigMethod = () => {
     ElMessage.warning('请输入密码');
     return;
   }
-  axios.post('http://www.aamofe.top/api/user/update_info/',  
-  qs.stringify({ password: pwdConfigInput.value }), { headers: { Authorization: authStore().token } })
+  axios.post('http://www.aamofe.top/api/user/update_info/',
+    qs.stringify({ password: pwdConfigInput.value }), { headers: { Authorization: authStore().token } })
     .then(res => {
       // 处理响应数据
       console.log(formData);

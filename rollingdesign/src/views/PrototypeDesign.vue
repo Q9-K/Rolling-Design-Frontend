@@ -79,10 +79,10 @@ onMounted(() => {
           else {
             stage = new Konva.default.Stage({
               container: 'canvasContainer',
-              width: 950.4,
-              // width: 1920,
-              height: 534.6,
-              // height: 1080
+              // width: 950.4,
+              // height: 534.6,
+              width: 1920,
+              height: 1080,
             });
 
             const bgLayer = new Konva.default.Layer();
@@ -195,21 +195,6 @@ onMounted(() => {
         }
       })
   }
-
-  /*
-  const bgLayer = new Konva.default.Layer();
-  stage.add(bgLayer);
-
-  // 创建一个背景矩形
-  const backgroundRect = new Konva.default.Rect({
-    width: stage.width(),
-    height: stage.height(),
-    fill: 'white', // 设置背景颜色
-  });
-  bgLayer.add(backgroundRect);
-
-   */
-
 
 })
 
@@ -510,9 +495,6 @@ const setGraphSize = ({ width, height }) => {
       <div class="middle-draw-outer">
         <div class="middle-draw">
           <div class="contain-outer">
-            <!--
-            <Grid style="width: 76%; height: 100%" />
-            -->
             <div class="canvasContainer" id="canvasContainer">
             </div>
           </div>
@@ -545,26 +527,21 @@ const setGraphSize = ({ width, height }) => {
   display: flex;
   flex-wrap: nowrap;
   background-color: #f8f8f8;
-
   .left-bar-outer {
     height: 100%;
     width: 20%;
   }
-
   .middle-and-bottom {
     height: 100%;
     width: 80%;
-
     .middle-draw-outer {
       width: 100%;
       height: 100%;
-
       .middle-draw {
         width: 100%;
         height: 100%;
         display: flex;
         flex-wrap: nowrap;
-
         .contain-outer {
           height: 100%;
           width: 95%;
@@ -572,13 +549,14 @@ const setGraphSize = ({ width, height }) => {
           justify-content: center;
           align-items: center;
           padding: 5px;
-
           .canvasContainer {
             border-radius: 5px;
             background-color: white;
+            max-width: 950.4px;
+            max-height: 534.6px;
+            overflow: auto;
           }
         }
-
         .tool-outer {
           height: 100%;
           width: 5%;

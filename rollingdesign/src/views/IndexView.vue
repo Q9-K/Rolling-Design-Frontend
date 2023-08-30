@@ -196,7 +196,7 @@ import { useRoute } from 'vue-router';
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
 import { reactive, toRefs } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ElMessage, ElMessageBox, ElNotification} from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
@@ -449,29 +449,43 @@ const getInviteLink = () => {
 }
 
 const copyLink = () => {
-  // 创建 Clipboard 实例，指定要复制的文本
-  const clipboard = new Clipboard('.copy-button', {
-    text: () => inviteLink.value,
-  });
+  console.log("can u see me")
 
-  // 复制成功时的处理
-  clipboard.on('success', (e) => {
-    console.log('复制成功', e);
-    e.clearSelection(); // 清除选中状态
-    clipboard.destroy(); // 销毁 clipboard 实例
-  });
+  navigator.clipboard.writeText(inviteLink.value)
 
-  // 复制失败时的处理
-  clipboard.on('error', (e) => {
-    console.error('复制失败', e);
-    clipboard.destroy(); // 销毁 clipboard 实例
-  });
+  // popper.value.hide()
+  // console.log(popper.value)
 
-  // 触发点击事件，开始复制
-  clipboard.onClick({
-    // 触发点击事件的元素，这里使用按钮
-    delegateTarget: () => $refs.copyButton,
-  });
+  ElNotification({
+    title: 'Success',
+    message: '复制成功',
+    type: 'success',
+    duration: 1000
+  })
+
+  // // 创建 Clipboard 实例，指定要复制的文本
+  // const clipboard = new Clipboard('.copy-button', {
+  //   text: () => inviteLink.value,
+  // });
+  //
+  // // 复制成功时的处理
+  // clipboard.on('success', (e) => {
+  //   console.log('复制成功', e);
+  //   e.clearSelection(); // 清除选中状态
+  //   clipboard.destroy(); // 销毁 clipboard 实例
+  // });
+  //
+  // // 复制失败时的处理
+  // clipboard.on('error', (e) => {
+  //   console.error('复制失败', e);
+  //   clipboard.destroy(); // 销毁 clipboard 实例
+  // });
+  //
+  // // 触发点击事件，开始复制
+  // clipboard.onClick({
+  //   // 触发点击事件的元素，这里使用按钮
+  //   delegateTarget: () => $refs.copyButton,
+  // });
 }
 
 const highlightRow = (index) => {

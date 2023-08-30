@@ -256,6 +256,7 @@ const login = () => {
         localStorage.setItem('token', res.data.user_info.token);
         localStorage.setItem('isLogin', true);
         localStorage.setItem('userId', res.data.user_info.user_id);
+        // localStorage.setItem('userAvatar', res.data.user_info.avatar_url)
         //id
         userStore.userId = res.data.user_info.user_id;
         //token
