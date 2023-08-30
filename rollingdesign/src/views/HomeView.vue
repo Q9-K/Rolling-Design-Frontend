@@ -10,29 +10,22 @@
 
             <img alt="web logo" src="@/assets/logo.svg" style=";margin-right: 30px;height:100px;">
 
-            <span style="margin-right:30px">
+            <span style="margin-right:30px" @click="jumpTo('index')">
               主页
             </span>
-            <span style="margin-right:30px">
-              草稿箱
-            </span>
-            <span style="margin-right:30px">
+            <span style="margin-right:30px" @click="jumpTo('teamPeople')">
               团队管理
             </span>
-            <span style="margin-right:30px">
+            <span style="margin-right:30px" @click="jumpTo('project')">
               项目
             </span>
-            <span>
+            <span @click="jumpTo('chat')">
               消息中心
             </span>
-            <!-- <div style="display: flex;"> -->
-              
-              <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
-              <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
-            <!-- </div> -->
-              
-            <!-- <a href=" " target="_blank">备案号：</a>
-        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
+
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="jumpTo('index')">进入工作区</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
           </div>
 
           <div>
@@ -59,13 +52,10 @@
             </span>
 
             <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
-            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
-            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
-
-
-            <!-- <a href=" " target="_blank">备案号：</a>
-          <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
-
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="loginDialog = true">登录</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large"
+              @click="registerDialog = true">注册</el-button>
 
             <!--登录-->
             <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
@@ -178,35 +168,7 @@ import { reactive, toRefs } from 'vue'
 import axios from 'axios'
 // const axios = inject('axios')
 
-
-// const incrementCount = () => {
-//   authStore.increment() // 调用 store 中的 mutation
-// }
-/*----------*/
 const router = useRouter()
-
-/**/
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
 
 /*main*/
 const loginDialog = ref(false)
@@ -223,8 +185,6 @@ const registerPwdConfrimInput = ref('')
 
 /*注册*/
 const register = () => {
-  // console.log(registerEmailInput);
-
   if (!(registerEmailInput.value && registerNameInput.value && registerPwdInput.value && registerPwdConfrimInput.value)) {
     console.log('不能为空');
     ElMessage.error('请输入所有信息，不能为空');
@@ -461,5 +421,4 @@ onMounted(() => {
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
-}
-</style>
+}</style>

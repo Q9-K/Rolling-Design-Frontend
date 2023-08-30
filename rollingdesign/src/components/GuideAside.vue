@@ -14,7 +14,7 @@
           <el-row class="block" style="display: flex;justify-content: space-between;align-items: center;">
             <div style="display: flex;align-items: center;">
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span v-if="authStore().isLogin" style="font-size:larger;font-weight: 800;">{{ authStore().teamName
+              <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name
               }}</span>
             </div>
             <el-icon class="el-icon--right" style="margin-right:7%" ref="btnSwiTeam" v-click-outside="teamOutside">
@@ -23,6 +23,7 @@
           </el-row>
         </div>
 
+        <!--切换团队-->
         <el-popover ref="popoverTeam" :virtual-ref="btnSwiTeam" trigger="click" title="" virtual-triggering width="300px"
           placement="left">
           <div style="margin-left:10px;">
@@ -95,14 +96,6 @@
           <span>回收站</span>
         </el-menu-item>
 
-        <!--消息中心-->
-        <el-menu-item index="message" @click="jumpTo('message')">
-          <el-icon>
-            <Comment />
-          </el-icon>
-          <span>消息中心</span>
-        </el-menu-item>
-
         <!--新建团队-->
         <el-menu-item @click="addTeamVisible = true">
           <el-icon>
@@ -153,8 +146,6 @@
         </el-dialog>
 
       </el-menu>
-
-
     </el-col>
   </div>
 </template>
@@ -190,7 +181,7 @@ const popoverTeam = ref()
 /*新建团队*/
 const addTeamVisible = ref(false)
 const addTeamNameInput = ref('')
-const addTeamIntroductionInput = ref('')
+// const addTeamIntroductionInput = ref('')
 
 const guideIndex = ref();//侧栏导航高亮标识！！
 const highlightedIndex=ref(-1);

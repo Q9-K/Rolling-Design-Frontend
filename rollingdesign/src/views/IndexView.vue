@@ -41,7 +41,6 @@
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
                     </div>
-
                     <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
                   </el-popover>
                 </div>
@@ -61,62 +60,11 @@
                 </span>
               </template>
             </el-dialog>
-
             <!--团队信息结束-->
 
             <el-row style="margin-top:40px;margin-bottom:30px;">
               <span style="font-size: 23px;font-weight: 900;">主页</span>
             </el-row>
-
-            <!-- <div class="draftFiles" style="margin-top:20px">
-              <el-row style="margin-top:20px;margin-bottom: 30px;">
-                <el-col :span="24">
-                  <el-row class="blockHeader" style="display:flex">
-                    <el-col :span="14" class="blockTitle"
-                      style="font-size:large;font-weight: 600;text-align: left;">草稿箱</el-col>
-                    <el-col :span="10" class="rightTitle" style="">查看更多</el-col>
-                  </el-row>
-                </el-col>
-
-
-                <el-col :span="12">
-                  <div style="margin-left:24px">
-                    <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                      原型
-                    </div>
-                    <el-col :span="4">
-                      <div style="width:100%;">
-                        <div>
-                          <img src="@/assets/projectImage.png" style="width:170px;height:120px" />
-                        </div>
-                        <div style="text-align: left;font-size: 14px;margin-bottom: 14px;">
-                          文档名字
-                        </div>
-                      </div>
-                    </el-col>
-                  </div>
-                </el-col>
-
-                <el-divider direction="vertical" style="height: 170px;"></el-divider>
-                <el-col :span="11">
-                  <div style="margin-left:24px">
-                    <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                      文档
-                    </div>
-                    <el-col :span="4">
-                      <div style="width:100%;">
-                        <div>
-                          <img src="@/assets/projectImage.png" style="width:170px;height:120px" />
-                        </div>
-                        <div>
-                          文档名字
-                        </div>
-                      </div>
-                    </el-col>
-                  </div>
-                </el-col>
-              </el-row>
-            </div> -->
 
             <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">项目</span>
@@ -138,7 +86,7 @@
             <div style="margin-top:20px">
               <el-row style="margin-top:40px;margin-bottom: 30px;">
                 <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
-                  项目
+                  项目（{{projectNum }}）
                 </span>
               </el-row>
               <!--项目封面图-->

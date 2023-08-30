@@ -37,138 +37,148 @@
               <span style="font-size:large;font-weight: 500;">{{ nowProject.name }}</span>
             </el-row>
 
-            
-            <!--原型部分-->
-            <!--展开状态（此为默认状态）-->
-            <div v-if="designShow">
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;">
-                  <el-icon @click="designShow = false">
-                    <CaretBottom />
-                  </el-icon>原型（{{ nowProject.designNum }}）
-                </span>
-              </el-row>
-
-              <!--原型封面图-->
-              <!--如果有原型-->
-              <el-row v-if="nowProject.designNum">
-                <div class="designBlock" v-for="(item, index) in designList" :key="index">
-                  <div style="width:100%">
-                    <img @click="jumpToDesign(item.id)" class="round designImg" src="@/assets/projectImage.png"
-                      style="width:90%;height:150px" />
-                  </div>
-                  <div style="display:flex;justify-content: space-between;width:90%">
-                    <span class="designName" style="padding-left:4px;display: flex;">
-                      {{ item.title }}
+            <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+              <el-tab-pane label="原型" name="designs">
+                <!--原型部分-->
+                <!--展开状态（此为默认状态）-->
+                <div v-if="designShow">
+                  <el-row style="margin-top:40px;margin-bottom: 30px;">
+                    <span style="font-size:large;font-weight: 500;">
+                      <el-icon @click="designShow = false">
+                        <CaretBottom />
+                      </el-icon>原型（{{ nowProject.designNum }}）
                     </span>
-                    <!-- <span class="rightContent">
-                      <el-icon >
-                        <More />
-                      </el-icon>
-                    </span> -->
-                  </div>
+                  </el-row>
 
-                </div>
-              </el-row>
-              <!--如果没有原型-->
-              <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-              </el-row>
-            </div>
-            <!--如果被折叠-->
-            <div v-else>
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="designShow = true">
-                  <el-icon>
-                    <CaretRight />
-                  </el-icon>原型
-                </span>
-              </el-row>
-            </div>
-
-            <!--文档部分-->
-            <!--展开状态（此为默认状态）-->
-            <div v-if="docShow">
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;">
-                  <el-icon @click="docShow = false">
-                    <CaretBottom />
-                  </el-icon>文档（{{ nowProject.docNum }}）
-                </span>
-              </el-row>
-
-              <!--如果有文档-->
-              <el-row v-if="nowProject.docNum">
-                <div class="designBlock" v-for="(item, index) in docList" :key="index">
-                  <div style="width:100%">
-                    <img @click="jumpToDoc(item.id)" class="round designImg" src="@/assets/projectImage.png"
-                      style="width:90%;height:150px" />
-                  </div>
-                  <div style="display:flex;justify-content: space-between;width:90%">
-                    <span class="designName" style="padding-left:4px;display: flex;" @click="jumpToDoc(item.id)">
-                      {{ item.title }}
-                    </span>
-                    <span class="rightContent">
-
-                      <el-popover placement="bottom" :width="100" trigger="click">
-                        <template #reference>
+                  <!--原型封面图-->
+                  <!--如果有原型-->
+                  <el-row v-if="nowProject.designNum">
+                    <div class="designBlock" v-for="(item, index) in designList" :key="index">
+                      <div style="width:100%">
+                        <img @click="jumpToDesign(item.id)" class="round designImg" src="@/assets/projectImage.png"
+                          style="width:90%;height:150px" />
+                      </div>
+                      <div style="display:flex;justify-content: space-between;width:90%">
+                        <span class="designName" style="padding-left:4px;display: flex;">
+                          {{ item.title }}
+                        </span>
+                        <span class="rightContent">
                           <el-icon>
                             <More />
                           </el-icon>
-                        </template>
-                        <div @mouseover="highlightRow(1)" @mouseleave="resetRow(1)"
-                          :class="{ 'highlighted-row': highlightedIndex === 1 }" class="in-center round-choice"
-                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="jumpToDoc(item.id)">
-                          <el-icon style="margin-right:3px;">
-                            <FolderOpened />
-                          </el-icon>打开
-                        </div>
-                        <div @mouseover="highlightRow(2)" @mouseleave="resetRow(2)"
-                          :class="{ 'highlighted-row': highlightedIndex === 2 }" class="in-center round-choice"
-                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="renameDocDialog = true"><el-icon
-                            style="margin-right:3px;">
-                            <EditPen />
-                          </el-icon>重命名</div>
-                        <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
-                          :class="{ 'highlighted-row': highlightedIndex === 3 }" class="in-center round-choice"
-                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="deleteDoc(item.id)">
-                          <el-icon style="margin-right:3px;">
-                            <FolderDelete />
-                          </el-icon>删除
-                        </div>
+                        </span>
+                      </div>
 
-                        <!--重命名-->
-                        <el-dialog v-model="renameDocDialog" title="重命名文档" width="20%" center>
-                          <el-input v-model="renameDocInput" placeholder="请输入名称" />
-                          <template #footer>
-                            <span class="dialog-footer">
-                              <el-button type="primary" @click="renameDoc(index, item.id)">
-                                确认
-                              </el-button>
-                            </span>
-                          </template>
-                        </el-dialog>
-                      </el-popover>
-                    </span>
-                  </div>
+                    </div>
+                  </el-row>
+                  <!--如果没有原型-->
+                  <el-row v-else>
+                    <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
+                  </el-row>
                 </div>
-              </el-row>
-              <!--如果没有文档-->
-              <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-              </el-row>
-            </div>
-            <!--如果被折叠-->
-            <div v-else>
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="docShow = true">
-                  <el-icon>
-                    <CaretRight />
-                  </el-icon>文档（{{ nowProject.docNum }}）
-                </span>
-              </el-row>
-            </div>
+                <!--如果被折叠-->
+                <div v-else>
+                  <el-row style="margin-top:40px;margin-bottom: 30px;">
+                    <span style="font-size:large;font-weight: 500;" @click="designShow = true">
+                      <el-icon>
+                        <CaretRight />
+                      </el-icon>原型（{{ nowProject.designNum }}）
+                    </span>
+                  </el-row>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="文档" name="designs">
+                <!--文档部分-->
+                <!--展开状态（此为默认状态）-->
+                <div v-if="docShow">
+                  <el-row style="margin-top:40px;margin-bottom: 30px;">
+                    <span style="font-size:large;font-weight: 500;">
+                      <el-icon @click="docShow = false">
+                        <CaretBottom />
+                      </el-icon>文档（{{ nowProject.docNum }}）
+                    </span>
+                  </el-row>
 
+                  <!--如果有文档-->
+                  <el-row v-if="nowProject.docNum">
+                    <div class="designBlock" v-for="(item, index) in docList" :key="index">
+                      <div style="width:100%">
+                        <img @click="jumpToDoc(item.id)" class="round designImg" src="@/assets/projectImage.png"
+                          style="width:90%;height:150px" />
+                      </div>
+                      <div style="display:flex;justify-content: space-between;width:90%">
+                        <span class="designName" style="padding-left:4px;display: flex;" @click="jumpToDoc(item.id)">
+                          {{ item.title }}
+                        </span>
+                        <span class="rightContent">
+
+                          <el-popover placement="bottom" :width="100" trigger="click">
+                            <template #reference>
+                              <el-icon>
+                                <More />
+                              </el-icon>
+                            </template>
+                            <div @mouseover="highlightRow(1)" @mouseleave="resetRow(1)"
+                              :class="{ 'highlighted-row': highlightedIndex === 1 }" class="in-center round-choice"
+                              style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="jumpToDoc(item.id)">
+                              <el-icon style="margin-right:3px;">
+                                <FolderOpened />
+                              </el-icon>打开
+                            </div>
+                            <div @mouseover="highlightRow(2)" @mouseleave="resetRow(2)"
+                              :class="{ 'highlighted-row': highlightedIndex === 2 }" class="in-center round-choice"
+                              style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="renameDocDialog = true"><el-icon
+                                style="margin-right:3px;">
+                                <EditPen />
+                              </el-icon>重命名</div>
+                            <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
+                              :class="{ 'highlighted-row': highlightedIndex === 3 }" class="in-center round-choice"
+                              style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="deleteDoc(item.id)">
+                              <el-icon style="margin-right:3px;">
+                                <FolderDelete />
+                              </el-icon>删除
+                            </div>
+
+                            <!--重命名-->
+                            <el-dialog v-model="renameDocDialog" title="重命名文档" width="20%" center>
+                              <el-input v-model="renameDocInput" placeholder="请输入名称" />
+                              <template #footer>
+                                <span class="dialog-footer">
+                                  <el-button type="primary" @click="renameDoc(index, item.id)">
+                                    确认
+                                  </el-button>
+                                </span>
+                              </template>
+                            </el-dialog>
+                          </el-popover>
+
+                        </span>
+                      </div>
+                    </div>
+                  </el-row>
+                  <!--如果没有文档-->
+                  <el-row v-else>
+                    <!-- <img class="round" src="@/assets/noFile.png" style="width: 100%;" /> -->
+                    <el-empty description="该项目暂无文档" style="width: 100%;">
+                      <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
+                    </el-empty>
+                  </el-row>
+                </div>
+                <!--如果被折叠-->
+                <div v-else>
+                  <el-row style="margin-top:40px;margin-bottom: 30px;">
+                    <span style="font-size:large;font-weight: 500;" @click="docShow = true">
+                      <el-icon>
+                        <CaretRight />
+                      </el-icon>文档（{{ nowProject.docNum }}）
+                    </span>
+                  </el-row>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="最近删除" name="delete">
+                Config
+              </el-tab-pane>
+            </el-tabs>
           </div>
         </el-main>
       </el-container>
@@ -201,6 +211,7 @@ import {
   FolderOpened,
 } from '@element-plus/icons-vue'
 const route = useRoute()
+const activeName = ref('files')
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -236,6 +247,14 @@ const renameDocDialog = ref(false);
 const renameDocBlock = ref([]);//点击其他地方关闭
 const renameDocInput = ref([]);
 
+const delDocList = ref([]);
+const delDocShow = ref(true);
+const delDocNum = ref('');
+
+const delDesignList = ref([]);
+const delDesignShow = ref(true);
+const delDesignNum = ref('');
+
 const nowTeam = reactive({
   teamId: '',
   name: '',
@@ -259,6 +278,8 @@ onMounted(() => {
   fetchNowProject();
   fetchDesignListData();
   fetchDocListData();
+  // fetchDelDesignListData();
+  // fetchDelDocListData();
 })
 
 const fetchNowTeam = () => {
@@ -311,12 +332,12 @@ const fetchNowProject = () => {
 //原型
 const fetchDesignListData = () => {
   let Headers = { 'Authorization': authStore().token };
-  axios.get('http://www.aamofe.top/api/document/all_prototype/' + route.params.id + '/', { headers: Headers })
+  axios.get('http://www.aamofe.top/api/document/all_file/', { params: { file_type: 'prototype', project_id: nowProject.projectId }, headers: Headers })
     .then((response) => {
       console.log(response);
 
-      if (response.data.errno == 0) {  //所有团队信息
-        response.data.prototype.forEach((design, index) => {
+      if (response.data.errno == 0) {
+        response.data.files.forEach((design, index) => {
           designList.value.push(design);
         })
         designList.value.pop();
@@ -333,18 +354,16 @@ const fetchDesignListData = () => {
 //文档
 const fetchDocListData = () => {
   let Headers = { 'Authorization': authStore().token };
-  axios.get('http://www.aamofe.top/api/document/all_documents/' + route.params.id + '/', { headers: Headers })
+  axios.get('http://www.aamofe.top/api/document/all_file/', { params: { file_type: 'document', project_id: nowProject.projectId }, headers: Headers })
     .then((response) => {
       console.log(response);
 
-      if (response.data.errno == 0) {  //所有团队信息
-        response.data.documents.forEach((doc, index) => {
-          //op字段为当前登录者可以对该
-          // if()
+      if (response.data.errno == 0) {
+        response.data.file.forEach((doc, index) => {
           docList.value.push(doc);/*【这样写】*/
         })
         docList.value.pop();
-        console.log(docList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+        console.log(docList.value);
       }
       else {
         ElMessage.warning(response.data.msg);
@@ -361,7 +380,7 @@ const newDesign = () => {
   //   return;
   // }
 
-  axios.post('http://www.aamofe.top/api/document/create_prototype/' + nowProject.projectId + '/', qs.stringify({ title: '默认原型' }), {
+  axios.post('http://www.aamofe.top/api/document/create/', qs.stringify({ file_type: 'prototype', project_id: nowProject.projectId, title: '默认原型' }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
@@ -389,8 +408,8 @@ const newDesign = () => {
 }
 
 const newDoc = () => {
-  axios.post('http://www.aamofe.top/api/document/create_document/' + nowProject.projectId + '/', qs.stringify(
-    { title: '默认文档' }
+  axios.post('http://www.aamofe.top/api/document/create/', qs.stringify(
+    { file_type: 'document', project_id: nowProject.projectId, title: '默认文档' }
   ),
     {
       headers: {
@@ -403,7 +422,7 @@ const newDoc = () => {
 
       if (res.data.errno == 0)//成功
       {
-        ElMessage.success(res.data.msg);
+        // ElMessage.success(res.data.msg);
         //进入文档
         jumpToDoc(res.data.document.id);
         return;
@@ -418,7 +437,7 @@ const newDoc = () => {
       console.error(error);
     });
 }
-
+//【】
 const renameDesign = (index, designId) => {
   if (!(renameDesignInput.value)) {
     console.log('不能为空');
@@ -455,7 +474,7 @@ const renameDesign = (index, designId) => {
       console.error(error);
     });
 }
-
+//【】
 const renameDoc = (docId) => {
   if (!(renameDocInput.value)) {
     console.log('不能为空');
@@ -492,35 +511,222 @@ const renameDoc = (docId) => {
   //     console.error(error);
   //   });
 }
+//0代表临时删除
 const deleteDoc = (docId) => {
   console.log(docId);
-  // axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: docId }), {
-  //   headers: { Authorization: authStore().token }
-  // })
-  //   .then(res => {
-  //     // 处理响应数据
-  //     console.log(res);
-  //     console.log(projectId);
+  axios.post('http://www.aamofe.top/api/document/delete', qs.stringify({ file_type: 'document', file_id: docId, project_id: nowProject.projectId, forever: 0 }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
 
-  //     if (res.data.errno == 0)//成功
-  //     {
-  //       ElMessage.success(res.data.msg);
-  //       //把项目从projectList里删除
-  //       if (index >= 0 && index < projectList.value.length) {
-  //         projectList.value.splice(index, 1);
-  //       }//【】
-  //     }
-  //     else {//失败
-  //       console.log(projectId);
-  //       ElMessage.error(res.data.msg);
-  //       return;
-  //     }
-  //   })
-  //   .catch(error => {
-  //     // 处理请求错误
-  //     console.error(error);
-  //   });
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        if (index >= 0 && index < docList.value.length) {
+          docList.value.splice(index, 1);
+        }//【】
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
+
+const deleteDesign = (designId) => {
+  axios.post('http://www.aamofe.top/api/document/delete', qs.stringify({ file_type: 'prototype', file_id: designId, project_id: nowProject.projectId, forever: 0 }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        if (index >= 0 && index < designList.value.length) {
+          designList.value.splice(index, 1);
+        }//【】
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+//最近删除文件中
+//最近删除中的内容【】。看看最后一个是num吗？
+// const fetchDelDocListData = () => {
+//   let Headers = { 'Authorization': authStore().token };
+//   axios.get('http://www.aamofe.top/api/document/all_deleted/' + route.params.id + '/', { headers: Headers })
+//     .then((response) => {
+//       console.log(response);
+
+//       if (response.data.errno == 0) {  //所有团队信息
+//         response.data.documents.forEach((doc, index) => {
+//           delDocList.value.push(doc);/*【这样写】*/
+//         })
+//         delDocList.value.pop();
+//         console.log(delDocList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+//       }
+//       else {
+//         ElMessage.warning(response.data.msg);
+//       }
+//     }).catch(error => {
+//       console.log(error);
+//     })
+// }
+// //【】
+// const fetchDelDesignListData = () => {
+//   let Headers = { 'Authorization': authStore().token };
+//   axios.get('http://www.aamofe.top/api/document/all_deleted_document/' + route.params.id + '/', { headers: Headers })
+//     .then((response) => {
+//       console.log(response);
+
+//       if (response.data.errno == 0) {  //所有团队信息
+//         response.data.documents.forEach((doc, index) => {
+//           //op字段为当前登录者可以对该
+//           // if()
+//           delDesignList.value.push(doc);/*【这样写】*/
+//         })
+//         delDesignList.value.pop();
+//         console.log(delDesignList.value);//memberList.value是一个数组。用的时候可以直接foeEach memberList
+//       }
+//       else {
+//         ElMessage.warning(response.data.msg);
+//       }
+//     }).catch(error => {
+//       console.log(error);
+//     })
+// }
+//【】可能有问题
+const recoverDoc = (index, docId) => {
+  console.log(docId);
+  console.log(index);
+  axios.post('http://www.aamofe.top/api/document/restore/', qs.stringify({ file_type: 'document', file_id: docId, project_id: nowProject.projectId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //放回文档中
+        // docList.value.push(delDocList.value[index]);
+        fetchDocListData();
+        //把项目从delDocList里删除
+        // if (index >= 0 && index < delDocList.value.length) {
+        //   delDocList.value.splice(index, 1);
+        // }
+        fetchDelDocListData();
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+const recoverDesign = (designId) => {
+  axios.post('http://www.aamofe.top/api/document/restore', qs.stringify({ file_type: 'prototype', file_id: designId, project_id: nowProject.projectId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        fetchDelDesignListData();
+        fetchDesignListData();
+        //把项目从projectList里删除
+        // if (index >= 0 && index < designList.value.length) {
+        //   designList.value.splice(index, 1);
+        // }//【】
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+//永久删除
+const deleteDocForever = (docId) => {
+  console.log(docId);
+  axios.post('http://www.aamofe.top/api/team/delete', qs.stringify({ file_type: 'document', file_id: docId, project_id: nowProject.projectId, forever: 1 }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+
+        delDocList.value = [];
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+const deleteDesignForever = (designId) => {
+  axios.post('http://www.aamofe.top/api/team/delete', qs.stringify({ file_type: 'prototype', file_id: designId, project_id: nowProject.projectId, forever: 1 }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        delDocList.value = [];
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
 
 const highlightRow = (index) => {
   highlightedIndex.value = index;
@@ -530,16 +736,6 @@ const resetRow = (index) => {
   highlightedIndex.value = -1;
 };
 
-// 手动控制弹出框的可见状态
-const togglePopover = () => {
-  console.group(togglePopover.value);
-  isPopoverVisible.value = true;
-  console.group(togglePopover.value)
-};
-
-const closePopover = () => {
-  isPopoverVisible.value = false;
-};
 </script>
 
 <style scoped>
@@ -612,28 +808,5 @@ const closePopover = () => {
   width: 178px;
   height: 178px;
   display: block;
-}
-</style>
-
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
 }
 </style>

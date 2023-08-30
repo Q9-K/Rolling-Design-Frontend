@@ -75,7 +75,7 @@
             <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;padding-left: 20px;">
               <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入昵称</el-col>
               <el-col :span="24">
-                <el-input v-model="nickNameConfigInput" placeholder="请输入昵称" />
+                <el-input v-model="nickNameConfigInput" @keyup.enter="nickNameConfig = false; nickNameConfigMethod()" placeholder="请输入昵称" />
               </el-col>
             </el-row>
 
