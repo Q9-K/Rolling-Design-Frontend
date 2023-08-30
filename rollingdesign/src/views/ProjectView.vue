@@ -87,7 +87,8 @@
                   </el-row>
                 </div>
               </el-tab-pane>
-              <el-tab-pane label="文档" name="designs">
+
+              <el-tab-pane label="文档" name="documents">
                 <!--文档部分-->
                 <!--展开状态（此为默认状态）-->
                 <div v-if="docShow">
@@ -200,6 +201,7 @@ import { ClickOutside as vClickOutside } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import { reactive, toRefs } from 'vue'
+import { TabsPaneContext } from 'element-plus'//【】
 import router from '@/router';
 import {
   CaretBottom,
@@ -211,7 +213,7 @@ import {
   FolderOpened,
 } from '@element-plus/icons-vue'
 const route = useRoute()
-const activeName = ref('files')
+const activeName = ref('designs')
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -726,7 +728,9 @@ const deleteDesignForever = (designId) => {
       console.error(error);
     });
 }
-
+const handleClick = (tab, event) => {
+  // console.log(tab, event)
+}
 
 const highlightRow = (index) => {
   highlightedIndex.value = index;
@@ -803,10 +807,10 @@ const resetRow = (index) => {
   /* 设置边框圆角半径，根据需要调整 */
 }
 
-/*上传团队封面*/
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+.demo-tabs > .el-tabs__title {
+  padding: 32px;
+  color: #6b778c;
+  font-size: 32px;
+  font-weight: 600;
 }
 </style>

@@ -90,18 +90,18 @@ const routes = [
     }
   },
   // 消息
-  {
-    path: '/message',
-    name: 'message',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
-    meta: {
-      index: 'message',
-      requireAuth: true
-    }
-  },
+  // {
+  //   path: '/message',
+  //   name: 'message',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
+  //   meta: {
+  //     index: 'message',
+  //     requireAuth: true
+  //   }
+  // },
   {
     path: '/about',
     name: 'about',
