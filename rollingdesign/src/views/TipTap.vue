@@ -5,74 +5,76 @@
 -->
 <template>
     <div class="box2">
-        <div class=" header">
-            <div class="actions1">
-                <div class="backToCenter">
-                    <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
-                        <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
+        <template v-if="dataLoaded">
+            <div class="header">
+                <div class="actions1">
+                    <div class="backToCenter">
+                        <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
+                            <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
+                        </el-tooltip>
+                    </div>
+                    <!-- <div class="select"></div> -->
+                </div>
+                <div class="fileinfo">
+                    <Title v-model="title" @keyup.enter="changeTitle(title)"></Title>
+                    <el-tooltip :visible="saveStatus" class="box-item" content="Top Left prompts info" placement="top-start"
+                        raw-content>
+                        <el-select>
+                            <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
+                 box-sizing: border-box; " @click="showFileHistory()">Last Modified: {{ lastEditTime }}</span>
+                        </el-select>
                     </el-tooltip>
                 </div>
-                <!-- <div class="select"></div> -->
-            </div>
-            <div class="fileinfo">
-                <Title v-model="title" @keyup.enter="changeTitle(title)"></Title>
-                <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
-                 box-sizing: border-box; ">Last Modified: {{ lastEditTime }}</span>
-            </div>
-            <div class="actions2">
-                <Button @click="downloadFile()">
-                    下载
-                </Button>
-                <Button @click="updateFileAndInform()">
-                    同步
-                </Button>
-                <el-popover :width="300" trigger="click" ref='popper'
-                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                    <template #reference>
-                        <Button @click="generateLink()">
-                            分享
-                        </Button>
-                        <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
-                    </template>
-                    <template #default>
-                        <div disabled style="text-align: center;">
-                            <el-input v-model="link" disabled></el-input>
-                            <div style="color: #d2d3d7;text-align: left;
+                <div class="actions2">
+                    <el-button @click="downloadFile()" :disabled="!editAble">
+                        下载
+                    </el-button>
+                    <el-button @click="updateFileAndInform()" :disabled="!editAble">
+                        同步
+                    </el-button>
+                    <el-popover :width="300" trigger="click" ref='popper'
+                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <el-button @click="generateLink()">
+                                分享
+                            </el-button>
+                            <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
+                        </template>
+                        <template #default>
+                            <div disabled style="text-align: center;">
+                                <el-input v-model="link" disabled></el-input>
+                                <div style="color: #d2d3d7;text-align: left;
                             margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
+                                </div>
                             </div>
-                        </div>
-                        <button @click="copyLink" class="copyLink"
-                            style="text-align: center; 
+                            <button @click="copyLink" class="copyLink"
+                                style="text-align: center; 
                             background-color: #3671ff;
                             outline: none;
                         margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
-                    </template>
-                </el-popover>
-            </div>
-            <div class="userAvatars">
-                <div class="team_members">
-                    <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members" :key="item.id"></el-avatar>
+                        </template>
+                    </el-popover>
                 </div>
-                <div class="selfAvatars">
-                    <template v-if="authStore().isLogin">
-                        <el-avatar :size="40" :src='authStore().userAvatar' style="font-size: 30px;"></el-avatar>
+                <div class="userAvatars">
+                    <div class="team_members">
+                        <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members"
+                            :key="item.id"></el-avatar>
+                    </div>
+                    <div class="selfAvatars">
+                        <template v-if="authStore().isLogin">
+                            <el-avatar :size="40" :src='authStore().userAvatar' style="font-size: 30px;"></el-avatar>
 
-                    </template>
-                    <template v-else>
-                        <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
-                    </template>
+                        </template>
+                        <template v-else>
+                            <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
+                        </template>
+                    </div>
                 </div>
             </div>
-        </div>
-        <template v-if="dataLoaded">
+
             <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
                 placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" />
-        </template>
-        <template v-else>
-            <div>
-                请稍等
-            </div>
+                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" />
         </template>
     </div>
 </template>
@@ -148,52 +150,6 @@ const editAble = ref(true)
 const dataLoaded = ref(false)
 // const lock = ref(false)
 
-const downloadFile = () => {
-    console.info(content.value)
-    const turndownService = new TurndownService()
-    const fileContent = turndownService.turndown(content.value)
-    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${title.value}.md`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-
-}
-
-
-const updateFile = async () => {
-    try {
-        let res = axios.post('/document/save_document/', qs.stringify({
-            content: content.value,
-            document_id: 3,
-            title: title.value,
-        }), {
-            'headers': {
-                'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NTQ4NzMsImlkIjoxfQ.qZECLptaKJv6EJaIdv8GY3pgMPuhB2FrDApPHvx8SsQ'
-            }
-        })
-        ElNotification({
-            title: 'Success',
-            message: '保存成功',
-            type: 'success',
-            duration: 1000
-        })
-        console.log(res.data)
-    } catch (err) {
-        console.error(err)
-    }
-}
-
-
-const updateFileAndInform = async () => {
-    await updateFile()
-}
-
-const changeTitle = async () => {
-    await updateFile()
-}
-
 
 let needToChangeLock = false
 const lastEditTime = ref('')
@@ -247,9 +203,10 @@ onMounted(async () => {
     team_members.value = authStore().team_members
     // console.log('team_members', res.data.members)
     // console.log('锁', res.data.document.is_locked)
-
+    //TODO:修改editAble
     editAble.value = false
-    await nextTick()
+    // await nextTick()
+    // await nextTick()
     dataLoaded.value = true
 
 
@@ -407,9 +364,80 @@ const copyLink = () => {
     })
 }
 
+
+const downloadFile = () => {
+    console.info(content.value)
+    const turndownService = new TurndownService()
+    const fileContent = turndownService.turndown(content.value)
+    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${title.value}.md`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+
+const updateFile = async () => {
+    try {
+        // let res = axios.post('/document/save/', qs.stringify({
+        //     file_type: 'document',
+        //     content: content.value,
+        //     file_id: authStore().userId,
+        //     title: title.value,
+        // }), {
+        //     'headers': {
+        //         'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NTQ4NzMsImlkIjoxfQ.qZECLptaKJv6EJaIdv8GY3pgMPuhB2FrDApPHvx8SsQ'
+        //     }
+        // })
+
+        // console.log(res.data)
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+
+const updateFileAndInform = async () => {
+    await updateFile()
+    ElNotification({
+        title: 'Success',
+        message: '保存成功',
+        type: 'success',
+        duration: 1000
+    })
+}
+
+const changeTitle = async () => {
+    await updateFile()
+    ElNotification({
+        title: 'Success',
+        message: '保存成功',
+        type: 'success',
+        duration: 1000
+    })
+}
+
+
+
+const saveStatus = ref(false)
 const onCreate = ({ editor }) => {
     // editor.isFocused = true
     // console.log(editor)
+}
+
+const showFileHistory = async () => {
+    // let res = await = ()
+}
+
+const onBlur = async ({ editor }) => {
+    if (editAble.value == true) {
+        updateFile()
+        saveStatus.value = true
+        setTimeout(() => {
+            saveStatus.value = false
+        }, 1000);
+    }
 }
 
 </script>
@@ -473,6 +501,14 @@ const onCreate = ({ editor }) => {
             width: 200px;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .userAvatars {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .team_members {}
         }
     }
 }
