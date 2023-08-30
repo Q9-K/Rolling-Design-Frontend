@@ -50,15 +50,13 @@
                 </el-popover>
             </div>
             <div class="userAvatars">
-                <!-- <div v-for="">
-                    {{  }}
-                </div> -->
+                <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members" :key="item.id"></el-avatar>
                 <div class="selfAvatars">
                     <template v-if="authStore().isLogin">
                         <el-avatar :size="40" :icon="UserFilled" style="font-size: 30px;"></el-avatar>
                     </template>
                     <template v-else>
-                        <el-avatar :size="40" style="font-size: 30px;"></el-avatar>
+                        <el-avatar :size="40" style="font-size: 30px; src = "></el-avatar>
                     </template>
                 </div>
             </div>
@@ -126,7 +124,7 @@ import * as Y from 'yjs'
 import Mention from '@tiptap/extension-mention'
 import suggestion from '../utils/suggestion.js'
 import Button from '../components/Button.vue';
-import { useSocketStore } from '../stores/useSocketStore'
+import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
 const socketStore = useSocketStore()
 const axios = inject('axios')
@@ -138,10 +136,6 @@ const provider = new HocuspocusProvider({
     name: 'rolling-cowork-document',
     document: ydoc,
 })
-
-
-
-
 
 const router = useRouter()
 const route = useRoute()
@@ -229,6 +223,7 @@ const beforeunloadHandler = async (e) => {
 //     }
 //     // window.confirm('are you sure to leave?')
 // }
+const team_members = ref('')
 onMounted(async () => {
     let socket = socketStore.socket
     if (socket == null || socket.readyState != 1) {
@@ -257,6 +252,7 @@ onMounted(async () => {
         }
     })
     authStore().team_members = res.data.members
+    team_members.value = authStore().team_members
     // console.log('team_members', res.data.members)
     // console.log('锁', res.data.document.is_locked)
 
@@ -375,7 +371,7 @@ const extensions = [
         provider: provider,
         user: {
             //TODO:通过状态管理获取用户名
-            name: '我是傻逼',
+            name: authStore().userID,
             color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
         },
     }),

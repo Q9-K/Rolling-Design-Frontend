@@ -23,32 +23,13 @@
             <el-row class="block" style="display: flex;align-items: center;">
               <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" />
               <span style="font-size:larger;font-weight: 800;">xxx的团队</span>
+
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-<!--                <el-button type="primary" @click="centerDialogVisible = true; getLink()">邀请成员</el-button>-->
-                <!--
-                TODO now-team
-                -->
-<!--                <InviteMemberButton />-->
+                <!-- <el-button type="primary" @click="centerDialogVisible = true; getLink()">邀请成员</el-button> -->
               </div>
             </el-row>
 
-<!--            <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>-->
-<!--              <span>-->
-<!--                &lt;!&ndash;输入信息，查找&ndash;&gt;-->
-<!--                &lt;!&ndash; <el-input v-model="input" placeholder="Please input" /> &ndash;&gt;-->
-<!--                link: {{ invideLink }}-->
-<!--                &lt;!&ndash;通过链接&ndash;&gt;-->
-<!--              </span>-->
-<!--              <template #footer>-->
-<!--                <span class="dialog-footer">-->
-<!--                  <el-button @click="centerDialogVisible = false">Cancel</el-button>-->
-<!--                  <el-button type="primary" @click="centerDialogVisible = false">-->
-<!--                    Confirm-->
-<!--                  </el-button>-->
-<!--                </span>-->
-<!--              </template>-->
-<!--            </el-dialog>-->
             <!--团队信息结束-->
 
             <el-row style="margin-top:40px;margin-bottom: 30px;">
@@ -77,16 +58,6 @@
                     <span class="designName" style="padding-left:4px;display: flex;">
                       项目名字{{ index }}
                     </span>
-                    <!-- <span class="rightContent">
-                      <el-button ref="projectButtonRef" v-click-outside="projectOut">
-                        click
-                      </el-button>
-                    </span> -->
-                    <!--？？？？-->
-                    <!-- <el-popover ref="projectPopoverRef" :virtual-ref="projectButtonRef" trigger="click" title="With title"
-                      virtual-triggering>
-                      <span> Some content </span>
-                    </el-popover> -->
                   </div>
 
                 </div>
@@ -228,7 +199,6 @@ import {
   MoreFilled,
   More,
 } from '@element-plus/icons-vue'
-import InviteMemberButton from "@/components/InviteMemberButton.vue";
 /*侧栏*/
 
 /*切换团队*/
@@ -272,15 +242,7 @@ const state = reactive({
 })
 const { circleUrl, squareUrl, sizeList } = toRefs(state)
 
-/*进入账户设置*/
-const personMsgDialog = ref(false)
-const nickNameConfig = ref(false)
-const nickNameConfigInput = ref('')
-const avatarConfig = ref(false)
-const pwdConfig = ref(false)
-const pwdConfigTitle = ref('修改密码')
-const pwdConfigInput = ref('')
-const pwdSureInput = ref('')
+
 
 const handleRemove = (file, uploadFiles) => {
   console.log(file, uploadFiles)
@@ -290,21 +252,6 @@ const handlePreview = (uploadFile) => {
   console.log(uploadFile)
 }
 
-const handleExceed = (files, uploadFiles) => {
-  ElMessage.warning(
-    `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
-    } totally`
-  )
-}
-
-const beforeRemove = (uploadFile, uploadFiles) => {
-  return ElMessageBox.confirm(
-    `Cancel the transfer of ${uploadFile.name} ?`
-  ).then(
-    () => true,
-    () => false
-  )
-}
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -344,21 +291,14 @@ const projectPopoverRef = ref()
 const projectOut = () => {
   // console.log(logmyButton.value.textContent)
   console.log(projectPopoverRef)
-  console.log(unref(projectPopoverRef))
+  console.log( unref(projectPopoverRef))
   unref(projectPopoverRef).popperRef?.delayHide?.()
 }
 
 const invideLink = ref();
 /*获取邀请链接*/
 const getLink = () => {
-  axios.get('http://www.aamofe.top/api/team/get_invitation/', {
-    params: {
-      team_id: 1
-    },
-    headers: {
-      Authorization: authStore().token
-    }
-  })
+  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
     .then(res => {
       // 处理响应数据
       console.log(res);
