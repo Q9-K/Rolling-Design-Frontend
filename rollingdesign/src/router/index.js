@@ -15,7 +15,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/IndexView.vue'),
     meta: {
       index: 'index',
-      requireAuth: false
+      requireAuth: true
     }
   },
   // 项目展示页
@@ -27,7 +27,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
     meta: {
       index: 'project',
-      requireAuth: false
+      requireAuth: true
     }
   },
   {
@@ -128,7 +128,7 @@ const routes = [
     name: 'chat',
     component: () => import('../views/chatRoom.vue'),
     meta: {
-      requireAuth: false
+      requireAuth: true
     }
   },
   {
