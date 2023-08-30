@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
+import { authStore } from '@/store'
 
 const routes = [
   /*登录页面*/
@@ -151,7 +151,8 @@ const router = createRouter({
   routes
 })
 router.beforeEach((to, from, next) => {
-  if (to.meta.requireAuth) {
+  const store = authStore()
+  if (to.meta.requireAuth && !store.isLogin) {
     next('/home')
   }
   else {

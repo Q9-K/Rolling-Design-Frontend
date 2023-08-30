@@ -21,8 +21,8 @@ export default {
         // console.log(res.data)
         const array = authStore().team_members
         const userId = authStore().userId
-        console.log('我是傻逼', array)
-        return array.filter(item => (item.username.toLowerCase().startsWith(query.toLowerCase())))
+        // console.log('我是傻逼', array)
+        return array.filter(item => (item.id != userId && item.username.toLowerCase().startsWith(query.toLowerCase())))
         // }, 2000);
     },
 
