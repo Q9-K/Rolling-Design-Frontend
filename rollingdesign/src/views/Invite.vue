@@ -40,7 +40,7 @@
       </div>
       <div style="width: 100%; height: 7%"></div>
       <div class="link-outer">
-        <p class="link">
+        <p @click="handleToLogin" class="link">
           www.aamofe.top
         </p>
       </div>
@@ -200,6 +200,8 @@ const handleToIndex = () => {
       .link {
         width: 100%;
         text-align: center;
+        color: #27398d;
+        cursor: pointer;
       }
     }
   }
