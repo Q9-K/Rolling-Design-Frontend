@@ -90,23 +90,6 @@ if (props.currentElement) {
   activeNames.value = ['widget-config']
 }
 
-// const sizeOptions = [
-//   {
-//     value: {
-//       width: 950.4,
-//       height: 534.6
-//     },
-//     label: "16 × 9",
-//   },
-//   {
-//     value: {
-//       width: 720,
-//       height: 540
-//     },
-//     label: "4 × 3",
-//   }
-// ]
-
 const graphWidth = ref(1920)
 const graphHeight = ref(1080)
 
@@ -149,24 +132,6 @@ const setPrototypeName = (value) => {
     </div>
     <el-collapse v-model="activeNames" class="collapse-outer">
       <el-collapse-item name="page-config" title="设置" class="page-config">
-<!--        <div class="select-size-box">-->
-<!--          <p class="select-size-title">-->
-<!--            画布比例-->
-<!--          </p>-->
-<!--          <el-select-->
-<!--            class="select-size"-->
-<!--            v-model="currentSize"-->
-<!--            placeholder="Select"-->
-<!--            @change="(value) => setGraphSize(value)"-->
-<!--          >-->
-<!--            <el-option-->
-<!--              v-for="item in sizeOptions"-->
-<!--              :key="item.value"-->
-<!--              :label="item.label"-->
-<!--              :value="item.value"-->
-<!--            />-->
-<!--          </el-select>-->
-<!--        </div>-->
         <div class="select-size-box">
           <p class="select-size-title">
             画布宽度
