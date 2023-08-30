@@ -5,7 +5,7 @@
 -->
 <template>
     <div class="box">
-        <button :disabled="disabled">
+        <button>
             <slot></slot>
         </button>
     </div>
@@ -13,10 +13,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
-const props = defineProps(['disabled'])
-
-const disabled = ref(props.disabled)
+// const props = defineProps(['shareLink'])
 // const shareFile = () => {
 //     console.log(props.shareLink)
 //     // navigator.clipboard.writeText(props.shareLink);

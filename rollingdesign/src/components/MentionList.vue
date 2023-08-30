@@ -2,7 +2,7 @@
     <div class="items">
         <template v-if="items.length">
             <div class="item" :class="{ 'is-selected': index === selectedIndex }" v-for="(item, index) in items"
-                :key="item.id" @click="selectItem(index)">
+                :key="index" @click="selectItem(index)">
                 <div class="userInfo">
                     <el-avatar :src="item.avatar_url" :size="20" shape="square"></el-avatar>
                     <span style="text-indent: 5px;">{{ item.username }}</span>
@@ -92,31 +92,27 @@ export default {
             // TODO:完成发送消息
             // console.log(this.$route)
             let socket = socketStore.socket
+
             // console.log(socket.readyState)
             if (socket.readyState != 1) {
                 socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-                socket.onopen = () => {
-                    socket.send(JSON.stringify({
-                        'type': 'file',
-                        'user_id': item.id,
-                        'url': 'www.baidu.com',
-                        'file_id': `${this.$route.params.id}`,
-                        // 'text': '我是傻逼'
-                    }))
-                    console.log("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送')
-                }
                 socketStore.socket = socket
             }
-            else {
+            // } catch (err) {
+            //     console.error(err)
+            // }
+            setTimeout(() => {
+                socketStore.socket = socket
+                console.log(socket.readyState)
                 socket.send(JSON.stringify({
                     'type': 'file',
-                    'user_id': item.id,
+                    'user_id': '4',
                     'url': 'www.baidu.com',
                     'file_id': `${this.$route.params.id}`,
                     // 'text': '我是傻逼'
                 }))
-                console.log("🚀 ~ file: MentionList.vue:119 ~ selectItem ~ user_id:", '直接发送成功')
-            }
+                console.log(`@user_name 成功`)
+            }, 2000)
             this.command({ id: item.username })
 
         },

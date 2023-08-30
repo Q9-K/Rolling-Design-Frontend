@@ -34,8 +34,9 @@ const axiosInstance = axios.create({
 let ElLoadingInstance
 const startLoading = () => {
   ElLoadingInstance = ElLoading.service({
-    text: 'Loading!',
+    text: '正在加载内容',
     fullscreen: false,
+    background: '#658c88'
   })
 }
 const endLoading = () => {
@@ -58,9 +59,9 @@ axiosInstance.interceptors.response.use(function (response) {
   // })
   return response;
 }, function (error) {
+
   return Promise.reject(error);
 });
-
 
 provide('axios', axiosInstance)
 </script>

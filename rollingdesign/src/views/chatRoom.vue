@@ -198,40 +198,40 @@ export default {
         },1000) 
     },
     methods: {
-        async init() {
-            setTimeout(async () => {
-                try {
-                    const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId);
-                    console.log(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId)
-                    // console.log(`获取到的消息` + res);
-                    this.rooms = ref([...res.rooms]);
-                    // await this.$nextTick
-                    console.log('所有群聊')
-                    console.log(res.rooms)
-                    console.log(this.rooms);
-                }
-                catch (error) {
-                    console.log(error);
-                }
-                for (let room of this.rooms) {
-                    if (room.roomId == this.selectedRoom) {
-                        room.users = room.users.filter(user => user._id != this.currentUserId);
-                        room.unreadCount = 0;
-                        console.log(room.users);
-                        const hasUserWithId = room.users.some(user => user._id == 9999);
-                        if (!hasUserWithId) {
-                            let all = {
-                                username: '所有人',
-                                _id: '9999',
-                            }
-                            room.users.push(all)
-                        }
-                        console.log(room.users)
-                        break; // 如果 roomId 是唯一的，找到后就跳出循环
-                    }
-                }
-            }, 0)
-        },
+        // async init() {
+        //     setTimeout(async () => {
+        //         try {
+        //             const { data: res } = await axios.get(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId);
+        //             console.log(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId)
+        //             // console.log(`获取到的消息` + res);
+        //             this.rooms = ref([...res.rooms]);
+        //             // await this.$nextTick
+        //             console.log('所有群聊')
+        //             console.log(res.rooms)
+        //             console.log(this.rooms);
+        //         }
+        //         catch (error) {
+        //             console.log(error);
+        //         }
+        //         for (let room of this.rooms) {
+        //             if (room.roomId == this.selectedRoom) {
+        //                 room.users = room.users.filter(user => user._id != this.currentUserId);
+        //                 room.unreadCount = 0;
+        //                 console.log(room.users);
+        //                 const hasUserWithId = room.users.some(user => user._id == 9999);
+        //                 if (!hasUserWithId) {
+        //                     let all = {
+        //                         username: '所有人',
+        //                         _id: '9999',
+        //                     }
+        //                     room.users.push(all)
+        //                 }
+        //                 console.log(room.users)
+        //                 break; // 如果 roomId 是唯一的，找到后就跳出循环
+        //             }
+        //         }
+        //     }, 0)
+        // },
         searchData(bool) {
             if (bool) {
                 console.log('bbb')

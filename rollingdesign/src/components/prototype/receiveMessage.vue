@@ -97,14 +97,14 @@ export default {
 			showMessageType: true
 		}
 	},
-	async mounted() {
-		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/1');
-		console.log(res)
-		this.storeData = res
-		//this.datalist = this.storeData.filter(obj => obj.is_read === false)
-		this.datalist = this.storeData
-		console.log('datalist' + this.datalist)
-	},
+	// async mounted() {
+	// 	const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/1');
+	// 	console.log(res)
+	// 	this.storeData = res
+	// 	//this.datalist = this.storeData.filter(obj => obj.is_read === false)
+	// 	this.datalist = this.storeData
+	// 	console.log('datalist' + this.datalist)
+	// },
 	methods: {
 		setRead() {
 			this.showMessageType = !this.showMessageType

@@ -40,9 +40,8 @@
                   <!--昵称和介绍-->
                   <el-row
                     style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 12px;">
-                    <el-col :span="24" class="in-center round-choice"
-                      style="text-align: left;font-weight: 600;font-size: 17px;margin-bottom: 5px;">{{
-                        teamItem.name }}</el-col>
+                    <el-col :span="24" class="in-center round-choice" style="text-align: left;font-weight: 600;font-size: 17px;margin-bottom: 5px;">{{
+                      teamItem.name }}</el-col>
                     <!-- <el-col :span="24" style="text-align: left;color: rgb(80, 79, 79);font-size: 13px;">描述</el-col> -->
                   </el-row>
                 </div>
@@ -153,9 +152,9 @@
 
 <script setup>
 import qs from 'qs'
-// import axios from 'axios'
+import axios from 'axios'
 // const axios = inject('axios')
-import { ref, unref,inject} from 'vue'
+import { ref, unref} from 'vue'
 import { useRoute } from 'vue-router';
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
@@ -175,8 +174,6 @@ import {
 } from '@element-plus/icons-vue'
 const route = useRoute()
 
-const axios = inject('axios')
-
 let teamList = ref([]);
 let projectList = ref([]);
 /*切换团队*/
@@ -188,7 +185,7 @@ const addTeamNameInput = ref('')
 // const addTeamIntroductionInput = ref('')
 
 const guideIndex = ref();//侧栏导航高亮标识！！
-const highlightedIndex = ref(-1);
+const highlightedIndex=ref(-1);
 
 let nowTeam = reactive({
   teamId: '',
@@ -202,66 +199,70 @@ let nowTeam = reactive({
 })
 
 //获取数据
-onMounted(async () => {
-  await fetchTeamlistData();
-  await fetchNowTeam();
-  await fetchProjectData();
-  await highLight();
+onMounted(() => {
+  fetchNowTeam();
+  fetchTeamlistData();
+  fetchProjectData();
+  highLight();
 })
 
 //获取当前团队
-const fetchNowTeam = async () => {
+const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
-  let response = await axios.get('/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
-  // console.log("🚀 ~ file: GuideAside.vue:225 ~ .then ~ response:", response)
-  // console.log(response);
+  axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
+    .then((response) => {
+      // console.log(response);
 
-  if (response.data.errno == 0) {  //获取成功“我”的身份信息
-    nowTeam.teamId = response.data.team.id;
-    nowTeam.name = response.data.team.name;
-    nowTeam.createTime = response.data.team.created_at;
-    nowTeam.creator = response.data.team.creator;
-    nowTeam.role_string = response.data.team.role_string;
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        nowTeam.teamId = response.data.team.id;
+        nowTeam.name = response.data.team.name;
+        nowTeam.createTime = response.data.team.created_at;
+        nowTeam.creator = response.data.team.creator;
+        nowTeam.role_string = response.data.team.role_string;
 
-    localStorage.setItem('teamId', response.data.team.id);
-    localStorage.setItem('teamName', response.data.team.name);
+        localStorage.setItem('teamId', response.data.team.id);
+        localStorage.setItem('teamName', response.data.team.name);
 
-    if (response.data.team.role_string === "CR" || response.data.team.role_string === "MG") { localStorage.setItem('isAdmin', true); }
-    else { localStorage.setItem('isAdmin', false); }
-    return;
-  }
-  else {
-    ElMessage.warning(response.data.msg);
-  }
+        if (response.data.team.role_string === "CR" || response.data.team.role_string === "MG") { localStorage.setItem('isAdmin', true); }
+        else { localStorage.setItem('isAdmin', false); }
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
 }
 
-
-const fetchTeamlistData = async () => {
+const fetchTeamlistData = () => {
   let Headers = { 'Authorization': authStore().token };
   teamList = ref([]);
 
-  let response = await axios.get('/team/all_teams/', { headers: Headers })
-  // .then((response) => {
-  // console.log("🚀 ~ file: GuideAside.vue:255 ~ .then ~ response:", response.data)
-  // console.log(response);
-  if (response.data.errno == 0) {  //所有团队信息
-    response.data.teams.forEach((team, index) => {
-      teamList.value.push(team);/*【这样写】*/
-      return;
+  axios.get('http://www.aamofe.top/api/team/all_teams/', { headers: Headers })
+    .then((response) => {
+      // console.log(response);
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.teams.forEach((team, index) => {
+          teamList.value.push(team);/*【这样写】*/
+          return;
+        })
+        // console.log(teamList.value);
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
     })
-    // console.log(teamList.value);
-  }
-  else {
-    ElMessage.warning(response.data.msg);
-  }
 }
 
 //获取项目列表
-const fetchProjectData = async() => {
+const fetchProjectData = () => {
   let Headers = { 'Authorization': authStore().token };
   projectList = ref([])
-  let response=axios.get('/team/all_projects/', { headers: Headers })
-    // .then((response) => {
+  axios.get('http://www.aamofe.top/api/team/all_projects/', { headers: Headers })
+    .then((response) => {
       // console.log(response);
 
       if (response.data.errno == 0) {  //所有团队信息
@@ -275,15 +276,15 @@ const fetchProjectData = async() => {
       else {
         ElMessage.warning(response.data.msg);
       }
-    // }).catch(error => {
-    //   console.log(error);
-    // })
+    }).catch(error => {
+      console.log(error);
+    })
 }
 
 //切换团队
-const switchToTeam = async(team_to_id) => {
-  let res=axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify({ team_id: team_to_id }), { headers: { Authorization: authStore().token } })
-    // .then(res => {
+const switchToTeam = (team_to_id) => {
+  axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify({ team_id: team_to_id }), { headers: { Authorization: authStore().token } })
+    .then(res => {
       // console.log(res);
       if (res.data.errno == 0)//成功
       {
@@ -300,22 +301,22 @@ const switchToTeam = async(team_to_id) => {
         ElMessage.error(res.data.msg);
         return;
       }
-    // })
-    // .catch(error => {
-    //   // 处理请求错误
-    //   console.error(error);
-    // });
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 
-const buildNewTeam = async () => {
+const buildNewTeam = () => {
   if (!(addTeamNameInput.value)) {
     console.log('不能为空');
     ElMessage.warning('请输入团队名称');
     return;
   }
 
-  let res=axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
-    // .then(res => {
+  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
+    .then(res => {
       // console.log(res);
 
       if (res.data.errno == 0)//成功
@@ -331,11 +332,11 @@ const buildNewTeam = async () => {
         ElMessage.error(res.data.msg);
         return;
       }
-    // })
-    // .catch(error => {
-    //   // 处理请求错误
-    //   console.error(error);
-    // });
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 
 const highLight = () => {//计算侧栏应该是哪里高亮
