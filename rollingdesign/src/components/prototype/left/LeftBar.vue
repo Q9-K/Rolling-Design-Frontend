@@ -90,27 +90,40 @@ if (props.currentElement) {
   activeNames.value = ['widget-config']
 }
 
-const sizeOptions = [
-  {
-    value: {
-      width: 950.4,
-      height: 534.6
-    },
-    label: "16 × 9",
-  },
-  {
-    value: {
-      width: 720,
-      height: 540
-    },
-    label: "4 × 3",
-  }
-]
+// const sizeOptions = [
+//   {
+//     value: {
+//       width: 950.4,
+//       height: 534.6
+//     },
+//     label: "16 × 9",
+//   },
+//   {
+//     value: {
+//       width: 720,
+//       height: 540
+//     },
+//     label: "4 × 3",
+//   }
+// ]
 
-const setGraphSize = (value) => {
+const graphWidth = ref(1920)
+const graphHeight = ref(1080)
+
+const handleSetGraphWidth = (value) => {
+  graphWidth.value = value
+  setGraphSize()
+}
+
+const handleSetGraphHeight = (value) => {
+  graphHeight.value = value
+  setGraphSize()
+}
+
+const setGraphSize = () => {
   props.setGraphSize({
-    width: value.width,
-    height: value.height
+    width: graphWidth.value,
+    height: graphHeight.value
   })
 }
 
@@ -136,23 +149,48 @@ const setPrototypeName = (value) => {
     </div>
     <el-collapse v-model="activeNames" class="collapse-outer">
       <el-collapse-item name="page-config" title="设置" class="page-config">
+<!--        <div class="select-size-box">-->
+<!--          <p class="select-size-title">-->
+<!--            画布比例-->
+<!--          </p>-->
+<!--          <el-select-->
+<!--            class="select-size"-->
+<!--            v-model="currentSize"-->
+<!--            placeholder="Select"-->
+<!--            @change="(value) => setGraphSize(value)"-->
+<!--          >-->
+<!--            <el-option-->
+<!--              v-for="item in sizeOptions"-->
+<!--              :key="item.value"-->
+<!--              :label="item.label"-->
+<!--              :value="item.value"-->
+<!--            />-->
+<!--          </el-select>-->
+<!--        </div>-->
         <div class="select-size-box">
           <p class="select-size-title">
-            画布比例
+            画布宽度
           </p>
-          <el-select
+          <el-input-number
+            v-model="graphWidth"
             class="select-size"
-            v-model="currentSize"
-            placeholder="Select"
-            @change="(value) => setGraphSize(value)"
-          >
-            <el-option
-              v-for="item in sizeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+            :min="10"
+            :max="5000"
+            @change="cur => handleSetGraphWidth(cur)"
+          />
+        </div>
+        <div style="width: 100%; height: 3vh" ></div>
+        <div class="select-size-box">
+          <p class="select-size-title">
+            画布高度
+          </p>
+          <el-input-number
+            v-model="graphHeight"
+            class="select-size"
+            :min="10"
+            :max="5000"
+            @change="cur => handleSetGraphHeight(cur)"
+          />
         </div>
       </el-collapse-item>
       <el-collapse-item name="add-widget" title="组件库" class="add-widget">
