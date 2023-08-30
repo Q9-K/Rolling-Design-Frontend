@@ -36,7 +36,9 @@
                   <!--邀请成员的框-->
                   <el-popover placement="bottom" :width="300" trigger="click">
                     <template #reference>
-                      <el-button v-if="(nowTeam.role_string==='CR'||nowTeam.role_string==='MG')&&nowTeam.name!='个人空间'" type="primary">邀请成员</el-button>
+                      <el-button
+                        v-if="(nowTeam.role_string === 'CR' || nowTeam.role_string === 'MG') && nowTeam.name != '个人空间'"
+                        type="primary">邀请成员</el-button>
                     </template>
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
@@ -86,7 +88,7 @@
             <div style="margin-top:20px">
               <el-row style="margin-top:40px;margin-bottom: 30px;">
                 <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
-                  项目（{{projectNum }}）
+                  项目（{{ projectNum }}）
                 </span>
               </el-row>
               <!--项目封面图-->
@@ -124,10 +126,11 @@
                           </el-icon>重命名</div>
                         <div @mouseover="highlightRow(3)" @mouseleave="resetRow(3)"
                           :class="{ 'highlighted-row': highlightedIndex === 3 }" class="in-center round-choice"
-                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="deleteProject(projectItem.id)">
+                          style="margin-bottom:6px;padding: 3px 0 3px 5px;" @click="deleteProject(index, projectItem.id)">
                           <el-icon style="margin-right:3px;">
                             <FolderDelete />
-                          </el-icon>删除</div>
+                          </el-icon>删除
+                        </div>
 
                         <el-dialog v-model="renameProjectDialog" title="重命名项目" width="20%" center>
                           <el-input v-model="renameProjectInput" placeholder="请输入项目名称" />
@@ -157,7 +160,10 @@
               </el-row>
               <!--如果没有项目-->
               <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
+                <!-- <img class="round" src="@/assets/noFile.png" style="width: 100%;" /> -->
+                <el-empty description="该团队暂无项目，快来新建吧" style="width: 100%;">
+                  <el-button type="primary" plain @click="createNewProject()">新建项目</el-button>
+                </el-empty>
               </el-row>
             </div>
 
@@ -196,7 +202,7 @@ import { useRoute } from 'vue-router';
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
 import { reactive, toRefs } from 'vue'
-import {ElMessage, ElMessageBox, ElNotification} from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
@@ -225,7 +231,6 @@ const renameProjectDialog = ref(false);
 const renameProjectInput = ref('');
 /*邀请成员*/
 const inviteLink = ref('');
-inviteLink.value = "hhahahah";//【】
 
 
 /*侧栏导航栏*/
@@ -256,7 +261,7 @@ let nowTeam = reactive({
   role_string: '',
 })
 
-const projectNum = ref();
+const projectNum = ref('');
 const projectList = ref([]);
 
 onMounted(() => {
@@ -277,8 +282,7 @@ const fetchNowTeam = () => {
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         nowTeam.role_string = response.data.team.role_string;
-        if((nowTeam.role_string==='CR'||nowTeam.role_string==='MG')&&nowTeam.name!="个人空间")
-        {
+        if ((nowTeam.role_string === 'CR' || nowTeam.role_string === 'MG') && nowTeam.name != "个人空间") {
           getInviteLink();
         }
         localStorage.setItem('teamId', response.data.team.id);
@@ -383,8 +387,7 @@ const renameProject = (index, projectId) => {
       {
         ElMessage.success(res.data.msg);
         renameProjectDialog.value = false;
-        projectList.value[index - 1] = { "name": renameProjectInput.value, "id": projectId };
-
+        projectList.value[index] = { "name": renameProjectInput.value, "id": projectId };
         renameProjectInput.value = '';
         return;
       }
@@ -399,7 +402,7 @@ const renameProject = (index, projectId) => {
     });
 }
 
-const deleteProject = (projectId) => {
+const deleteProject = (index, projectId) => {
   console.log(projectId);
   axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: projectId }), {
     headers: { Authorization: authStore().token }
@@ -413,9 +416,17 @@ const deleteProject = (projectId) => {
       {
         ElMessage.success(res.data.msg);
         //把项目从projectList里删除
-        if (index >= 0 && index < projectList.value.length) {
-          projectList.value.splice(index, 1);
-        }//【】
+        // console.log(index);
+        let i = 0;
+        for (i = 0; i < projectList.value.length - 1; i++) {
+          if (i >= index) {
+            // console.log(i);
+            projectList.value[i] = projectList.value[i + 1];
+          }
+        }
+        projectList.value.pop();
+        // console.log(projectList.value);
+        projectNum--;
       }
       else {//失败
         console.log(projectId);

@@ -289,7 +289,7 @@ const fetchUserData = () => {
         nickNameConfigInput.value = user.nickName;
         user.userAvatar = response.data.user_info.avatar_url;
         localStorage.setItem('userAvatar', user.userAvatar)  //这是头像
-        console.log("🚀 ~ file: Header.vue:291 ~ .then ~ authStore().userAvatar:", authStore().userAvatar)
+        // console.log("🚀 ~ file: Header.vue:291 ~ .then ~ authStore().userAvatar:", authStore().userAvatar)
         user.email = response.data.user_info.email;
         return;
       }

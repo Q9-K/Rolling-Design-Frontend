@@ -153,7 +153,8 @@
 <script setup>
 import qs from 'qs'
 import axios from 'axios'
-import { ref, unref } from 'vue'
+// const axios = inject('axios')
+import { ref, unref} from 'vue'
 import { useRoute } from 'vue-router';
 import { onMounted } from 'vue'
 import { authStore } from "../store/index.js"
@@ -210,7 +211,7 @@ const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
-      console.log(response);
+      // console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         nowTeam.teamId = response.data.team.id;
@@ -284,7 +285,7 @@ const fetchProjectData = () => {
 const switchToTeam = (team_to_id) => {
   axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify({ team_id: team_to_id }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      console.log(res);
+      // console.log(res);
       if (res.data.errno == 0)//成功
       {
         //重新载入数据
@@ -316,7 +317,7 @@ const buildNewTeam = () => {
 
   axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      console.log(res);
+      // console.log(res);
 
       if (res.data.errno == 0)//成功
       {

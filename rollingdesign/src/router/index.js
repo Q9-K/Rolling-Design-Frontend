@@ -29,7 +29,7 @@ const routes = [
     }
   },
   {
-    path: '/design/:id',
+    path: '/design/:id/:id',
     name: '/design',
     component: () => import('../views/PrototypeDesign.vue'),
     meta: {
@@ -130,7 +130,7 @@ const routes = [
     }
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/:pathMatch(.*)*', /*其他页面*/
     name: 'notFound',
     component: () => import('../views/404.vue')
   }
