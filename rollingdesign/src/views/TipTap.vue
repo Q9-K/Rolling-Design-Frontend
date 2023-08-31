@@ -13,32 +13,24 @@
                             <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
                         </el-tooltip>
                     </div>
-                    <!-- <div class="select"></div> -->
                 </div>
                 <div class="fileinfo">
                     <Title v-model="title" @keyup.enter="changeTitle(title)"></Title>
-                    <el-tooltip :visible="saveStatus" class="box-item" content="Top Left prompts info" placement="top-start"
-                        raw-content>
-
-                        <el-popover :width="300" trigger="click" ref='popper'
-                            popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                            <template #reference>
-                                <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
+                    <el-popover :width="300" trigger="click" ref='popper'
+                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
                  box-sizing: border-box; " @click="showFileHistory()">Last Modified: {{ lastEditTime }}</span>
-                            </template>
-                            <template #default>
-                                <el-timeline>
-                                    <el-timeline-item v-for="(data, index) in fileHistory" :key="index"
-                                        :timestamp="data.modified_at" @click="switchToHistoryFile(index)">
-                                        {{ data.user }}
-                                    </el-timeline-item>
-                                </el-timeline>
-                            </template>
-                        </el-popover>
-                        <el-select>
-
-                        </el-select>
-                    </el-tooltip>
+                        </template>
+                        <template #default>
+                            <el-timeline>
+                                <el-timeline-item v-for="(data, index) in fileHistory" :key="index"
+                                    :timestamp="data.modified_at" @click="switchToHistoryFile(index)">
+                                    {{ data.user }}
+                                </el-timeline-item>
+                            </el-timeline>
+                        </template>
+                    </el-popover>
                 </div>
                 <div class="actions2">
                     <el-button @click="testat()">test</el-button>
@@ -65,7 +57,6 @@
                             <el-button @click="generateLink()" :disabled="!editAble">
                                 分享
                             </el-button>
-                            <!-- <el-avatar src="https://avatars.githubusercontent.com/u/72015883?v=4" /> -->
                         </template>
                         <template #default>
                             <div disabled style="text-align: center;">
@@ -104,9 +95,10 @@
                     </div>
                 </div>
             </div>
+
             <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
-                placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" :output="outputFileType" id="editor" />
+                placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFileAndInform()" spellcheck
+                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" id="editor" />
         </template>
     </div>
 </template>
@@ -116,7 +108,7 @@ import outputFile from '../utils/output'
 import qs from 'qs'
 import { UserFilled } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
-import { ref, onUnmounted, onMounted, inject, nextTick } from 'vue';
+import { ref, onMounted, inject, nextTick, onBeforeMount, onUnmounted } from 'vue';
 // import { ArrowLeftBold, Download } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'
@@ -145,6 +137,7 @@ import {
     Image,
 } from 'element-tiptap';
 import {
+
     HardBreak,
     Heading,
     FontFamily,
@@ -153,7 +146,7 @@ import {
 } from 'element-tiptap-vue3-fixed'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import { HocuspocusProvider } from '@hocuspocus/provider'
+import { TiptapCollabProvider } from '@hocuspocus/provider'
 import Typography from '@tiptap/extension-typography'
 import Title from '../components/Title.vue';
 import * as Y from 'yjs'
@@ -162,160 +155,51 @@ import suggestion from '../utils/suggestion.js'
 import Button from '../components/Button.vue';
 import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
+const jwt_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2OTM1MTE5NTYsIm5iZiI6MTY5MzUxMTk1NiwiZXhwIjoxNjkzNTk4MzU2LCJpc3MiOiJodHRwczovL2NvbGxhYi50aXB0YXAuZGV2IiwiYXVkIjoiazIwMzc0MzE5QGdtYWlsLmNvbSJ9.T4MUj7cztgbdqQLviZC5p-VC0dde-1hKyhH8vuUzpJg'
+
+
 const socketStore = useSocketStore()
 const axios = inject('axios')
-
-const ydoc = new Y.Doc();
-const provider = new HocuspocusProvider({
-    // url: 'ws://101.43.159.45:1234',
-    url: 'ws://localhost:1234',
-    name: 'rolling-cowork-document',
-    document: ydoc,
-})
-
-
-
 const router = useRouter()
 const route = useRoute()
 const title = ref('Rolling Document')
-const editor = ref(null)
-const editorInstance = ref(null)
-const editorContentDOM = ref('')
-const content = ref()
-const editAble = ref(true)
-const dataLoaded = ref(true)
-const outputFileType = ref('html')
+const editor = ref()
+const content = ref('')
+const dataLoaded = ref(false)
 const shareEditAble = ref(true)
 const lastEditTime = ref('')
 const fileHistory = ref()
+let editAble = false
+let socket = null
+let editorInstance
+let timeHook = false
+let fileContent = ''
+let userCount = 0
 
-// const lock = ref(false)
+const provider = new TiptapCollabProvider({
+    // url: 'ws://101.43.159.45:1234',
+    appId: '8mzo739x', // get this at collab.tiptap.dev
+    name: `rolling-document-${route.params.id}`, // e.g. a uuid uuidv4();
+    token: jwt_token, // see "Authentication" below
+    document: new Y.Doc(),
+
+})
 
 const testat = () => {
-
-    editorInstance.value.commands.insertContentAt(editorInstance.value.state.selection.$cursor.pos, '@李四', {
+    editorInstance.commands.insertContentAt(editorInstance.state.selection.$cursor.pos, '@李四', {
         updateSelection: true,
         parseOptions: {
             preserveWhitespace: 'full',
         }
     })
-    console.log("🚀 ~ file: TipTap.vue:184 ~ testat ~ editorInstance:", editorInstance.value.state.selection.$cursor.pos)
+    console.log("🚀 ~ file: TipTap.vue:184 ~ testat ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
 }
 
-
-let needToChangeLock = false
-
-// const beforeunloadHandler = async (e) => {
-//     e.preventDefault()
-//     e.returnValue = ''
-//     setTimeout(() => {
-//     }, 0);
-//     // e.returnValue = ""
-//     // console.log('刷新页面')
-//     let res = await axios.post('/document/change_lock/', qs.stringify({
-//         document_id: 3,
-//         type: '-'
-//     }))
-//     console.log('out', res.data)
-
-// }
+const popper = ref()
+const link = ref('')
 const team_members = ref('')
-const userEdit = ref(true)
-onMounted(async () => {
-    // authStore().userAvatar
-    // console.log("🚀 ~ file: TipTap.vue:230 ~ onMounted ~ authStore().userAvatar:", authStore().userAvatar)
-    // let socket = socketStore.socket
-    // if (socket == null || socket.readyState != 1) {
-    //     socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-    //     socketStore.socket = socket
-    // }
-    // window.addEventListener('beforeunload', e => beforeunloadHandler(e))
-    // window.addEventListener('unload', e => unloadHandler(e))
 
-    const res = await axios.get(`/document/view_document/${route.params.id}`, {
-        headers: {
-            //TODO:通过pinia全局获取本地token
-            Authorization: authStore().token
-        }
-    })
-
-    const document = res.data.document
-    title.value = document.title
-    const lock = document.is_locked
-    const time = document.modified_at
-    lastEditTime.value = new Date(time).toLocaleString().replace("T", " ").replace("Z", " ")
-    if (authStore().isLogin) {
-        editAble.value = document.editable
-    }
-    const res2 = await axios.get('/team/all_members/', {
-        headers: {
-            Authorization: authStore().token
-        }
-    })
-    authStore().team_members = res2.data.members
-    team_members.value = authStore().team_members
-    // console.log('team_members', res.data.members)
-    // console.log('锁', res.data.document.is_locked)
-    // // TODO:修改editAble
-    // editAble.value = true
-    dataLoaded.value = true
-
-
-    // UserName = document.
-
-
-    // needToChangeLock = true
-
-    // let response = await axios.post('/document/change_lock/', qs.stringify({
-    //     document_id: 3,
-    //     type: '+'
-    // }))
-    // console.log(response.data)
-    // if (lock > 0) {
-    //     content.value = ''
-    //     console.log('next open')
-    //     // await nextTick()
-    // }
-    // else {
-    //     content.value = document.content
-    //     console.log('first open')
-    // }
-
-    if (editAble.value == false) {
-        let elements = window.document.getElementsByClassName("el-tiptap-editor");
-        //TODO:根据用户状态弹出消息
-        if (!authStore().isLogin) {
-            ElMessage({
-                message: '您尚未登录，登陆后方可编辑文档！',
-                type: 'info',
-                duration: 2500,
-                center: true,
-                offset: 8,
-                grouping: true,
-                showClose: true
-            })
-        }
-        else {
-            ElMessage({
-                message: '你尚不具备该文档编辑权限，请联系文档管理员！',
-                type: 'info',
-                duration: 2500,
-                center: true,
-                offset: 8,
-                grouping: true,
-                showClose: true
-            })
-        }
-
-        setTimeout(() => {
-            const element = elements[0];
-            element.style.opacity = '0.45'
-        }, 0);
-
-
-    }
-
-})
+let username = authStore().username
 
 const extensions = [
     History.configure({
@@ -338,9 +222,15 @@ const extensions = [
     Image.configure({
         inline: true,
         uploadRequest(file) {
-            // let res = await axios.post('/api接口')
-            // const imgUrl = res.data.url
-            // return imgUrl
+            const fd = new FormData()
+            fd.append('file', file)
+            fd.append('file_type', 'document')
+            //这里似乎用浏览器原生的formdata速度足够快，不会出现先创建img节点的问题，又或者是我的写法的问题
+            // 这里 return 是返回 Promise 对象
+            return axios.post('/document/upload/', fd).then(({ data: res }) => {
+                // 这个 return 是返回最后的结果
+                return res.url
+            })
         },
     }),
     CodeBlock,
@@ -374,41 +264,66 @@ const extensions = [
         provider: provider,
         user: {
             //TODO:通过状态管理获取用户名
-            name: authStore().username,
+            name: username,
             color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
         },
     }),
 ];
 
-onUnmounted(() => {
+// Collaboration.config.disableSync = true;//为了防止协作文档重复写入,但是没卵用
+onBeforeMount(async () => {
 
+    const res = await axios.get(`/document/view_document/${route.params.id}`)
+    timeHook = true
+    const document = res.data.document
+    title.value = document.title
+    // content.value = document.content
+    fileContent = document.content
+    const time = document.modified_at
+    lastEditTime.value = new Date(time).toLocaleString()
+
+    if (authStore().isLogin) {
+        editAble = document.editable
+        // console.log("🚀 ~ file: TipTap.vue:287 ~ onBeforeMount ~ editAble:", editAble)
+    }
+
+    const res2 = await axios.get('/team/all_members/')
+    authStore().team_members = res2.data.members
+    team_members.value = res2.data.members
+    await nextTick(() => {
+        dataLoaded.value = true
+    })
+})
+
+onMounted(() => {
+    socket = socketStore.socket
+    if (socket == null || socket.readyState != 1) {
+        socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+        socket.onmessage = (event) => {
+            userCount = event.data
+        }
+        socketStore.socket = socket
+    }
 })
 
 
-const popper = ref()
-const link = ref('')
+onUnmounted(() => {
+    socket.close()
+})
+
 
 
 const generateLink = async () => {
 
-    const shareLock = shareEditAble.value ? '1' : '0'
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id: route.params.id,
-        editable: '1'
-    }), {
-        headers: {
-            Authorization: authStore().token
-        }
-    })
-    link.value = res.data.data[0]
+    }))
+    link.value = res.data.data.url
 
 }
 const copyLink = () => {
     navigator.clipboard.writeText(link.value)
-
     popper.value.hide()
-    // console.log(popper.value)
-
     ElNotification({
         title: 'Success',
         message: '复制成功',
@@ -419,25 +334,23 @@ const copyLink = () => {
 
 //TODO:现在能够支持json,html,markdown格式的导出，还需要支持pdf,doc的格式
 const downloadFile = (command) => {
-    console.log("🚀 ~ file: TipTap.vue:398 ~ downloadFile ~ command:", command)
+    // console.log("🚀 ~ file: TipTap.vue:398 ~ downloadFile ~ command:", command)
     const fileType = command
-    editorContentDOM.value = document.querySelector('.el-tiptap-editor__content')
-    outputFile(fileType, content.value, title.value, editorContentDOM.value, editorInstance.value)
+    const editorContentDOM = document.querySelector('.el-tiptap-editor__content')
+    console.log("🚀 ~ file: TipTap.vue:338 ~ downloadFile ~ content:", content)
+    outputFile(fileType, content.value, title.value, editorContentDOM, editorInstance)
 }
 
 
 const updateFile = async () => {
+    // console.log("🚀 ~ file: TipTap.vue:367 ~ updateFile ~ content.value:", content.value)
     lastEditTime.value = new Date().toLocaleString();
     let res = axios.post('/document/save/', qs.stringify({
         file_type: 'document',
         content: content.value,
         file_id: route.params.id,
         title: title.value,
-    }), {
-        'headers': {
-            'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM1NTQ4NzMsImlkIjoxfQ.qZECLptaKJv6EJaIdv8GY3pgMPuhB2FrDApPHvx8SsQ'
-        }
-    })
+    }))
 
 }
 
@@ -446,7 +359,7 @@ const updateFileAndInform = async () => {
     await updateFile()
     ElNotification({
         title: 'Success',
-        message: '保存成功',
+        message: '保存文件成功！',
         type: 'success',
         duration: 1000
     })
@@ -461,8 +374,6 @@ const changeTitle = async () => {
         duration: 1000
     })
 }
-
-
 
 const saveStatus = ref(false)
 
@@ -481,41 +392,81 @@ const showFileHistory = async () => {
 }
 
 const switchToHistoryFile = async (index) => {
-    // console.log("🚀 ~ file: TipTap.vue:484 ~ switchToHistoryFile ~ index:", index)
-    // await editorInstance.value.setContent(fileHistory.value[index].content)
-    // content.value = fileHistory.value[index].content
-    // console.log("🚀 ~ file: TipTap.vue:486 ~ switchToHistoryFile ~ editorInstance:",)
-    // await nextTick(() => {
-    editorInstance.value.commands.setContent(fileHistory.value[index].content)
-    // })
+    await editorInstance.commands.setContent(fileHistory.value[index].content)
 }
 
+
+const switchPermission = async () => {
+    console.log(shareEditAble.value)
+    let res = await axios.post('/document/update_document_permisson/', qs.stringify({
+        document_id: route.params.id,
+        editable: shareEditAble.value == true ? '1' : '0',
+    }))
+    console.log("🚀 ~ file: TipTap.vue:517 ~ switchPermission ~ res:", res.data)
+}
+
+
+//设置30s脱离焦点自动保存文件
 const onBlur = async ({ editor }) => {
-    if (editAble.value == true) {
+    if (editAble == true) {
         setTimeout(() => {
             updateFile()
             saveStatus.value = true
             setTimeout(() => {
                 saveStatus.value = false
             }, 1000);
-        }, 30000)
+            ElNotification({
+                title: 'Success',
+                message: '自动保存文件成功！',
+                type: 'success',
+                duration: 1000
+            })
+        }, 60000)
     }
 }
 
-const onCreate = ({ editor }) => {
-    editorInstance.value = editor
+const onCreate = async ({ editor }) => {
+    editorInstance = editor
+
+    if (socketStore.socket.readyState == 1) {
+        // console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
+    }
+    // editorInstance.commands.setContent(fileContent)
+    if (editAble == false) {
+        editorInstance.extensionManager.extensions.find((extension) => extension.name === 'collaborationCursor').options.user.name = ''
+        let elements = window.document.getElementsByClassName("el-tiptap-editor");
+        //TODO:根据用户状态弹出消息
+        if (!authStore().isLogin) {
+            ElMessage({
+                message: '您尚未登录，登陆后方可编辑文档！',
+                type: 'info',
+                duration: 2500,
+                center: true,
+                offset: 8,
+                grouping: true,
+                showClose: true
+            })
+        }
+        else {
+            ElMessage({
+                message: '你尚不具备该文档编辑权限，请联系文档管理员！',
+                type: 'info',
+                duration: 2500,
+                center: true,
+                offset: 8,
+                grouping: true,
+                showClose: true
+            })
+        }
+        const element = elements[0];
+        element.style.opacity = '0.45'
+        // Collaboration.config.disableSync = false 没啥用
+
+    }
+
 }
 
-const switchPermission = async () => {
-    console.log(editAble.value)
-    let res = await axios.get('/document/update_document_permisson/', {
-        params: {
-            editAble: editAble.value ? '1' : '0',
-            document_id: route.params.id
-        }
-    })
-    console.log("🚀 ~ file: TipTap.vue:517 ~ switchPermission ~ res:", res.data)
-}
+
 
 </script>
 
@@ -627,7 +578,7 @@ const switchPermission = async () => {
     font-weight: 600;
     left: -1px;
     line-height: normal;
-    padding: 0.1rem 0.3rem;
+    // padding: 0.1rem 0.3rem;
     position: absolute;
     top: -1.4em;
     user-select: none;
