@@ -53,6 +53,36 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/DocView.vue'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     // meta: { index: 'project:id' }
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },

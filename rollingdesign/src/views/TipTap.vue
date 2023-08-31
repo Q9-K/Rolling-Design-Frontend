@@ -26,9 +26,11 @@
                     </el-tooltip>
                 </div>
                 <div class="actions2">
-                    <el-button @click="downloadFile()" :disabled="!editAble">
-                        下载
-                    </el-button>
+                    <el-select v-model="fileType" @click="" :disabled="!editAble" placeholder="导出" suffix-icon=""
+                        @change="downloadFile()">
+                        <el-option v-for="item in outputTypes" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
                     <el-button @click="updateFileAndInform()" :disabled="!editAble">
                         同步
                     </el-button>
@@ -74,20 +76,21 @@
 
             <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
                 placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" />
+                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" :output="outputFileType" />
         </template>
     </div>
 </template>
   
 <script setup>
+import outputFile from '../utils/output'
 import qs from 'qs'
 import { UserFilled } from '@element-plus/icons-vue'
 import { ElLoading, ElNotification } from 'element-plus'
 import { ref, watch, onUnmounted, onMounted, onBeforeUnmount, onUpdated, onBeforeMount, nextTick, inject, reactive } from 'vue';
-import { ArrowLeftBold, Download } from '@element-plus/icons-vue'
+// import { ArrowLeftBold, Download } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'
-import TurndownService from 'turndown'
+
 import {
     Document,
     Text,
@@ -145,66 +148,92 @@ const router = useRouter()
 const route = useRoute()
 const title = ref('Rolling Document')
 const editor = ref(null)
+const editorInstance = ref(null)
 const content = ref()
 const editAble = ref(true)
-const dataLoaded = ref(false)
+const dataLoaded = ref(true)
+const outputFileType = ref('html')
+const fileType = ref('')
+const outputTypes = ref([
+    {
+        value: 'md',
+        label: 'markdown格式',
+    },
+    {
+        value: 'json',
+        label: 'json格式',
+    },
+    {
+        value: 'html',
+        label: 'html格式',
+    },
+    {
+        value: 'doc',
+        label: 'doc格式',
+    },
+    {
+        value: 'pdf',
+        label: 'pdf格式',
+    },
+
+])
 // const lock = ref(false)
 
 
 let needToChangeLock = false
 const lastEditTime = ref('')
-const beforeunloadHandler = async (e) => {
-    e.preventDefault()
-    e.returnValue = ''
-    setTimeout(() => {
-    }, 0);
-    // e.returnValue = ""
-    // console.log('刷新页面')
-    let res = await axios.post('/document/change_lock/', qs.stringify({
-        document_id: 3,
-        type: '-'
-    }))
-    console.log('out', res.data)
+// const beforeunloadHandler = async (e) => {
+//     e.preventDefault()
+//     e.returnValue = ''
+//     setTimeout(() => {
+//     }, 0);
+//     // e.returnValue = ""
+//     // console.log('刷新页面')
+//     let res = await axios.post('/document/change_lock/', qs.stringify({
+//         document_id: 3,
+//         type: '-'
+//     }))
+//     console.log('out', res.data)
 
-}
+// }
 const team_members = ref('')
 onMounted(async () => {
     // authStore().userAvatar
     // console.log("🚀 ~ file: TipTap.vue:230 ~ onMounted ~ authStore().userAvatar:", authStore().userAvatar)
-    let socket = socketStore.socket
-    if (socket == null || socket.readyState != 1) {
-        socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-        socketStore.socket = socket
-    }
+    // let socket = socketStore.socket
+    // if (socket == null || socket.readyState != 1) {
+    //     socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+    //     socketStore.socket = socket
+    // }
     // window.addEventListener('beforeunload', e => beforeunloadHandler(e))
     const route = useRoute()
     // console.log('id', route.params.id)
     // window.addEventListener('unload', e => unloadHandler(e))
 
-    const res = await axios.get(`/document/view_document/${route.params.id}`, {
-        headers: {
-            //TODO:通过pinia全局获取本地token
-            Authorization: authStore().token
-        }
-    })
+    // const res = await axios.get(`/document/view_document/${route.params.id}`, {
+    //     headers: {
+    //         //TODO:通过pinia全局获取本地token
+    //         Authorization: authStore().token
+    //     }
+    // })
 
-    const document = res.data.document
-    title.value = document.title
-    const lock = document.is_locked
-    const time = document.modified_at
-    lastEditTime.value = new Date(time).toLocaleString().replace("T", " ").replace("Z", " ")
+    // const document = res.data.document
+    // title.value = document.title
+    // const lock = document.is_locked
+    // const time = document.modified_at
+    // lastEditTime.value = new Date(time).toLocaleString().replace("T", " ").replace("Z", " ")
     // editAble.value = document.editable
-    const res2 = await axios.get('/team/all_members/', {
-        headers: {
-            Authorization: authStore().token
-        }
-    })
-    authStore().team_members = res2.data.members
-    team_members.value = authStore().team_members
+    // const res2 = await axios.get('/team/all_members/', {
+    //     headers: {
+    //         Authorization: authStore().token
+    //     }
+    // })
+    // authStore().team_members = res2.data.members
+    // team_members.value = authStore().team_members
     // console.log('team_members', res.data.members)
     // console.log('锁', res.data.document.is_locked)
     //TODO:修改editAble
-    editAble.value = false
+    editAble.value = true
     // await nextTick()
     // await nextTick()
     dataLoaded.value = true
@@ -215,54 +244,54 @@ onMounted(async () => {
 
     // needToChangeLock = true
 
-    let response = await axios.post('/document/change_lock/', qs.stringify({
-        document_id: 3,
-        type: '+'
-    }))
-    console.log(response.data)
-    if (lock > 0) {
-        content.value = ''
-        console.log('next open')
-        // await nextTick()
-    }
-    else {
-        content.value = document.content
-        console.log('first open')
-    }
+    // let response = await axios.post('/document/change_lock/', qs.stringify({
+    //     document_id: 3,
+    //     type: '+'
+    // }))
+    // console.log(response.data)
+    // if (lock > 0) {
+    //     content.value = ''
+    //     console.log('next open')
+    //     // await nextTick()
+    // }
+    // else {
+    //     content.value = document.content
+    //     console.log('first open')
+    // }
 
-    if (editAble.value == false) {
-        let elements = window.document.getElementsByClassName("el-tiptap-editor");
-        //TODO:根据用户状态弹出消息
-        if (true) {
-            ElMessage({
-                message: '您尚未登录，登陆后方可编辑文档！',
-                type: 'info',
-                duration: 2500,
-                center: true,
-                offset: 8,
-                grouping: true,
-                showClose: true
-            })
-        }
-        else {
-            ElMessage({
-                message: '你尚不具备该文档编辑权限，请联系文档管理员！',
-                type: 'info',
-                duration: 2500,
-                center: true,
-                offset: 8,
-                grouping: true,
-                showClose: true
-            })
-        }
+    // if (editAble.value == false) {
+    //     let elements = window.document.getElementsByClassName("el-tiptap-editor");
+    //     //TODO:根据用户状态弹出消息
+    //     if (true) {
+    //         ElMessage({
+    //             message: '您尚未登录，登陆后方可编辑文档！',
+    //             type: 'info',
+    //             duration: 2500,
+    //             center: true,
+    //             offset: 8,
+    //             grouping: true,
+    //             showClose: true
+    //         })
+    //     }
+    //     else {
+    //         ElMessage({
+    //             message: '你尚不具备该文档编辑权限，请联系文档管理员！',
+    //             type: 'info',
+    //             duration: 2500,
+    //             center: true,
+    //             offset: 8,
+    //             grouping: true,
+    //             showClose: true
+    //         })
+    //     }
 
-        setTimeout(() => {
-            const element = elements[0];
-            element.style.opacity = '0.45'
-        }, 0);
+    //     setTimeout(() => {
+    //         const element = elements[0];
+    //         element.style.opacity = '0.45'
+    //     }, 0);
 
 
-    }
+    // }
 
 })
 
@@ -364,17 +393,24 @@ const copyLink = () => {
     })
 }
 
-
+//TODO:现在能够支持json,html,markdown格式的导出，还需要支持pdf,doc的格式
 const downloadFile = () => {
-    console.info(content.value)
-    const turndownService = new TurndownService()
-    const fileContent = turndownService.turndown(content.value)
-    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${title.value}.md`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    console.log("🚀 ~ file: TipTap.vue:396 ~ downloadFile ~ index):", title.value)
+
+    // outputFileType.value = 'json'
+    // console.log("🚀 ~ file: TipTap.vue:379 ~ downloadFile ~ editor.value.editor:", editorInstance.value.getHTML())
+    // const turndownService = new TurndownService()
+    // const fileContent = editorInstance.value.getJSON()
+    // // const fileContent = turndownService.turndown(editorInstance.value.getHTML())
+    // const blob = new Blob([JSON.stringify(fileContent)], { type: 'text/html' });
+    // const link = document.createElement('a');
+    // link.href = URL.createObjectURL(blob);
+    // link.download = `${title.value}.json`;
+    // link.click();
+    // URL.revokeObjectURL(link.href);
+    // const fileType = fileType.value
+    // if(fileType)
+    // outputFile(fileType.value, content.value, title.value, editorInstance.value)
 }
 
 
@@ -422,8 +458,7 @@ const changeTitle = async () => {
 
 const saveStatus = ref(false)
 const onCreate = ({ editor }) => {
-    // editor.isFocused = true
-    // console.log(editor)
+    editorInstance.value = editor
 }
 
 const showFileHistory = async () => {
@@ -508,7 +543,9 @@ const onBlur = async ({ editor }) => {
             justify-content: space-between;
             align-items: center;
 
-            .team_members {}
+            .team_members {
+                color: red;
+            }
         }
     }
 }
