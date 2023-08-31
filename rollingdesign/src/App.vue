@@ -26,9 +26,13 @@ import {ref ,provide} from 'vue'
 // import { ElLoading } from 'element-plus'
 import { provide, ref, nextTick } from 'vue'
 import axios from 'axios'
+import { authStore } from "./store/index"
 import { ElLoading } from 'element-plus';
 const axiosInstance = axios.create({
   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+  headers: {
+    Authorization: authStore().token
+  }
 });
 
 let ElLoadingInstance

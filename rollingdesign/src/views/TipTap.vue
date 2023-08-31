@@ -74,7 +74,7 @@
                                     <div>分享权限</div>
                                     <el-switch v-model="shareEditAble" class="ml-2" active-text='可以编辑' inactive-text="不可编辑"
                                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                                        @change="handleEdit()" />
+                                        @change="switchPermission()" />
                                 </div>
                                 <div style="color: #d2d3d7;text-align: left;
                             margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
@@ -456,7 +456,7 @@ const changeTitle = async () => {
     await updateFile()
     ElNotification({
         title: 'Success',
-        message: '保存成功',
+        message: '重命名文件成功！',
         type: 'success',
         duration: 1000
     })
@@ -506,14 +506,15 @@ const onCreate = ({ editor }) => {
     editorInstance.value = editor
 }
 
-const handleEdit = async () => {
-    let res = await axios.get('/api接口', {
+const switchPermission = async () => {
+    console.log(editAble.value)
+    let res = await axios.get('/document/update_document_permisson/', {
         params: {
-            editAble: '0'
+            editAble: editAble.value ? '1' : '0',
+            document_id: route.params.id
         }
     })
-    console.log("🚀 ~ file: TipTap.vue:506 ~ handleEdit ~ res:", res.data)
-
+    console.log("🚀 ~ file: TipTap.vue:517 ~ switchPermission ~ res:", res.data)
 }
 
 </script>
