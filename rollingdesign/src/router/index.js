@@ -143,6 +143,11 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'notFound',
     component: () => import('../views/404.vue')
+  },
+  {
+    path: '/preview/:token',
+    name: 'preview',
+    component: () => import('../views/PreviewPrototypePage.vue')
   }
 ]
 

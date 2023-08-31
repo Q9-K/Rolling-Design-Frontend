@@ -37,7 +37,7 @@
               <span style="font-size:large;font-weight: 500;">{{ nowProject.name }}</span>
             </el-row>
 
-            
+
             <!--原型部分-->
             <!--展开状态（此为默认状态）-->
             <div v-if="designShow">

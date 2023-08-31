@@ -4,16 +4,20 @@ import exportHTMLIcon from '@/assets/icon/exportHTML.png'
 import saveGraphIcon from '@/assets/icon/saveGraph.png'
 import quitPrototypeIcon from '@/assets/icon/quitPrototype.png'
 import saveAsTemplateIcon from '@/assets/icon/saveAsTemplate.png'
+import previewPrototypeIcon from '@/assets/icon/previewPrototype.png'
 import {inject, ref, watch} from "vue";
 import {useRouter} from "vue-router";
+import {authStore} from "@/store";
+import axios from "axios";
 
 const router = useRouter()
 
 const props = defineProps([
   'saveGraph',
+  'saveAsTemplate',
+  'previewPrototype',
   'exportPng',
   'exportHtml',
-  'currentColor',
   'currentElement'
 ])
 
@@ -39,7 +43,12 @@ const quitPrototype = () => {
 const handleSaveAsTemplate = () => {
   console.log("save as template")
   console.log("can u see me")
-  // TODO
+  props.saveAsTemplate()
+}
+
+const handlePreviewPrototype = () => {
+  console.log("share prototype")
+  props.previewPrototype()
 }
 
 const toolsList = [
@@ -52,6 +61,11 @@ const toolsList = [
     title: "保存",
     handleClick: handleSaveGraph,
     imageSrc: saveGraphIcon
+  },
+  {
+    title: "预览",
+    handleClick: handlePreviewPrototype,
+    imageSrc: previewPrototypeIcon
   },
   {
     title: "保存为模板",

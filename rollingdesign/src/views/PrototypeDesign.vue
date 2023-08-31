@@ -1,23 +1,17 @@
 <script setup>
 import LeftBar from "../components/prototype/left/LeftBar.vue";
 import * as Konva from "konva";
-import { inject, onMounted, ref, watch } from "vue";
-import { saveAs } from 'file-saver'
+import {onMounted, ref} from "vue";
+import {saveAs} from 'file-saver'
 import Tools from "../components/prototype/right/Tools.vue";
 import KonvaInput from "../components/prototype/konvaWidget/KonvaInput";
 import KonvaButton from "../components/prototype/konvaWidget/KonvaButton";
 import KonvaRatio from "../components/prototype/konvaWidget/KonvaRatio";
 import {authStore} from "../store/index";
-import axios, {get} from "axios";
-// import drawGrids from "@/components/prototype/grid/drawGrids";
-// import Grid from "@/components/prototype/grid/Grid.vue";
-// import { provide } from "vue";
-// import axios from "axios";
-// import qs from 'qs'
-// import {prefixUrl} from "@/main";
-
-import { useRoute } from 'vue-router';
+import axios from "axios";
+import {useRoute} from 'vue-router';
 import qs from "qs";
+import PreviewPrototype from "../components/prototype/preview/PreviewPrototype.vue";
 
 const route = useRoute();
 const designId = route.params.id;
@@ -25,12 +19,13 @@ const designId = route.params.id;
 let stage, layer
 let isGroup
 
-let currentElement = ref(null)
-
+const currentElement = ref(null)
+const isPreviewOpen = ref(false)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
+const previewPrototypeToken = ref('')
 
 const groups = []
 
@@ -54,11 +49,13 @@ onMounted(() => {
   }
   // 本地没有从服务端拿
   else {
-    let Headers = { 'Authorization': authStore().token };
+    const token = authStore().token
+
+    let Headers = { 'Authorization': token };
 
     let formerContent = ''
 
-    axios.get('http://www.aamofe.top/api/document/view_prototype/', {
+    axios.get('http://www.aamofe.top/api/document/view_prototype/' + designId, {
       headers: Headers,
       params: {
         prototype_id: designId
@@ -223,27 +220,30 @@ const adjustMouseState = (element) => {
 }
 
 const exportHTML = () => {
-  const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
+  // const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
+  //
+  // const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
+  //
+  // const html = `
+  //   <!DOCTYPE html>
+  //   <html lang="en-US">
+  //   <head>
+  //     <title>Konva Canvas Export</title>
+  //   </head>
+  //   <body>
+  //     <img src="${canvasDataURL}" alt="Exported Canvas">
+  //   </body>
+  //   </html>
+  // `;
+  //
+  // // 创建一个 Blob 对象，将 HTML 字符串放入其中
+  // const blob = new Blob([html], { type: 'text/html' });
+  //
+  // // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
+  // saveAs(blob, 'exported_canvas.html');
+  // 将虚拟舞台的内容导出为SVG
 
-  const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
 
-  const html = `
-    <!DOCTYPE html>
-    <html lang="en-US">
-    <head>
-      <title>Konva Canvas Export</title>
-    </head>
-    <body>
-      <img src="${canvasDataURL}" alt="Exported Canvas">
-    </body>
-    </html>
-  `;
-
-  // 创建一个 Blob 对象，将 HTML 字符串放入其中
-  const blob = new Blob([html], { type: 'text/html' });
-
-  // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
-  saveAs(blob, 'exported_canvas.html');
 }
 
 const exportPng = () => {
@@ -277,9 +277,11 @@ const saveGraph = () => {
   const prototypeName = sessionStorage.getItem("prototypeName")
   sessionStorage.setItem('stageStringify', stageStringify)
 
-  // TODO 向后端发送保存原型设计的接口
-  axios.post('http://www.aamofe.top/api/document/save_prototype/', qs.stringify({
-    prototype_id: designId,
+  axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
+    file_type: "prototype",
+    file_id: designId,
+    // TODO 拿到项目ID，project_id
+    parent_folder_id: 1,
     content: stageStringify,
     title:prototypeName
   }),{
@@ -474,6 +476,33 @@ const setGraphSize = ({ width, height }) => {
   stage.height(height)
 }
 
+// TODO 保存为模板
+const saveAsTemplate = () => {
+
+}
+
+// TODO 预览
+const handlePreviewPrototype = () => {
+  const Headers = { 'Authorization': authStore().token }
+
+  axios.post('http://www.aamofe.top/api/document/share_prototype/', qs.stringify({
+    prototype_id: designId,
+    visible: "1"
+  }), {
+    headers: Headers
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log("嘿嘿嘿")
+        if (response.data.errno === 0) {
+          previewPrototypeToken.value = response.data.token
+          console.log(previewPrototypeToken.value)
+          isPreviewOpen.value = true
+        }
+      }
+    })
+}
+
 </script>
 
 <template>
@@ -495,17 +524,26 @@ const setGraphSize = ({ width, height }) => {
       <div class="middle-draw-outer">
         <div class="middle-draw">
           <div class="contain-outer">
-            <div class="canvasContainer" id="canvasContainer">
+            <div class="canvas-container" id="canvasContainer">
             </div>
           </div>
           <div class="tool-outer">
-            <Tools :save-graph="saveGraph" :export-png="exportPng" :export-html="exportHTML"
-              :current-element="currentElement" />
+            <Tools
+              :save-graph="saveGraph"
+              :export-png="exportPng"
+              :export-html="exportHTML"
+              :current-element="currentElement"
+              :save-as-template="saveAsTemplate"
+              :preview-prototype="handlePreviewPrototype"
+            />
           </div>
         </div>
       </div>
     </div>
   </div>
+  <el-dialog style="height: 70vh; width: 60vw; background-color: #8c939d" v-model="isPreviewOpen">
+    <PreviewPrototype :prototype-token="previewPrototypeToken"/>
+  </el-dialog>
   <div v-if="showContextMenu" :style="{
     position: 'absolute',
     left: `${contextMenuPosition.x + 10}px`,
@@ -549,7 +587,7 @@ const setGraphSize = ({ width, height }) => {
           justify-content: center;
           align-items: center;
           padding: 5px;
-          .canvasContainer {
+          .canvas-container {
             border-radius: 5px;
             background-color: white;
             max-width: 950.4px;
