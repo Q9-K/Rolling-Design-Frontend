@@ -73,10 +73,9 @@
                     </div>
                 </div>
             </div>
-
             <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
                 placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFile()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" :output="outputFileType" />
+                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" :output="outputFileType" id="editor" />
         </template>
     </div>
 </template>
@@ -144,11 +143,14 @@ const provider = new HocuspocusProvider({
     document: ydoc,
 })
 
+
+
 const router = useRouter()
 const route = useRoute()
 const title = ref('Rolling Document')
 const editor = ref(null)
 const editorInstance = ref(null)
+const editorContentDOM = ref('')
 const content = ref()
 const editAble = ref(true)
 const dataLoaded = ref(true)
@@ -206,7 +208,7 @@ onMounted(async () => {
     //     socketStore.socket = socket
     // }
     // window.addEventListener('beforeunload', e => beforeunloadHandler(e))
-    const route = useRoute()
+    // const route = useRoute()
     // console.log('id', route.params.id)
     // window.addEventListener('unload', e => unloadHandler(e))
 
@@ -232,11 +234,9 @@ onMounted(async () => {
     // team_members.value = authStore().team_members
     // console.log('team_members', res.data.members)
     // console.log('锁', res.data.document.is_locked)
-    //TODO:修改editAble
-    editAble.value = true
-    // await nextTick()
-    // await nextTick()
-    dataLoaded.value = true
+    // // TODO:修改editAble
+    // editAble.value = true
+    // dataLoaded.value = true
 
 
     // UserName = document.
@@ -315,7 +315,12 @@ const extensions = [
     }),
     Image.configure({
         inline: true,
-        allowBase64: false
+        uploadRequest(file) {
+            // let res = await axios.post('/api接口')
+            // const imgUrl = res.data.url
+            // return imgUrl
+            return 'https://summer-1315620690.cos.ap-beijing.myqcloud.com/user_avatar/1.png'
+        },
     }),
     CodeBlock,
     Blockquote,
@@ -395,22 +400,8 @@ const copyLink = () => {
 
 //TODO:现在能够支持json,html,markdown格式的导出，还需要支持pdf,doc的格式
 const downloadFile = () => {
-    console.log("🚀 ~ file: TipTap.vue:396 ~ downloadFile ~ index):", title.value)
-
-    // outputFileType.value = 'json'
-    // console.log("🚀 ~ file: TipTap.vue:379 ~ downloadFile ~ editor.value.editor:", editorInstance.value.getHTML())
-    // const turndownService = new TurndownService()
-    // const fileContent = editorInstance.value.getJSON()
-    // // const fileContent = turndownService.turndown(editorInstance.value.getHTML())
-    // const blob = new Blob([JSON.stringify(fileContent)], { type: 'text/html' });
-    // const link = document.createElement('a');
-    // link.href = URL.createObjectURL(blob);
-    // link.download = `${title.value}.json`;
-    // link.click();
-    // URL.revokeObjectURL(link.href);
-    // const fileType = fileType.value
-    // if(fileType)
-    // outputFile(fileType.value, content.value, title.value, editorInstance.value)
+    editorContentDOM.value = document.querySelector('.el-tiptap-editor__content')
+    outputFile(fileType.value, content.value, title.value, editorContentDOM.value, editorInstance.value)
 }
 
 
@@ -457,9 +448,6 @@ const changeTitle = async () => {
 
 
 const saveStatus = ref(false)
-const onCreate = ({ editor }) => {
-    editorInstance.value = editor
-}
 
 const showFileHistory = async () => {
     // let res = await = ()
@@ -473,6 +461,10 @@ const onBlur = async ({ editor }) => {
             saveStatus.value = false
         }, 1000);
     }
+}
+
+const onCreate = ({ editor }) => {
+    editorInstance.value = editor
 }
 
 </script>

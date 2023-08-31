@@ -12,18 +12,9 @@ import { authStore } from "../store/index.js"
 
 export default {
     items: async ({ query }) => {
-        // let res = await axios.get('/team/all_members/', {
-        //     headers: {
-        //         Authorization: authStore().token
-        //     }
-        // })
-        // setTimeout(() => {
-        // console.log(res.data)
         const array = authStore().team_members
         const userId = authStore().userId
-        // console.log('我是傻逼', array)
         return array.filter(item => (item.id != userId && item.username.toLowerCase().startsWith(query.toLowerCase())))
-        // }, 2000);
     },
 
     render: () => {
