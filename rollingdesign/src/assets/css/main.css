@@ -24,3 +24,8 @@ body,
   border: 1px solid transparent;
   background-clip: content-box;
 }
+
+.other-cursor {
+  background-color: yellow;
+  border: 1px solid red;
+}

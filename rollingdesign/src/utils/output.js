@@ -19,7 +19,7 @@ export default async function (fileType, fileContent, title, editorContentDom, e
         const markdownContent = turndownService.turndown(fileContent)
         blob = new Blob([markdownContent], { type: 'text/plain;charset=utf-8' })
     }
-    else if (fileType == 'doc') {
+    else if (fileType == 'docx') {
         // blob = await richToWord(fileContent)
         const content = fileContent.replace(/<strong>/g, '<b>')
             .replace(/<\/strong>/g, '</b>')
@@ -27,7 +27,7 @@ export default async function (fileType, fileContent, title, editorContentDom, e
             .replace(/<mark/g, '<span')
             .replace(/<\/mark>/g, '</span>')
         const data = await asBlob(fileContent, { type: 'text/html;charset=utf-8' })
-        saveAs(data, `${title}.doc`)
+        saveAs(data, `${title}.docx`)
 
     }
     else if (fileType == 'html') {

@@ -48,16 +48,16 @@ axiosInstance.interceptors.request.use(function (config) {
   return config;
 }, function (error) {
   // 对请求错误做些什么
+  endLoading()
   return Promise.reject(error);
 });
 
 
 axiosInstance.interceptors.response.use(function (response) {
-  // nextTick(() => {
-    endLoading()
-  // })
+  endLoading()
   return response;
 }, function (error) {
+  endLoading()
   return Promise.reject(error);
 });
 

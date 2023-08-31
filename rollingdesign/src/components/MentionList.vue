@@ -93,30 +93,30 @@ export default {
             // console.log(this.$route)
             let socket = socketStore.socket
             // console.log(socket.readyState)
-            if (socket.readyState != 1) {
-                socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-                socket.onopen = () => {
-                    socket.send(JSON.stringify({
-                        'type': 'file',
-                        'user_id': item.id,
-                        'url': 'www.baidu.com',
-                        'file_id': `${this.$route.params.id}`,
-                        // 'text': '我是傻逼'
-                    }))
-                    console.log("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送')
-                }
-                socketStore.socket = socket
-            }
-            else {
-                socket.send(JSON.stringify({
-                    'type': 'file',
-                    'user_id': item.id,
-                    'url': 'www.baidu.com',
-                    'file_id': `${this.$route.params.id}`,
-                    // 'text': '我是傻逼'
-                }))
-                console.log("🚀 ~ file: MentionList.vue:119 ~ selectItem ~ user_id:", '直接发送成功')
-            }
+            // if (socket.readyState != 1) {
+            //     socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+            //     socket.onopen = () => {
+            //         socket.send(JSON.stringify({
+            //             'type': 'file',
+            //             'user_id': item.id,
+            //             'url': 'www.baidu.com',
+            //             'file_id': `${this.$route.params.id}`,
+            //             // 'text': '我是傻逼'
+            //         }))
+            //         console.log("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送')
+            //     }
+            //     socketStore.socket = socket
+            // }
+            // else {
+            //     socket.send(JSON.stringify({
+            //         'type': 'file',
+            //         'user_id': item.id,
+            //         'url': 'www.baidu.com',
+            //         'file_id': `${this.$route.params.id}`,
+            //         // 'text': '我是傻逼'
+            //     }))
+            //     console.log("🚀 ~ file: MentionList.vue:119 ~ selectItem ~ user_id:", '直接发送成功')
+            // }
             this.command({ id: item.username })
 
         },
