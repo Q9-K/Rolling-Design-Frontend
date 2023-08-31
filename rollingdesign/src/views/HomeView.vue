@@ -5,10 +5,11 @@
       <el-header>
         <!--如果已经登录-->
         <div v-if="userStore.isLogin">
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
             <!-- <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;"> -->
 
-            <img alt="web logo" src="@/assets/logo.svg" style=";margin-right: 30px;height:100px;">
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
 
             <span style="margin-right:30px" @click="jumpTo('index')">
               主页
@@ -34,9 +35,10 @@
         </div>
         <!--未登录-->
         <div v-else>
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
             <!-- <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;"> -->
-            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-24px;left:22%; height:150px;">
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
             <span style="margin-right:30px" @click="jumpTo('/index')">
               主页
             </span>
@@ -148,6 +150,22 @@
       </el-header>
 
       <el-main style="height:80vh">
+        <div style="position:absolute;left:14%;top:16% ;width:40%">
+
+          <div style="font-size:30px;margin-bottom:8px;font-weight: 800;">在线一体化</div>
+          <div style="font-size:45px;margin-bottom:8px;font-weight: 900;">软工开发团队协作与管理平台</div>
+          <div style="font-size:30px;margin-bottom:10px;font-weight: 800;">流转设计 &nbsp; &nbsp;让团队开发更简单</div>
+          <div style="font-size:30px;font-weight: 800;">快来使用吧～</div>
+          <div v-if="userStore.isLogin" style="margin-top: 20px;">
+            <el-button color="#626aef" style="z-index:1999;padding:35px 30px 35px 30px" size="large" @click="jumpTo('index')">
+              <span style="font-size: 27px;">进入工作区</span>
+            </el-button>
+          </div>
+          <div v-else style="margin-top: 20px;">
+            <el-button color="#626aef" style="z-index:1999;" size="large" @click="loginDialog = true">登录</el-button>
+          </div>
+
+        </div>
         <div>
           <img class="show" src="@/assets/show.png" />
         </div>
@@ -422,4 +440,5 @@ onMounted(() => {
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
-}</style>
+}
+</style>

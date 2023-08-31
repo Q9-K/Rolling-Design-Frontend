@@ -53,9 +53,9 @@ axiosInstance.interceptors.request.use(function (config) {
 
 
 axiosInstance.interceptors.response.use(function (response) {
-  nextTick(() => {
+  // nextTick(() => {
     endLoading()
-  })
+  // })
   return response;
 }, function (error) {
   return Promise.reject(error);
