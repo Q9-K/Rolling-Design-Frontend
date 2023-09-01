@@ -1,13 +1,15 @@
+/*
+ * @Date: 2023-09-01 11:46:33
+ * @Author: Q9K
+ * @Description: 
+ */
 import TurndownService from 'turndown'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { asBlob } from 'html-docx-js-typescript'
 import saveAs from 'file-saver'
 
-
 export default async function (fileType, fileContent, title, editorContentDom, editorInstance) {
-    // let fileSuffix = ''
-
     let blob
     if (fileType == 'json') {
         // fileSuffix = 'json'
@@ -28,6 +30,7 @@ export default async function (fileType, fileContent, title, editorContentDom, e
             .replace(/<\/mark>/g, '</span>')
         const data = await asBlob(fileContent, { type: 'text/html;charset=utf-8' })
         saveAs(data, `${title}.docx`)
+
 
     }
     else if (fileType == 'html') {

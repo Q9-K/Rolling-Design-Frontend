@@ -6,6 +6,8 @@
 <template>
     <div class="box2">
         <template v-if="dataLoaded">
+
+            <VTour ref="tour" :steps="steps"></VTour>
             <div class="header">
                 <div class="actions1">
                     <div class="backToCenter">
@@ -35,7 +37,7 @@
                 <div class="actions2">
                     <el-button @click="testat()">test</el-button>
                     <el-dropdown trigger="click" @command="downloadFile">
-                        <el-button type="primary">
+                        <el-button type="primary" id="tourtest">
                             下载
                         </el-button>
                         <template #dropdown>
@@ -96,9 +98,9 @@
                 </div>
             </div>
 
-            <el-tiptap v-model:content="content" :extensions="extensions" ref="editor"
-                placeholder="欢迎使用Rolling Markdown Editor!👏" @keydown.s.ctrl.prevent="updateFileAndInform()" spellcheck
-                :readonly="!editAble" @onCreate="onCreate" @onBlur="onBlur" id="editor" />
+            <el-tiptap v-model:content="content" :extensions="extensions" placeholder="欢迎使用Rolling Markdown Editor!👏"
+                @keydown.s.ctrl.prevent="updateFileAndInform()" spellcheck :readonly="!editAble" @onCreate="onCreate"
+                @onBlur="onBlur" id="editor" autoFocus />
         </template>
     </div>
 </template>
@@ -135,9 +137,9 @@ import {
     Highlight,
     SelectAll,
     Image,
+
 } from 'element-tiptap';
 import {
-
     HardBreak,
     Heading,
     FontFamily,
@@ -157,13 +159,12 @@ import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
 const jwt_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2OTM1MTE5NTYsIm5iZiI6MTY5MzUxMTk1NiwiZXhwIjoxNjkzNTk4MzU2LCJpc3MiOiJodHRwczovL2NvbGxhYi50aXB0YXAuZGV2IiwiYXVkIjoiazIwMzc0MzE5QGdtYWlsLmNvbSJ9.T4MUj7cztgbdqQLviZC5p-VC0dde-1hKyhH8vuUzpJg'
 
-
+const tour = ref(null)
 const socketStore = useSocketStore()
 const axios = inject('axios')
 const router = useRouter()
 const route = useRoute()
 const title = ref('Rolling Document')
-const editor = ref()
 const content = ref('')
 const dataLoaded = ref(false)
 const shareEditAble = ref(true)
@@ -172,9 +173,8 @@ const fileHistory = ref()
 let editAble = false
 let socket = null
 let editorInstance
-let timeHook = false
-let fileContent = ''
 let userCount = 0
+
 
 const provider = new TiptapCollabProvider({
     // url: 'ws://101.43.159.45:1234',
@@ -192,7 +192,6 @@ const testat = () => {
             preserveWhitespace: 'full',
         }
     })
-    console.log("🚀 ~ file: TipTap.vue:184 ~ testat ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
 }
 
 const popper = ref()
@@ -221,6 +220,7 @@ const extensions = [
     }),
     Image.configure({
         inline: true,
+        draggable: true,
         uploadRequest(file) {
             const fd = new FormData()
             fd.append('file', file)
@@ -272,23 +272,24 @@ const extensions = [
 
 // Collaboration.config.disableSync = true;//为了防止协作文档重复写入,但是没卵用
 onBeforeMount(async () => {
-
     const res = await axios.get(`/document/view_document/${route.params.id}`)
-    timeHook = true
     const document = res.data.document
     title.value = document.title
     // content.value = document.content
-    fileContent = document.content
     const time = document.modified_at
     lastEditTime.value = new Date(time).toLocaleString()
 
     if (authStore().isLogin) {
         editAble = document.editable
+        editAble = true
+        // console.log("🚀 ~ file: TipTap.vue:295 ~ onBeforeMount ~ document.editable:", document)
         // console.log("🚀 ~ file: TipTap.vue:287 ~ onBeforeMount ~ editAble:", editAble)
     }
 
     const res2 = await axios.get('/team/all_members/')
     authStore().team_members = res2.data.members
+    // localStorage.setItem('team_members', res2.data.members)
+    // console.log("🚀 ~ file: TipTap.vue:312 ~ onBeforeMount ~ res2.data.members:", res2.data)
     team_members.value = res2.data.members
     await nextTick(() => {
         dataLoaded.value = true
@@ -427,9 +428,13 @@ const onBlur = async ({ editor }) => {
 
 const onCreate = async ({ editor }) => {
     editorInstance = editor
+    const position = { from: 3, to: 3 };
+    // editorInstance.commands.setSelection(position)
+
+    console.log("🚀 ~ file: TipTap.vue:454 ~ onCreate ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
 
     if (socketStore.socket.readyState == 1) {
-        // console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
+        console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
     }
     // editorInstance.commands.setContent(fileContent)
     if (editAble == false) {
@@ -463,6 +468,8 @@ const onCreate = async ({ editor }) => {
         // Collaboration.config.disableSync = false 没啥用
 
     }
+
+
 
 }
 

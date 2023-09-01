@@ -21,7 +21,8 @@ export default {
         // console.log(res.data)
         const array = authStore().team_members
         const userId = authStore().userId
-        return array.filter(item => (item.id != userId && item.username.toLowerCase().startsWith(query.toLowerCase())))
+        console.log("🚀 ~ file: suggestion.js:23 ~ //setTimeout ~ team_members:", authStore().team_members)
+        return array.filter(item => (item.username.toLowerCase().startsWith(query.toLowerCase())))
 
     },
 
