@@ -4,9 +4,10 @@ export default class KonvaSelect extends Konva.Group {
   constructor(config, layer) {
     super(config);
 
-    this.options = config.options || [];
+    this.attrs.options = config.options || [];
     this.value = config.value || null;
     this.layer = layer
+    this.attrs.defineType = 'KonvaSelect'
 
     this.updateListTexts(layer)
 
@@ -39,7 +40,7 @@ export default class KonvaSelect extends Konva.Group {
 
     this.add(this.selectRect);
 
-    const selectedOption = this.options.find(option => option.value === this.value);
+    const selectedOption = this.attrs.options.find(option => option.value === this.value);
 
     this.selectText = new Konva.Text({
       x: -40,
@@ -84,7 +85,7 @@ export default class KonvaSelect extends Konva.Group {
 
     this.listGroup.add(this.listRect);
 
-    this.listTexts = this.options.map((option, index) => {
+    this.listTexts = this.attrs.options.map((option, index) => {
       // console.log("can u see us")
       const listText = new Konva.Text({
         x: 10,
@@ -110,7 +111,7 @@ export default class KonvaSelect extends Konva.Group {
 
     this.value = newValue;
 
-    const selectedOption = this.options.find(option => option.value === newValue);
+    const selectedOption = this.attrs.options.find(option => option.value === newValue);
 
     if (selectedOption) {
       this.selectText.text(selectedOption.label);
@@ -125,7 +126,7 @@ export default class KonvaSelect extends Konva.Group {
     this.destroyChildren()
     // console.log("can u see me")
     // this.attrs.options.push(newOptions)
-    this.options.push(newOptions)
+    this.attrs.options.push(newOptions)
     console.log(this.options)
     this.updateListTexts(this.layer)
     this.draw()
@@ -137,13 +138,13 @@ export default class KonvaSelect extends Konva.Group {
     console.log(this.getChildren())
 
 
-    this.options = this.options.filter((option) => {
-      return option.value !== deletedOptions.value;
-    })
+    // this.options = this.options.filter((option) => {
+    //   return option.value !== deletedOptions.value;
+    // })
     this.attrs.options = this.attrs.options.filter((option) => {
       return option.value !== deletedOptions.value;
     })
-    console.log(this.options)
+    // console.log(this.options)
     this.updateListTexts(this.layer)
     // this.draw()
   }
@@ -162,7 +163,7 @@ export default class KonvaSelect extends Konva.Group {
 
     console.log(this.attrs.options)
 
-    console.log(this.options)
+    // console.log(this.options)
 
     return `
       <el-select

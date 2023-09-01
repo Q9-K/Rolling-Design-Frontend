@@ -4,14 +4,15 @@ export default class KonvaRadio extends Konva.Group {
   constructor(config) {
     super(config);
 
-    this.options = config.options || [];
+    this.attrs.options = config.options || [];
     this.value = config.value || null;
+    this.attrs.defineType = 'KonvaRadio'
 
     this.updateRadioButtons()
   }
 
   updateRadioButtons() {
-    this.radioButtons = this.options.map((option, index) => {
+    this.radioButtons = this.attrs.options.map((option, index) => {
       console.log("wwwwwwwwwwwwwwwwwwwwwwwww")
       const radioButton = new Konva.Group({
         x: 0,
@@ -66,7 +67,7 @@ export default class KonvaRadio extends Konva.Group {
     this.radioButtons.forEach((radioButton) => {
       const radioInnerCircle = radioButton.children[1];
 
-      if (this.options[radioButton.index].value === newValue) {
+      if (this.attrs.options[radioButton.index].value === newValue) {
         radioInnerCircle.show();
 
       } else {
@@ -81,7 +82,7 @@ export default class KonvaRadio extends Konva.Group {
   addOptions(newOptions) {
     this.destroyChildren()
     // this.attrs.options.push(newOptions)
-    this.options.push(newOptions)
+    this.attrs.options.push(newOptions)
     this.updateRadioButtons()
     this.draw()
   }
@@ -90,13 +91,13 @@ export default class KonvaRadio extends Konva.Group {
     console.log(this.getChildren())
     this.destroyChildren()
     console.log(this.getChildren())
-    this.options = this.options.filter((option) => {
-      return option.value !== deletedOptions.value;
-    })
+    // this.options = this.options.filter((option) => {
+    //   return option.value !== deletedOptions.value;
+    // })
     this.attrs.options = this.attrs.options.filter((option) => {
       return option.value !== deletedOptions.value;
     })
-    console.log(this.options)
+    // console.log(this.options)
     this.updateRadioButtons()
     // this.draw()
   }

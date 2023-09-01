@@ -3,6 +3,8 @@ import Konva from "konva";
 export default class KonvaText extends Konva.Text {
   constructor(config) {
     super(config);
+
+    this.attrs.defineType = 'KonvaText'
   }
 
   /*

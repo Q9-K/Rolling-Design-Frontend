@@ -56,6 +56,7 @@ onMounted(() => {
      */
     // console.log(stageStringify)
     const stageJSON = JSON.parse(stageStringify)
+    // console.log(stageJSON)
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
 
     stage.find('Image').forEach((imageNode) => {
@@ -100,7 +101,8 @@ onMounted(() => {
 
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
-            stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            // console.log(stageJSON)
+            stage = Konva.default.Stage.create(stageJSON, 'canvasContainer');
             stage.width(width)
             stage.height(height)
             stage.children.forEach((item) => {
@@ -113,6 +115,95 @@ onMounted(() => {
               }
             })
 
+            /*
+              这样行不行，只有天知道
+             */
+            // 遍历舞台上的所有节点
+            stage.find(node => {
+
+              // 检查节点的类型
+              if (node.attrs.defineType === 'KonvaImage') {
+                const myShape = new KonvaImage(node.getAttrs());
+                node.parent.add(myShape);
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSwitch') {
+                const myShape = new KonvaSwitch(node.getAttrs());
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaButton') {
+                const myShape = new KonvaButton(node.getAttrs());
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaInput') {
+                const myShape = new KonvaInput(node.getAttrs());
+                // 将新创建的实例添加到舞台中
+                node.parent.add(myShape);
+                // 删除原来的节点
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaInputNumber') {
+                const myShape = new KonvaInputNumber(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaRadio') {
+                const myShape = new KonvaRadio(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaRect') {
+                const myShape = new KonvaRect(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                // groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSelect') {
+                const myShape = new KonvaSelect(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaText') {
+                const myShape = new KonvaText(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                // groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSlider') {
+                const myShape = new KonvaSlider(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+            });
+
+
             stage.find('Image').forEach((imageNode) => {
               const src = imageNode.getAttr('src');
               const image = new Image();
@@ -122,6 +213,10 @@ onMounted(() => {
               }
               image.src = src;
             });
+
+            stage.find('KonvaImage').forEach((image) => {
+              image.insertEventListener()
+            })
 
             console.log(stage.getLayers())
             sessionStorage.removeItem('stageStringify')
@@ -243,39 +338,9 @@ onMounted(() => {
             layer.batchDraw();
           }, 100);
 
-          // 每隔1秒钟重新绘制
-          // setInterval(() => {
-          //   stage.getLayers().forEach((item) => {
-          //     if (item.getChildren().length === 0) {
-          //       item.destroy()
-          //     }
-          //     else if (item.getChildren().at(0) instanceof Konva.default.Group &&
-          //       item.getChildren().at(0).getChildren().length === 0) {
-          //       item.destroy()
-          //     }
-          //   })
-          //   console.log(stage.getLayers())
-          // }, 1000);
         }
       })
   }
-
-  // let imageObj = new Image();
-  // imageObj.onload = function() {
-  //   let yoda = new Konva.default.Image({
-  //     x: 50,
-  //     y: 50,
-  //     image: imageObj,
-  //     width: 106,
-  //     height: 118
-  //   });
-  //
-  //   // add the shape to the layer
-  //   layer.add(yoda);
-  //   layer.batchDraw();
-  // };
-  // imageObj.src = 'https://summer-1315620690.cos.ap-beijing.myqcloud.com/user_avatar/1.png';
-
 
 })
 
@@ -669,6 +734,8 @@ const addSwitch = () => {
     draggable: true
   })
 
+  groups.push(newSwitch)
+
   layer.add(newSwitch)
 }
 
@@ -770,7 +837,6 @@ const handlePreviewPrototype = () => {
   })
     .then((response) => {
       if (response.status === 200) {
-        console.log("嘿嘿嘿")
         if (response.data.errno === 0) {
           previewPrototypeToken.value = response.data.token
           console.log(previewPrototypeToken.value)

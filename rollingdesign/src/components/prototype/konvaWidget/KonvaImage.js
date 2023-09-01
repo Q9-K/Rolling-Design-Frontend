@@ -8,15 +8,21 @@ export default class KonvaImage extends Konva.Image {
     this.attrs.y = config.y
     this.attrs.initialWidth = config.width
     this.attrs.initialHeight = config.height
+    this.attrs.defineType = 'KonvaImage'
 
-    this.on('transform', () => {
-      // 更新 width 和 height 属性
-      this.attrs.width = this.attrs.scaleX * this.attrs.initialWidth;
-      this.attrs.height = this.attrs.scaleY * this.attrs.initialHeight
-    });
+    this.insertEventListener()
   }
 
+  insertEventListener() {
+    this.on('transform', () => {
+      // 更新 width 和 height 属性
+      this.attrs.width = this.attrs.scaleX * this.attrs.initialWidth
+      this.attrs.height = this.attrs.scaleY * this.attrs.initialHeight
 
+      console.log(this.attrs.width)
+      console.log(this.attrs.height)
+    });
+  }
 
   /*
     哦天哪
