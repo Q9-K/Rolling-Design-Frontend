@@ -50,8 +50,6 @@ onMounted(() => {
 
   // 本地有从本地拿
   if (stageStringify) {
-
-    // TODO 重新打开插入的图片（本地保存）
     /*
       太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
       死给你看
@@ -88,9 +86,6 @@ onMounted(() => {
     })
       .then((response) => {
         if (response.status === 200) {
-
-          // TODO 从服务器获取
-
           console.log(response.data)
 
           formerContent = response.data.prototype.content
@@ -281,6 +276,7 @@ onMounted(() => {
   // };
   // imageObj.src = 'https://summer-1315620690.cos.ap-beijing.myqcloud.com/user_avatar/1.png';
 
+
 })
 
 const deleteSelectedItem = () => {
@@ -448,8 +444,6 @@ const saveGraph = () => {
 
   console.log(stage)
 
-  // TODO 保存图片给后端
-
   axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
     file_type: "prototype",
     file_id: designId,
@@ -573,7 +567,6 @@ const addImage = () => {
       const formData = new FormData()
       formData.append('file_type', 'prototype')
       formData.append('file', file)
-      // TODO 上传图片给后端
       axios.post('http://www.aamofe.top/api/document/upload/', formData, {
         headers:{
           Authorization: authStore().token
