@@ -18,7 +18,8 @@ const props = defineProps([
   'previewPrototype',
   'exportPng',
   'exportHtml',
-  'currentElement'
+  'currentElement',
+  'isTemplate'
 ])
 
 console.log(props.currentElement)
@@ -83,6 +84,17 @@ const toolsList = [
     imageSrc: exportPNGIcon
   }
 ]
+
+watch(
+  () => props.isTemplate,
+  (newValue, oldValue) => {
+    if (newValue === true) {
+      toolsList.filter((item) => {
+        return item.title !== '保存为模板';
+      })
+    }
+  }
+)
 
 </script>
 

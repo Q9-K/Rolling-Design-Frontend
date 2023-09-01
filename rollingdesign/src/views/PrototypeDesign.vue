@@ -33,6 +33,7 @@ const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
 const previewPrototypeToken = ref('')
 const initialSize = ref(null)
+const isTemplate = ref(false)
 
 const groups = []
 
@@ -82,6 +83,7 @@ onMounted(() => {
             width: width,
             height: height
           }
+          isTemplate.value = response.data.prototype.is_template
 
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
@@ -774,6 +776,7 @@ const handlePreviewPrototype = () => {
               :current-element="currentElement"
               :save-as-template="saveAsTemplate"
               :preview-prototype="handlePreviewPrototype"
+              :is-template="isTemplate"
             />
           </div>
         </div>
