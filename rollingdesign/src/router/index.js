@@ -29,7 +29,7 @@ const routes = [
     }
   },
   {
-    path: '/design/:id/:id',
+    path: '/design/:parentFolderId/:id',
     name: '/design',
     component: () => import('../views/PrototypeDesign.vue'),
     meta: {
@@ -82,7 +82,7 @@ const routes = [
 
 
 
-    
+
     // meta: { index: 'project:id' }
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },

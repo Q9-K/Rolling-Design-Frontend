@@ -27,6 +27,7 @@ const props = defineProps([
   'addInputNumber',
   'currentElement',
   'prototypeTitle',
+  "initialSize"
 ])
 
 const widgets = [
@@ -94,7 +95,6 @@ const widgets = [
 
 const prototypeName = ref('')
 const activeNames = ref(['page-config', 'add-widget'])
-const currentSize = ref("16 × 9")
 
 watch(
   () => props.currentElement,
@@ -122,8 +122,21 @@ if (props.currentElement) {
   activeNames.value = ['widget-config']
 }
 
-const graphWidth = ref(1920)
-const graphHeight = ref(1080)
+const graphWidth = ref()
+const graphHeight = ref()
+
+if (props.initialSize) {
+  graphWidth.value = props.initialSize.width
+  graphHeight.value = props.initialSize.height
+}
+
+watch(
+  () => props.initialSize,
+  (newValue) => {
+    graphWidth.value = newValue.width
+    graphHeight.value = newValue.height
+  }
+)
 
 const handleSetGraphWidth = (value) => {
   graphWidth.value = value
