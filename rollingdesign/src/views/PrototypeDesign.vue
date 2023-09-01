@@ -615,7 +615,14 @@ const addSlider = () => {
     y: 100,
     width: 100,
     height: 10,
+    min: -10,
+    max: 10,
     draggable: true
+  })
+
+  slider.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
   })
 
   layer.add(slider)
@@ -645,7 +652,14 @@ const addInputNumber = () => {
     y: 100,
     width: 120,
     height: 30,
+    min: 0,
+    max: 100,
     draggable: true
+  })
+
+  inputNumber.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
   })
 
   layer.add(inputNumber)

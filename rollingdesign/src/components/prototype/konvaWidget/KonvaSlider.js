@@ -52,6 +52,8 @@ export default class KonvaSlider extends Konva.Group {
           width: ${this.attrs.width}px;
           height: ${this.attrs.height}px;
         "
+        :min="${this.min}"
+        :max="${this.max}"
       ></el-slider>
     `
   }

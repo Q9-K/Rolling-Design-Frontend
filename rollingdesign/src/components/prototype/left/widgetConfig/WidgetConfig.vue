@@ -10,6 +10,10 @@ import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
 import RadioConfig from "@/components/prototype/left/widgetConfig/RadioConfig.vue";
 import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import SelectConfig from "@/components/prototype/left/widgetConfig/SelectConfig.vue";
+import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
+import SliderConfig from "@/components/prototype/left/widgetConfig/SliderConfig.vue";
+import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
+import InputNumberConfig from "@/components/prototype/left/widgetConfig/InputNumberConfig.vue";
 
 const props = defineProps([
   'currentElement'
@@ -30,6 +34,12 @@ const handleDifferentType = (widget) => {
   }
   else if (widget instanceof KonvaSelect) {
     widgetType.value = 'select'
+  }
+  else if (widget instanceof KonvaSlider) {
+    widgetType.value = 'slider'
+  }
+  else if (widget instanceof  KonvaInputNumber) {
+    widgetType.value = 'inputNumber'
   }
 }
 
@@ -62,6 +72,14 @@ watch(
     />
     <SelectConfig
       v-else-if="widgetType === 'select'"
+      :current-element="currentElement"
+    />
+    <SliderConfig
+      v-else-if="widgetType === 'slider'"
+      :current-element="currentElement"
+    />
+    <InputNumberConfig
+      v-else-if="widgetType === 'inputNumber'"
       :current-element="currentElement"
     />
     <p v-else>
