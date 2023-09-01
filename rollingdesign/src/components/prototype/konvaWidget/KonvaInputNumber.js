@@ -110,8 +110,8 @@ export default class KonvaInputNumber extends Konva.Group {
     return `
       <el-input-number
         v-model="${inputNumberData}"
-        :min="-10"
-        :max="10"
+        :min="${this.min}"
+        :max="${this.max}"
         style="
           position: absolute;
           left: ${this.attrs.x}px;
