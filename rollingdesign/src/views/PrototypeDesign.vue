@@ -49,7 +49,8 @@ onMounted(() => {
 
   // 本地有从本地拿
   if (stageStringify) {
-    // TODO 重新打开插入的图片
+
+    // TODO 重新打开插入的图片（本地保存）
     /*
       太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
       死给你看
@@ -75,6 +76,9 @@ onMounted(() => {
     })
       .then((response) => {
         if (response.status === 200) {
+
+          // TODO 从服务器获取
+
           console.log(response.data)
 
           formerContent = response.data.prototype.content
@@ -237,6 +241,22 @@ onMounted(() => {
         }
       })
   }
+
+  // let imageObj = new Image();
+  // imageObj.onload = function() {
+  //   let yoda = new Konva.default.Image({
+  //     x: 50,
+  //     y: 50,
+  //     image: imageObj,
+  //     width: 106,
+  //     height: 118
+  //   });
+  //
+  //   // add the shape to the layer
+  //   layer.add(yoda);
+  //   layer.batchDraw();
+  // };
+  // imageObj.src = 'https://summer-1315620690.cos.ap-beijing.myqcloud.com/user_avatar/1.png';
 
 })
 
@@ -402,6 +422,8 @@ const saveGraph = () => {
 
   console.log(stage)
 
+  // TODO 保存图片给后端
+
   axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
     file_type: "prototype",
     file_id: designId,
@@ -504,6 +526,8 @@ const addImage = () => {
     if (file) {
       const base64Image = await convertToBase64(file);
 
+      await new Promise(resolve => base64Image.onload = resolve);
+
       const image = new Konva.default.Image({
         x: 100,
         y: 100,
@@ -521,12 +545,34 @@ const addImage = () => {
 
       adjustMouseState(image)
 
+      console.log(file)
+      console.log(base64Image)
+      // TODO 上传图片给后端
+      axios.post('http://www.aamofe.top/api/document/upload/', qs.stringify({
+        file_type: "prototype",
+        file: file
+      }), {
+        headers:{
+          Authorization: authStore().token
+        }
+      }).then((response) => {
+        if (response.status === 200) {
+          if (response.data.errno === 0) {
+            ElMessage({
+              message: "图片上传成功",
+              type: "success"
+            })
+            image.setAttr('src', response.data.url)
+          }
+        }
+      })
+
       layer.add(image);
       layer.draw();
     }
   };
-
   input.click();
+
 }
 
 const addButton = () => {
