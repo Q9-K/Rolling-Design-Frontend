@@ -85,7 +85,7 @@ export default class KonvaSelect extends Konva.Group {
     this.listGroup.add(this.listRect);
 
     this.listTexts = this.options.map((option, index) => {
-      console.log("can u see us")
+      // console.log("can u see us")
       const listText = new Konva.Text({
         x: 10,
         y: index * 30 + 7,
@@ -123,7 +123,7 @@ export default class KonvaSelect extends Konva.Group {
 
   addOptions(newOptions) {
     this.destroyChildren()
-    console.log("can u see me")
+    // console.log("can u see me")
     // this.attrs.options.push(newOptions)
     this.options.push(newOptions)
     console.log(this.options)

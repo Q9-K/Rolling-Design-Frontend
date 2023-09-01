@@ -42,8 +42,8 @@ const quitPrototype = () => {
 }
 
 const handleSaveAsTemplate = () => {
-  console.log("save as template")
-  console.log("can u see me")
+  // console.log("save as template")
+  // console.log("can u see me")
   props.saveAsTemplate()
 }
 

@@ -12,7 +12,7 @@ const previewList = ref([])
 const prototypeShareToken = ref('')
 const previewShareLink = ref('')
 
-console.log("can u see me")
+// console.log("can u see me")
 
 prototypeShareToken.value = props.prototypeToken
 previewShareLink.value = 'http://www.aamofe.top/preview/' + props.prototypeToken
