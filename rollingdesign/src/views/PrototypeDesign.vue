@@ -32,6 +32,7 @@ const selectedItem = ref(null);
 const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
 const previewPrototypeToken = ref('')
+const initialSize = ref(null)
 
 const groups = []
 
@@ -73,16 +74,24 @@ onMounted(() => {
 
           formerContent = response.data.prototype.content
           prototypeTitle.value = response.data.prototype.title
+          const width = response.data.prototype.width
+          const height = response.data.prototype.height
+          initialSize.value = {
+            width: width,
+            height: height
+          }
 
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
             stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
-            stage.getLayers().forEach((item) => {
-              if (item.getChildren().length === 0) {
+            stage.width(width)
+            stage.height(height)
+            stage.children.forEach((item) => {
+              if (item.children.length === 0) {
                 item.destroy()
               }
-              else if (item.getChildren().at(0) instanceof Konva.default.Group &&
-                item.getChildren().at(0).getChildren().length === 0) {
+              else if (item.children.at(0) instanceof Konva.default.Group &&
+                item.children.at(0).getChildren().length === 0) {
                 item.destroy()
               }
             })
@@ -385,13 +394,17 @@ const saveGraph = () => {
   const prototypeName = sessionStorage.getItem("prototypeName")
   sessionStorage.setItem('stageStringify', stageStringify)
 
+  console.log(stage)
+
   axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
     file_type: "prototype",
     file_id: designId,
     // TODO 拿到项目ID，project_id
     parent_folder_id: 1,
     content: stageStringify,
-    title:prototypeName
+    title: prototypeName,
+    width: stage.attrs.width,
+    height: stage.attrs.height
   }),{
     headers:{
       Authorization: authStore().token
@@ -703,6 +716,7 @@ const handlePreviewPrototype = () => {
   <div class="prototype-design">
     <div class="left-bar-outer">
       <LeftBar
+        :initial-size="initialSize"
         :set-graph-size="setGraphSize"
         :add-text="addText"
         :add-image="addImage"
