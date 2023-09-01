@@ -414,7 +414,12 @@ const saveGraph = () => {
   })
     .then((response) => {
       if (response.status === 200) {
-        console.log(response.data)
+        if (response.data.errno === 0) {
+          ElMessage({
+            message: "保存成功",
+            type: "success"
+          })
+        }
       }
     })
 }
@@ -700,7 +705,10 @@ const saveAsTemplate = () => {
     .then((response) => {
       if (response.status === 200) {
         if (response.data.errno === 0) {
-          ElMessage("导出成功")
+          ElMessage({
+            message: "导出成功",
+            type: "success"
+          })
         }
       }
     })
