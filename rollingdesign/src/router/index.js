@@ -29,7 +29,7 @@ const routes = [
     }
   },
   {
-    path: '/design/:projectId/:id',
+    path: '/design/:parentFolderId/:id',
     name: '/design',
     component: () => import('../views/PrototypeDesign.vue'),
     meta: {
