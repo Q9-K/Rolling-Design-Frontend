@@ -156,7 +156,6 @@ export default class KonvaSelect extends Konva.Group {
     快看看
     这不是天才是什么
    */
-  // TODO Select 下拉选择框的HTML
   exportHTMLString() {
 
     const selectData = "selectData" + this._id
