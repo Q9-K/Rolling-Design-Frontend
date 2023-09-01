@@ -77,6 +77,16 @@ onMounted(() => {
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
             stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            stage.getLayers().forEach((item) => {
+              if (item.getChildren().length === 0) {
+                item.destroy()
+              }
+              else if (item.getChildren().at(0) instanceof Konva.default.Group &&
+                item.getChildren().at(0).getChildren().length === 0) {
+                item.destroy()
+              }
+            })
+            console.log(stage.getLayers())
             sessionStorage.removeItem('stageStringify')
           }
           else {
@@ -191,10 +201,24 @@ onMounted(() => {
             contextMenuLayer.draw();
           });
 
-          // 每隔0.3秒钟重新绘制
+          // 每隔0.1秒钟重新绘制
           setInterval(() => {
             layer.batchDraw();
-          }, 300);
+          }, 100);
+
+          // 每隔1秒钟重新绘制
+          // setInterval(() => {
+          //   stage.getLayers().forEach((item) => {
+          //     if (item.getChildren().length === 0) {
+          //       item.destroy()
+          //     }
+          //     else if (item.getChildren().at(0) instanceof Konva.default.Group &&
+          //       item.getChildren().at(0).getChildren().length === 0) {
+          //       item.destroy()
+          //     }
+          //   })
+          //   console.log(stage.getLayers())
+          // }, 1000);
         }
       })
   }
@@ -206,7 +230,7 @@ const deleteSelectedItem = () => {
   console.log("救命")
 
   if (isGroup) {
-    selectedItem.value.remove()
+    selectedItem.value.destroy()
     layer.batchDraw();
   }
   else {
