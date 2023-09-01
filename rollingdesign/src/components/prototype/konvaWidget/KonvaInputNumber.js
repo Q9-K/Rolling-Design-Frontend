@@ -104,9 +104,12 @@ export default class KonvaInputNumber extends Konva.Group {
     这不是天才是什么
    */
   exportHTMLString() {
+
+    const inputNumberData = "inputNumberDara" + this._id
+
     return `
       <el-input-number
-        v-model="inputNumberData"
+        v-model="${inputNumberData}"
         :min="-10"
         :max="10"
         style="
@@ -121,8 +124,11 @@ export default class KonvaInputNumber extends Konva.Group {
   }
 
   exportHTMLDate() {
+
+    const inputNumberData = "inputNumberDara" + this._id
+
     return `
-      inputNumberData: 0,
+      ${inputNumberData}: 0,
     `
   }
 }

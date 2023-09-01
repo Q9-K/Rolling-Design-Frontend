@@ -111,6 +111,7 @@ export default class KonvaRadio extends Konva.Group {
   exportHTMLString() {
 
     const radioList = []
+    const radioData = "radioData" + this._id
 
     this.attrs.options.forEach((option) => {
       radioList.push(`
@@ -122,7 +123,7 @@ export default class KonvaRadio extends Konva.Group {
 
     return `
       <el-radio-group
-        v-model="radioData"
+        v-model="${radioData}"
         style="
           position: absolute;
           left: ${this.attrs.x}px;
@@ -137,8 +138,11 @@ export default class KonvaRadio extends Konva.Group {
   }
 
   exportHTMLData() {
+
+    const radioData = "radioData" + this._id
+
     return `
-      radioData: 1,
+      ${radioData}: 1,
     `
   }
 }

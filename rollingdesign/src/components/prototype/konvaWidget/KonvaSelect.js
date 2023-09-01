@@ -158,13 +158,15 @@ export default class KonvaSelect extends Konva.Group {
   // TODO Select 下拉选择框的HTML
   exportHTMLString() {
 
+    const selectData = "selectData" + this._id
+
     console.log(this.attrs.options)
 
     console.log(this.options)
 
     return `
       <el-select
-        v-model="selectData"
+        v-model="${selectData}"
         style="
           --el-switch-on-color: #13ce66;
           position: absolute;
@@ -186,6 +188,8 @@ export default class KonvaSelect extends Konva.Group {
 
   exportHTMLDate() {
 
+    const selectData = "selectData" + this._id
+
     function convertJSON(json) {
       let result = [];
       for (let key in json) {
@@ -198,7 +202,7 @@ export default class KonvaSelect extends Konva.Group {
     console.log(optionsArray)
 
     return `
-      selectData: '',
+      ${selectData}: '',
       options: ${optionsArray},
     `
   }

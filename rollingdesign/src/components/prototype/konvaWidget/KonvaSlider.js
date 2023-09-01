@@ -39,9 +39,12 @@ export default class KonvaSlider extends Konva.Group {
     这不是天才是什么
    */
   exportHTMLString() {
+
+    const sliderData = "sliderData" + this._id
+
     return `
       <el-slider
-        v-model="sliderData"
+        v-model="${sliderData}"
         style="
           position: absolute;
           left: ${this.attrs.x}px;
@@ -54,8 +57,11 @@ export default class KonvaSlider extends Konva.Group {
   }
 
   exportHTMLDate() {
+
+    const sliderData = "sliderData" + this._id
+
     return `
-      sliderData: 0,
+      ${sliderData}: 0,
     `
   }
 }

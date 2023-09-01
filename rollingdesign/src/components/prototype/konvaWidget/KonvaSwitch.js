@@ -67,9 +67,12 @@ export default class KonvaSwitch extends Konva.Group {
     这不是天才是什么
    */
   exportHTMLString() {
+
+    const switchData = "switchData" + this._id
+
     return `
       <el-switch
-        v-model="switchData"
+        v-model="${switchData}"
         style="
           --el-switch-on-color: #13ce66;
           position: absolute;
@@ -81,8 +84,11 @@ export default class KonvaSwitch extends Konva.Group {
   }
 
   exportHTMLDate() {
+
+    const switchData = "switchData" + this._id
+
     return `
-      switchData: false,
+      ${switchData}: false,
     `
   }
 }
