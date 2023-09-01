@@ -19,6 +19,7 @@ import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
 import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
 import {ElMessage} from "element-plus";
+import KonvaImage from "@/components/prototype/konvaWidget/KonvaImage";
 
 const route = useRoute();
 const designId = route.params.id;
@@ -55,9 +56,20 @@ onMounted(() => {
       太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
       死给你看
      */
-
+    // console.log(stageStringify)
     const stageJSON = JSON.parse(stageStringify)
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+
+    stage.find('Image').forEach((imageNode) => {
+      const src = imageNode.getAttr('src');
+      const image = new Image();
+      image.onload = () => {
+        imageNode.image(image);
+        imageNode.getLayer().batchDraw();
+      }
+      image.src = src;
+    });
+
     sessionStorage.removeItem('stageStringify')
   }
   // 本地没有从服务端拿
@@ -105,6 +117,17 @@ onMounted(() => {
                 item.destroy()
               }
             })
+
+            stage.find('Image').forEach((imageNode) => {
+              const src = imageNode.getAttr('src');
+              const image = new Image();
+              image.onload = () => {
+                imageNode.image(image);
+                imageNode.getLayer().batchDraw();
+              }
+              image.src = src;
+            });
+
             console.log(stage.getLayers())
             sessionStorage.removeItem('stageStringify')
           }
@@ -348,6 +371,9 @@ const exportHTML = () => {
         htmlElements.push(shape.exportHTMLString())
         htmlData.push(shape.exportHTMLDate())
       }
+      else if (shape instanceof KonvaImage) {
+        htmlElements.push(shape.exportHTMLString())
+      }
       // 添加更多图形类型的转换逻辑
     });
   });
@@ -526,32 +552,29 @@ const addImage = () => {
     if (file) {
       const base64Image = await convertToBase64(file);
 
-      await new Promise(resolve => base64Image.onload = resolve);
+      const originalWidth = base64Image.width;
+      const originalHeight = base64Image.height;
+      const newWidth = (originalWidth / originalHeight) * 100;
 
-      const image = new Konva.default.Image({
+      const image = new KonvaImage({
         x: 100,
         y: 100,
+        height: 100,
+        width: newWidth,
         image: base64Image,
         base64Image: base64Image,
         draggable: true,
       });
 
-      const originalWidth = base64Image.width;
-      const originalHeight = base64Image.height;
-      const newWidth = (originalWidth / originalHeight) * 100;
-
-      image.width(newWidth);
-      image.height(100);
-
       adjustMouseState(image)
 
       console.log(file)
       console.log(base64Image)
+      const formData = new FormData()
+      formData.append('file_type', 'prototype')
+      formData.append('file', file)
       // TODO 上传图片给后端
-      axios.post('http://www.aamofe.top/api/document/upload/', qs.stringify({
-        file_type: "prototype",
-        file: file
-      }), {
+      axios.post('http://www.aamofe.top/api/document/upload/', formData, {
         headers:{
           Authorization: authStore().token
         }
@@ -563,6 +586,7 @@ const addImage = () => {
               type: "success"
             })
             image.setAttr('src', response.data.url)
+            console.log(image)
           }
         }
       })
