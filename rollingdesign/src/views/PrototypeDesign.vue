@@ -1,23 +1,23 @@
 <script setup>
 import LeftBar from "../components/prototype/left/LeftBar.vue";
 import * as Konva from "konva";
-import { inject, onMounted, ref, watch } from "vue";
-import { saveAs } from 'file-saver'
+import {onMounted, ref} from "vue";
+import {saveAs} from 'file-saver'
 import Tools from "../components/prototype/right/Tools.vue";
 import KonvaInput from "../components/prototype/konvaWidget/KonvaInput";
 import KonvaButton from "../components/prototype/konvaWidget/KonvaButton";
-import KonvaRatio from "../components/prototype/konvaWidget/KonvaRatio";
+import KonvaRadio from "../components/prototype/konvaWidget/KonvaRadio";
 import {authStore} from "../store/index";
-import axios, {get} from "axios";
-// import drawGrids from "@/components/prototype/grid/drawGrids";
-// import Grid from "@/components/prototype/grid/Grid.vue";
-// import { provide } from "vue";
-// import axios from "axios";
-// import qs from 'qs'
-// import {prefixUrl} from "@/main";
-
-import { useRoute } from 'vue-router';
+import axios from "axios";
+import {useRoute} from 'vue-router';
 import qs from "qs";
+import PreviewPrototype from "../components/prototype/preview/PreviewPrototype.vue";
+import KonvaRect from "@/components/prototype/konvaWidget/KonvaRect";
+import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
+import KonvaSwitch from "@/components/prototype/konvaWidget/KonvaSwitch";
+import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
+import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
+import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
 
 const route = useRoute();
 const designId = route.params.id;
@@ -25,12 +25,13 @@ const designId = route.params.id;
 let stage, layer
 let isGroup
 
-let currentElement = ref(null)
-
+const currentElement = ref(null)
+const isPreviewOpen = ref(false)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
+const previewPrototypeToken = ref('')
 
 const groups = []
 
@@ -38,7 +39,7 @@ onMounted(() => {
 
   const stageStringify = sessionStorage.getItem('stageStringify')
 
-  console.log(stageStringify)
+  // console.log(stageStringify)
 
   // 本地有从本地拿
   if (stageStringify) {
@@ -54,11 +55,13 @@ onMounted(() => {
   }
   // 本地没有从服务端拿
   else {
-    let Headers = { 'Authorization': authStore().token };
+    const token = authStore().token
+
+    let Headers = { 'Authorization': token };
 
     let formerContent = ''
 
-    axios.get('http://www.aamofe.top/api/document/view_prototype/', {
+    axios.get('http://www.aamofe.top/api/document/view_prototype/' + designId, {
       headers: Headers,
       params: {
         prototype_id: designId
@@ -74,6 +77,16 @@ onMounted(() => {
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
             stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            stage.getLayers().forEach((item) => {
+              if (item.getChildren().length === 0) {
+                item.destroy()
+              }
+              else if (item.getChildren().at(0) instanceof Konva.default.Group &&
+                item.getChildren().at(0).getChildren().length === 0) {
+                item.destroy()
+              }
+            })
+            console.log(stage.getLayers())
             sessionStorage.removeItem('stageStringify')
           }
           else {
@@ -192,6 +205,20 @@ onMounted(() => {
           setInterval(() => {
             layer.batchDraw();
           }, 100);
+
+          // 每隔1秒钟重新绘制
+          // setInterval(() => {
+          //   stage.getLayers().forEach((item) => {
+          //     if (item.getChildren().length === 0) {
+          //       item.destroy()
+          //     }
+          //     else if (item.getChildren().at(0) instanceof Konva.default.Group &&
+          //       item.getChildren().at(0).getChildren().length === 0) {
+          //       item.destroy()
+          //     }
+          //   })
+          //   console.log(stage.getLayers())
+          // }, 1000);
         }
       })
   }
@@ -203,7 +230,7 @@ const deleteSelectedItem = () => {
   console.log("救命")
 
   if (isGroup) {
-    selectedItem.value.remove()
+    selectedItem.value.destroy()
     layer.batchDraw();
   }
   else {
@@ -223,27 +250,108 @@ const adjustMouseState = (element) => {
 }
 
 const exportHTML = () => {
-  const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
+  // const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
+  //
+  // const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
+  //
+  // const html = `
+  //   <!DOCTYPE html>
+  //   <html lang="en-US">
+  //   <head>
+  //     <title>Konva Canvas Export</title>
+  //   </head>
+  //   <body>
+  //     <img src="${canvasDataURL}" alt="Exported Canvas">
+  //   </body>
+  //   </html>
+  // `;
+  //
+  // // 创建一个 Blob 对象，将 HTML 字符串放入其中
+  // const blob = new Blob([html], { type: 'text/html' });
+  //
+  // // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
+  // saveAs(blob, 'exported_canvas.html');
+  // 将虚拟舞台的内容导出为SVG
 
-  const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
+  const htmlElements = [];
+  const htmlData = []
 
-  const html = `
+  // 遍历舞台上的图层和图形
+  stage.getChildren().forEach(layer => {
+    layer.getChildren().forEach(shape => {
+      console.log(shape)
+      // 转换Konva图形为对应的HTML元素
+      if (shape instanceof KonvaRect) {
+        htmlElements.push(shape.exportHTMLString());
+      }
+      else if (shape instanceof KonvaText) {
+        htmlElements.push(shape.exportHTMLString());
+      }
+      else if (shape instanceof KonvaButton) {
+        htmlElements.push(shape.exportHTMLString())
+      }
+      else if (shape instanceof KonvaInput) {
+        htmlElements.push(shape.exportHTMLString())
+      }
+      else if (shape instanceof KonvaSwitch) {
+        htmlElements.push(shape.exportHTMLString())
+        htmlData.push(shape.exportHTMLDate())
+      }
+      else if (shape instanceof KonvaSlider) {
+        htmlElements.push(shape.exportHTMLString())
+        htmlData.push(shape.exportHTMLDate())
+      }
+      else if (shape instanceof KonvaInputNumber) {
+        htmlElements.push(shape.exportHTMLString())
+        htmlData.push(shape.exportHTMLDate())
+      }
+      else if (shape instanceof KonvaRadio) {
+        htmlElements.push(shape.exportHTMLString())
+        htmlData.push(shape.exportHTMLData())
+      }
+      else if (shape instanceof KonvaSelect) {
+        htmlElements.push(shape.exportHTMLString())
+        htmlData.push(shape.exportHTMLDate())
+      }
+      // 添加更多图形类型的转换逻辑
+    });
+  });
+
+  // 创建HTML代码
+  const htmlContent = `
     <!DOCTYPE html>
-    <html lang="en-US">
+    <html>
     <head>
-      <title>Konva Canvas Export</title>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+      <script src="https://unpkg.com/vue@next"><\/script>
+      <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+      <script src="https://unpkg.com/element-plus"><\/script>
+      <title>Converted Canvas to HTML</title>
     </head>
     <body>
-      <img src="${canvasDataURL}" alt="Exported Canvas">
+      <div id="app">
+        ${htmlElements.join('\n')}
+      </div>
+      <script>
+        const App = {
+          data() {
+            return {
+              ${htmlData.join('\n')}
+            };
+          },
+        };
+        const app = Vue.createApp(App);
+        app.use(ElementPlus);
+        app.mount("#app");
+      <\/script>
     </body>
     </html>
   `;
 
-  // 创建一个 Blob 对象，将 HTML 字符串放入其中
-  const blob = new Blob([html], { type: 'text/html' });
-
-  // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
-  saveAs(blob, 'exported_canvas.html');
+  // 保存HTML内容为文件
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  saveAs(blob, "file.html");
 }
 
 const exportPng = () => {
@@ -271,15 +379,17 @@ const saveGraph = () => {
   const stageJSON = stage.toJSON()
   const stageStringify = JSON.stringify(stageJSON)
   console.log("-------------------------")
-  console.log(stageJSON)
+  // console.log(stageJSON)
   console.log("-------------------------")
 
   const prototypeName = sessionStorage.getItem("prototypeName")
   sessionStorage.setItem('stageStringify', stageStringify)
 
-  // TODO 向后端发送保存原型设计的接口
-  axios.post('http://www.aamofe.top/api/document/save_prototype/', qs.stringify({
-    prototype_id: designId,
+  axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
+    file_type: "prototype",
+    file_id: designId,
+    // TODO 拿到项目ID，project_id
+    parent_folder_id: 1,
     content: stageStringify,
     title:prototypeName
   }),{
@@ -295,7 +405,7 @@ const saveGraph = () => {
 }
 
 const addText = () => {
-  const text = new Konva.default.Text({
+  const text = new KonvaText({
     x: 100,
     y: 100,
     text: '点击编辑文本内容',
@@ -306,7 +416,8 @@ const addText = () => {
   })
 
   text.on('click', (e) => {
-    currentElement.value = e.target
+    console.log(e)
+    currentElement.value = e.currentTarget
   })
 
   text.on('dblclick', () => {
@@ -435,22 +546,41 @@ const addInput = () => {
 
 const addRadio = () => {
 
-  const stageBox = stage.container().getBoundingClientRect();
+  // const stageBox = stage.container().getBoundingClientRect();
 
-  const select = new KonvaRatio({
+  const radio = new KonvaRadio({
     x: 100,
     y: 100,
     width: 200,
     height: 30,
-    draggable: true
-  }, stageBox);
+    draggable: true,
+    options: [
+      { label: 'Option A', value: 'Option A' }
+    ],
+  });
 
-  groups.push(select)
-  layer.add(select)
+  radio.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
+  })
+
+  groups.push(radio)
+  layer.add(radio)
 }
 
 const addRect = () => {
-  const rect = new Konva.default.Rect({
+  // const rect = new Konva.default.Rect({
+  //   x: 100,
+  //   y: 100,
+  //   width: 150,
+  //   height: 100,
+  //   fill: "#7f9ac7",
+  //   strokeWidth: 0.01,
+  //   stroke: "#000000",
+  //   draggable: true
+  // })
+
+  const rect = new KonvaRect({
     x: 100,
     y: 100,
     width: 150,
@@ -469,9 +599,102 @@ const addRect = () => {
   layer.add(rect)
 }
 
+const addSwitch = () => {
+  const newSwitch = new KonvaSwitch({
+    x: 100,
+    y: 100,
+    draggable: true
+  })
+
+  layer.add(newSwitch)
+}
+
+const addSlider = () => {
+  const slider = new KonvaSlider({
+    x: 100,
+    y: 100,
+    width: 100,
+    height: 10,
+    min: -10,
+    max: 10,
+    draggable: true
+  })
+
+  slider.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
+  })
+
+  layer.add(slider)
+}
+
+const addSelect = () => {
+  const select = new KonvaSelect({
+    x: 100,
+    y: 100,
+    options: [
+      { label: 'Option A', value: 'Option A' },
+    ],
+    draggable: true
+  }, layer)
+
+  select.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
+  })
+
+  layer.add(select)
+}
+
+const addInputNumber = () => {
+  const inputNumber = new KonvaInputNumber({
+    x: 100,
+    y: 100,
+    width: 120,
+    height: 30,
+    min: 0,
+    max: 100,
+    draggable: true
+  })
+
+  inputNumber.on('click', (e) => {
+    console.log(e)
+    currentElement.value = e.currentTarget
+  })
+
+  layer.add(inputNumber)
+}
+
 const setGraphSize = ({ width, height }) => {
   stage.width(width)
   stage.height(height)
+}
+
+// TODO 保存为模板
+const saveAsTemplate = () => {
+
+}
+
+// TODO 预览
+const handlePreviewPrototype = () => {
+  const Headers = { 'Authorization': authStore().token }
+
+  axios.post('http://www.aamofe.top/api/document/share_prototype/', qs.stringify({
+    prototype_id: designId,
+    visible: "1"
+  }), {
+    headers: Headers
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log("嘿嘿嘿")
+        if (response.data.errno === 0) {
+          previewPrototypeToken.value = response.data.token
+          console.log(previewPrototypeToken.value)
+          isPreviewOpen.value = true
+        }
+      }
+    })
 }
 
 </script>
@@ -487,6 +710,10 @@ const setGraphSize = ({ width, height }) => {
         :add-input="addInput"
         :add-radio="addRadio"
         :add-rect="addRect"
+        :add-switch="addSwitch"
+        :add-slider="addSlider"
+        :add-select="addSelect"
+        :add-input-number="addInputNumber"
         :current-element="currentElement"
         :prototype-title="prototypeTitle"
       />
@@ -495,17 +722,26 @@ const setGraphSize = ({ width, height }) => {
       <div class="middle-draw-outer">
         <div class="middle-draw">
           <div class="contain-outer">
-            <div class="canvasContainer" id="canvasContainer">
+            <div class="canvas-container" id="canvasContainer">
             </div>
           </div>
           <div class="tool-outer">
-            <Tools :save-graph="saveGraph" :export-png="exportPng" :export-html="exportHTML"
-              :current-element="currentElement" />
+            <Tools
+              :save-graph="saveGraph"
+              :export-png="exportPng"
+              :export-html="exportHTML"
+              :current-element="currentElement"
+              :save-as-template="saveAsTemplate"
+              :preview-prototype="handlePreviewPrototype"
+            />
           </div>
         </div>
       </div>
     </div>
   </div>
+  <el-dialog style="height: 70vh; width: 60vw; background-color: #8c939d" v-model="isPreviewOpen">
+    <PreviewPrototype :prototype-token="previewPrototypeToken"/>
+  </el-dialog>
   <div v-if="showContextMenu" :style="{
     position: 'absolute',
     left: `${contextMenuPosition.x + 10}px`,
@@ -549,7 +785,7 @@ const setGraphSize = ({ width, height }) => {
           justify-content: center;
           align-items: center;
           padding: 5px;
-          .canvasContainer {
+          .canvas-container {
             border-radius: 5px;
             background-color: white;
             max-width: 950.4px;

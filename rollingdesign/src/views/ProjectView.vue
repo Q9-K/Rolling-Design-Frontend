@@ -373,7 +373,7 @@ const newDesign = () => {
       console.log(res);
 
       if (res.data.errno == 0)//成功
-      {        
+      {
         designList.value.push({ "id": res.data.document.id, "title": '新建原型' })
         nowProject.designNum++;
         console.log(designList);

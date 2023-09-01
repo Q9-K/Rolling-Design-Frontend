@@ -5,6 +5,10 @@ import buttonWidgetIcon from '@/assets/icon/buttonWidgetIcon.png'
 import inputWidgetIcon from '@/assets/icon/inputWidgetIcon.png'
 import choiceWidgetIcon from '@/assets/icon/choiceWidgetIcon.png'
 import rectWidgetIcon from '@/assets/icon/rectWidgetIcon.png'
+import switchWidgetIcon from '@/assets/icon/switchWidgetIcon.png'
+import sliderWidgetIcon from '@/assets/icon/sliderWidgetIcon.png'
+import selectWidgetIcon from '@/assets/icon/selectWidgetIcon.png'
+import inputNumberWidgetIcon from '@/assets/icon/inputNumberWidgetIcon.png'
 import WidgetConfig from "@/components/prototype/left/widgetConfig/WidgetConfig.vue";
 
 import {ref, toRefs, watch, provide} from "vue";
@@ -17,6 +21,10 @@ const props = defineProps([
   'addInput',
   'addRadio',
   'addRect',
+  'addSwitch',
+  'addSlider',
+  'addSelect',
+  'addInputNumber',
   'currentElement',
   'prototypeTitle',
 ])
@@ -47,7 +55,7 @@ const widgets = [
     handleClick: props.addButton
   },
   {
-    title: "选择",
+    title: "点击选择",
     icon: choiceWidgetIcon,
     key: "choice",
     handleClick: props.addRadio
@@ -57,6 +65,30 @@ const widgets = [
     icon: rectWidgetIcon,
     key: "rect",
     handleClick: props.addRect
+  },
+  {
+    title: "开关",
+    icon: switchWidgetIcon,
+    key: "switch",
+    handleClick: props.addSwitch
+  },
+  {
+    title: "滑块",
+    icon: sliderWidgetIcon,
+    key: "slider",
+    handleClick: props.addSlider
+  },
+  {
+    title: "下拉选择",
+    icon: selectWidgetIcon,
+    key: "select",
+    handleClick: props.addSelect
+  },
+  {
+    title: "数字输入",
+    icon: inputNumberWidgetIcon,
+    key: "inputNumber",
+    handleClick: props.addInputNumber
   }
 ]
 
@@ -238,7 +270,7 @@ const setPrototypeName = (value) => {
         .select-size {
           height: 100%;
           width: 70%;
-          padding-right: 5%;
+          margin-right: 5%;
           display: flex;
           justify-content: center;
           align-items: center
