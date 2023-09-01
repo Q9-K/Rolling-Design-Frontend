@@ -93,7 +93,7 @@ export default {
             // console.log(this.$route)
             let socket = socketStore.socket
             // console.log(socket.readyState)
-            if (socket.readyState != 1) {
+            if (socket != null && socket.readyState != 1) {
                 socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
                 socket.onopen = () => {
                     socket.send(JSON.stringify({

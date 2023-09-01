@@ -6,10 +6,10 @@
 <template>
     <div class="box2">
         <template v-if="dataLoaded">
-
             <VTour ref="tour" :steps="steps"></VTour>
             <div class="header">
                 <div class="actions1">
+                    <el-button @click="saveAsTemplate" :disabled="!editAble">保存为模板</el-button>
                     <div class="backToCenter">
                         <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
                             <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
@@ -17,12 +17,13 @@
                     </div>
                 </div>
                 <div class="fileinfo">
-                    <Title v-model="title" @keyup.enter="changeTitle(title)"></Title>
-                    <el-popover :width="300" trigger="click" ref='popper'
+                    <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editAble"></Title>
+                    <el-popover :disabled="!editAble" :width="300" trigger="click" ref='popper'
                         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
                             <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
-                 box-sizing: border-box; " @click="showFileHistory()">Last Modified: {{ lastEditTime }}</span>
+                 box-sizing: border-box; " @click="editAble ? showFileHistory() : ''">Last Modified: {{ lastEditTime
+                 }}</span>
                         </template>
                         <template #default>
                             <el-timeline>
@@ -35,9 +36,8 @@
                     </el-popover>
                 </div>
                 <div class="actions2">
-                    <el-button @click="testat()">test</el-button>
                     <el-dropdown trigger="click" @command="downloadFile">
-                        <el-button type="primary" id="tourtest">
+                        <el-button type="primary" id="tourtest" :disabled="!editAble">
                             下载
                         </el-button>
                         <template #dropdown>
@@ -83,8 +83,8 @@
                 </div>
                 <div class="userAvatars">
                     <div class="team_members">
-                        <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members"
-                            :key="item.id"></el-avatar>
+                        <el-avatar :src="item.avatar_url" :size="20" v-for="(item, index) in team_members" :key="item.id"
+                            @click="testat(index)"></el-avatar>
                     </div>
                     <div class="selfAvatars">
                         <template v-if="authStore().isLogin">
@@ -105,6 +105,15 @@
     </div>
 </template>
   
+
+<!-- <script>
+export default {
+    beforeRouteEnter() {
+
+    }
+}
+</script> -->
+
 <script setup>
 import outputFile from '../utils/output'
 import qs from 'qs'
@@ -157,7 +166,6 @@ import suggestion from '../utils/suggestion.js'
 import Button from '../components/Button.vue';
 import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
-const jwt_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2OTM1MTE5NTYsIm5iZiI6MTY5MzUxMTk1NiwiZXhwIjoxNjkzNTk4MzU2LCJpc3MiOiJodHRwczovL2NvbGxhYi50aXB0YXAuZGV2IiwiYXVkIjoiazIwMzc0MzE5QGdtYWlsLmNvbSJ9.T4MUj7cztgbdqQLviZC5p-VC0dde-1hKyhH8vuUzpJg'
 
 const tour = ref(null)
 const socketStore = useSocketStore()
@@ -180,19 +188,18 @@ const provider = new TiptapCollabProvider({
     // url: 'ws://101.43.159.45:1234',
     appId: '8mzo739x', // get this at collab.tiptap.dev
     name: `rolling-document-${route.params.id}`, // e.g. a uuid uuidv4();
-    token: jwt_token, // see "Authentication" below
+    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
     document: new Y.Doc(),
-
+    onConnect() {
+        // console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
+        dataLoaded.value = true
+    }
 })
 
-const testat = () => {
-    editorInstance.commands.insertContentAt(editorInstance.state.selection.$cursor.pos, '@李四', {
-        updateSelection: true,
-        parseOptions: {
-            preserveWhitespace: 'full',
-        }
-    })
-}
+// console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.configuration)
+// provider.configuration.onConnect = () => {
+//     console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
+// }
 
 const popper = ref()
 const link = ref('')
@@ -291,14 +298,11 @@ onBeforeMount(async () => {
     // localStorage.setItem('team_members', res2.data.members)
     // console.log("🚀 ~ file: TipTap.vue:312 ~ onBeforeMount ~ res2.data.members:", res2.data)
     team_members.value = res2.data.members
-    await nextTick(() => {
-        dataLoaded.value = true
-    })
 })
 
 onMounted(() => {
     socket = socketStore.socket
-    if (socket == null || socket.readyState != 1) {
+    if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
         socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
         socket.onmessage = (event) => {
             userCount = event.data
@@ -309,7 +313,10 @@ onMounted(() => {
 
 
 onUnmounted(() => {
-    socket.close()
+    if (socket != null) {
+        socket.close()
+        socketStore.socket = null
+    }
 })
 
 
@@ -330,6 +337,15 @@ const copyLink = () => {
         message: '复制成功',
         type: 'success',
         duration: 1000
+    })
+}
+
+const testat = (index) => {
+    editorInstance.commands.insertContentAt(editorInstance.state.selection.$cursor.pos, team_members.value[index].username, {
+        updateSelection: true,
+        parseOptions: {
+            preserveWhitespace: 'full',
+        }
     })
 }
 
@@ -426,14 +442,24 @@ const onBlur = async ({ editor }) => {
     }
 }
 
+const saveAsTemplate = async () => {
+    let res = await axios.post('/document/save_as_template/', qs.stringify({
+        content: content.value,
+        title: title.value,
+        file_type: 'document'
+    }))
+    console.log("🚀 ~ file: TipTap.vue:435 ~ saveAsTemplate ~ res:", res.data)
+}
+
+
 const onCreate = async ({ editor }) => {
     editorInstance = editor
     const position = { from: 3, to: 3 };
     // editorInstance.commands.setSelection(position)
 
-    console.log("🚀 ~ file: TipTap.vue:454 ~ onCreate ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
+    // console.log("🚀 ~ file: TipTap.vue:454 ~ onCreate ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
 
-    if (socketStore.socket.readyState == 1) {
+    if (socketStore.socket != null && socketStore.socket.readyState == 1) {
         console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
     }
     // editorInstance.commands.setContent(fileContent)

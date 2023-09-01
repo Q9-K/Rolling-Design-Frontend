@@ -11,14 +11,10 @@ import { ElementTiptapPlugin } from 'element-tiptap';
 import 'element-plus/dist/index.css'
 import 'element-tiptap/lib/style.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import axios from 'axios';
 import { createPinia } from 'pinia';
 import './assets/css/main.css'
 import './assets/icons/iconfont.css'
-// import '@globalhive/vuejs-tour/dist/style.css';
-// import VueJsTour from '@globalhive/vuejs-tour';
-// import VueShepherdPlugin from 'vue-shepherd';
-// import '~shepherd.js/dist/css/shepherd.css';
+
 
 const pinia = createPinia();
 const app = createApp(App)

@@ -4,23 +4,9 @@
  * @Description: 
 -->
 <template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav> -->
   <router-view />
 </template>
 
-<!-- <script setup>
-import {ref ,provide} from 'vue'
-// const app = createApp(App)
-
-// import axios from 'axios'
-// const axiosInstance = axios.create({
-//   baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
-// });
-// provide('axios',axiosInstance)
-</script> -->
 
 <script setup>
 // import { ElLoading } from 'element-plus'
@@ -34,6 +20,14 @@ const axiosInstance = axios.create({
     Authorization: authStore().token
   }
 });
+
+const axiosInstanceWithoutLoading =
+  axios.create({
+    baseURL: 'http://www.aamofe.top/api', // 设置基本 URL
+    headers: {
+      Authorization: authStore().token
+    }
+  });
 
 let ElLoadingInstance
 const startLoading = () => {
@@ -66,7 +60,28 @@ axiosInstance.interceptors.response.use(function (response) {
 });
 
 
+axiosInstanceWithoutLoading.interceptors.request.use(function (config) {
+  // 在发送请求之前做些什么
+  // startLoading()
+  return config;
+}, function (error) {
+  // 对请求错误做些什么
+  // endLoading()
+  return Promise.reject(error);
+});
+
+
+axiosInstanceWithoutLoading.interceptors.response.use(function (response) {
+  // endLoading()
+  return response;
+}, function (error) {
+  // endLoading()
+  return Promise.reject(error);
+});
+
+
 provide('axios', axiosInstance)
+provide('axios2', axiosInstanceWithoutLoading)
 </script>
 
 <style lang="scss">
