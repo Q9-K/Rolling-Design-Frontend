@@ -1,7 +1,7 @@
 <script setup>
 import LeftBar from "../components/prototype/left/LeftBar.vue";
 import * as Konva from "konva";
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import {saveAs} from 'file-saver'
 import Tools from "../components/prototype/right/Tools.vue";
 import KonvaInput from "../components/prototype/konvaWidget/KonvaInput";
@@ -18,7 +18,7 @@ import KonvaSwitch from "@/components/prototype/konvaWidget/KonvaSwitch";
 import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
 import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
-
+import {ElMessage} from "element-plus";
 const route = useRoute();
 const designId = route.params.id;
 
@@ -35,6 +35,8 @@ const previewPrototypeToken = ref('')
 const initialSize = ref(null)
 
 const groups = []
+
+const beautifulAxios = inject('axios')
 
 onMounted(() => {
 
@@ -683,13 +685,30 @@ const setGraphSize = ({ width, height }) => {
   stage.height(height)
 }
 
-// TODO 保存为模板
 const saveAsTemplate = () => {
 
+  const stageJSON = stage.toJSON()
+  const stageStringify = JSON.stringify(stageJSON)
+
+  beautifulAxios.post('/document/save_as_template/', qs.stringify({
+    content: stageStringify,
+    title: prototypeTitle.value,
+    file_type: "prototype",
+    width: stage.attrs.width,
+    height: stage.attrs.height
+  }))
+    .then((response) => {
+      if (response.status === 200) {
+        if (response.data.errno === 0) {
+          ElMessage("导出成功")
+        }
+      }
+    })
 }
 
 // TODO 预览
 const handlePreviewPrototype = () => {
+
   const Headers = { 'Authorization': authStore().token }
 
   axios.post('http://www.aamofe.top/api/document/share_prototype/', qs.stringify({
