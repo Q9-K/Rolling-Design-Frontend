@@ -19,8 +19,10 @@ import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
 import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
 import {ElMessage} from "element-plus";
+
 const route = useRoute();
 const designId = route.params.id;
+const parentFolderId = route.params.parentFolderId
 
 let stage, layer
 let isGroup
@@ -403,8 +405,7 @@ const saveGraph = () => {
   axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
     file_type: "prototype",
     file_id: designId,
-    // TODO 拿到项目ID，project_id
-    parent_folder_id: 1,
+    parent_folder_id: parentFolderId,
     content: stageStringify,
     title: prototypeName,
     width: stage.attrs.width,
