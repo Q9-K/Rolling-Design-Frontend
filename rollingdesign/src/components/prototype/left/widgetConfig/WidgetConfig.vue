@@ -1,9 +1,19 @@
 <script setup>
-import {ref, watch} from "vue";
+import {ref, toRaw, watch} from "vue";
 import RectConfig from "@/components/prototype/left/widgetConfig/RectConfig.vue";
 import {Rect} from "konva/lib/shapes/Rect";
 import {Text} from "konva/lib/shapes/Text";
 import TextConfig from "@/components/prototype/left/widgetConfig/TextConfig.vue";
+import KonvaRadio from "@/components/prototype/konvaWidget/KonvaRadio";
+import KonvaRect from "@/components/prototype/konvaWidget/KonvaRect";
+import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
+import RadioConfig from "@/components/prototype/left/widgetConfig/RadioConfig.vue";
+import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
+import SelectConfig from "@/components/prototype/left/widgetConfig/SelectConfig.vue";
+import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
+import SliderConfig from "@/components/prototype/left/widgetConfig/SliderConfig.vue";
+import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
+import InputNumberConfig from "@/components/prototype/left/widgetConfig/InputNumberConfig.vue";
 
 const props = defineProps([
   'currentElement'
@@ -12,12 +22,24 @@ const props = defineProps([
 const widgetType = ref(null)
 
 const handleDifferentType = (widget) => {
-  if (widget instanceof Rect) {
+  console.log(widget)
+  if (widget instanceof KonvaRect) {
     widgetType.value = 'rect'
   }
-  else if (widget instanceof Text) {
-    console.log(widget)
+  else if (widget instanceof KonvaText) {
     widgetType.value = 'text'
+  }
+  else if (widget instanceof KonvaRadio) {
+    widgetType.value = 'radio'
+  }
+  else if (widget instanceof KonvaSelect) {
+    widgetType.value = 'select'
+  }
+  else if (widget instanceof KonvaSlider) {
+    widgetType.value = 'slider'
+  }
+  else if (widget instanceof  KonvaInputNumber) {
+    widgetType.value = 'inputNumber'
   }
 }
 
@@ -27,7 +49,7 @@ watch(
     console.log('子组件接收到的属性发生变化：', newValue, oldValue);
     // 在这里可以执行响应的操作，比如重新渲染子组件内容
     if (newValue) {
-      handleDifferentType(newValue)
+      handleDifferentType(toRaw(newValue))
     }
   }
 )
@@ -42,6 +64,22 @@ watch(
     />
     <TextConfig
       v-else-if="widgetType === 'text'"
+      :current-element="currentElement"
+    />
+    <RadioConfig
+      v-else-if="widgetType === 'radio'"
+      :current-element="currentElement"
+    />
+    <SelectConfig
+      v-else-if="widgetType === 'select'"
+      :current-element="currentElement"
+    />
+    <SliderConfig
+      v-else-if="widgetType === 'slider'"
+      :current-element="currentElement"
+    />
+    <InputNumberConfig
+      v-else-if="widgetType === 'inputNumber'"
       :current-element="currentElement"
     />
     <p v-else>
