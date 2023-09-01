@@ -49,13 +49,13 @@ export default class KonvaSlider extends Konva.Group {
           width: ${this.attrs.width}px;
           height: ${this.attrs.height}px;
         "
-      />
+      ></el-slider>
     `
   }
 
   exportHTMLDate() {
     return `
-      sliderData: false,
+      sliderData: 0,
     `
   }
 }

@@ -75,10 +75,8 @@ export default class KonvaSwitch extends Konva.Group {
           position: absolute;
           left: ${this.attrs.x}px;
           top: ${this.attrs.y}px;
-          width: ${this.attrs.width}px;
-          height: ${this.attrs.height}px;
         "
-      />
+      ></el-switch>
     `
   }
 

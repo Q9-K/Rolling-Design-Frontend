@@ -198,8 +198,8 @@ export default class KonvaSelect extends Konva.Group {
     console.log(optionsArray)
 
     return `
-      selectData: false,
-      options: ${optionsArray}
+      selectData: '',
+      options: ${optionsArray},
     `
   }
 }

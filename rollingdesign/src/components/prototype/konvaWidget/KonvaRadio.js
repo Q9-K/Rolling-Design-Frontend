@@ -131,14 +131,14 @@ export default class KonvaRadio extends Konva.Group {
           flex-wrap: wrap;
         "
       >
-        ${radioList}
+        ${radioList.join('\n')}
       </el-radio-group>
     `
   }
 
   exportHTMLData() {
     return `
-      radioData: 1
+      radioData: 1,
     `
   }
 }

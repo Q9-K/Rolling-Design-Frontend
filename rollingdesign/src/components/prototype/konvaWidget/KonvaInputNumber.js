@@ -107,6 +107,8 @@ export default class KonvaInputNumber extends Konva.Group {
     return `
       <el-input-number
         v-model="inputNumberData"
+        :min="-10"
+        :max="10"
         style="
           position: absolute;
           left: ${this.attrs.x}px;
@@ -114,13 +116,13 @@ export default class KonvaInputNumber extends Konva.Group {
           width: ${this.attrs.width}px;
           height: ${this.attrs.height}px;
         "
-      />
+      ></el-input-number>
     `
   }
 
   exportHTMLDate() {
     return `
-      inputNumberData: false,
+      inputNumberData: 0,
     `
   }
 }
