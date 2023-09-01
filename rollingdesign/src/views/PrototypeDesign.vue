@@ -304,29 +304,6 @@ const adjustMouseState = (element) => {
 }
 
 const exportHTML = () => {
-  // const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
-  //
-  // const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
-  //
-  // const html = `
-  //   <!DOCTYPE html>
-  //   <html lang="en-US">
-  //   <head>
-  //     <title>Konva Canvas Export</title>
-  //   </head>
-  //   <body>
-  //     <img src="${canvasDataURL}" alt="Exported Canvas">
-  //   </body>
-  //   </html>
-  // `;
-  //
-  // // 创建一个 Blob 对象，将 HTML 字符串放入其中
-  // const blob = new Blob([html], { type: 'text/html' });
-  //
-  // // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
-  // saveAs(blob, 'exported_canvas.html');
-  // 将虚拟舞台的内容导出为SVG
-
   const htmlElements = [];
   const htmlData = []
 
