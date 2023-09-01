@@ -755,6 +755,8 @@ const addSlider = () => {
     currentElement.value = e.currentTarget
   })
 
+  groups.push(slider)
+
   layer.add(slider)
 }
 
@@ -791,6 +793,8 @@ const addInputNumber = () => {
     console.log(e)
     currentElement.value = e.currentTarget
   })
+
+  groups.push(inputNumber)
 
   layer.add(inputNumber)
 }
