@@ -55,60 +55,35 @@ const beautifulAxios = inject('axios')
 
 onMounted(() => {
 
-  const stageStringify = sessionStorage.getItem('stageStringify')
+  // const stageStringify = sessionStorage.getItem('stageStringify')
 
   // console.log(stageStringify)
 
+  const stageStringify = null
+
   // 本地有从本地拿
-  if (stageStringify) {
-    /*
-      太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
-      死给你看
-     */
-    // console.log(stageStringify)
-    const stageJSON = JSON.parse(stageStringify)
-    // console.log(stageJSON)
-    stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+  const token = authStore().token
+  let Headers = {'Authorization': token};
+  let formerContent = ''
+  axios.get('http://www.aamofe.top/api/document/view_prototype/' + designId, {
+    headers: Headers,
+    params: {
+      prototype_id: designId
+    }
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log(response.data)
 
-    stage.find('Image').forEach((imageNode) => {
-      const src = imageNode.getAttr('src');
-      const image = new Image();
-      image.onload = () => {
-        imageNode.image(image);
-        imageNode.getLayer().batchDraw();
-      }
-      image.src = src;
-    });
-
-    sessionStorage.removeItem('stageStringify')
-  }
-  // 本地没有从服务端拿
-  else {
-    const token = authStore().token
-
-    let Headers = { 'Authorization': token };
-
-    let formerContent = ''
-
-    axios.get('http://www.aamofe.top/api/document/view_prototype/' + designId, {
-      headers: Headers,
-      params: {
-        prototype_id: designId
-      }
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(response.data)
-
-          formerContent = response.data.prototype.content
-          prototypeTitle.value = response.data.prototype.title
-          const width = response.data.prototype.width
-          const height = response.data.prototype.height
-          initialSize.value = {
-            width: width,
-            height: height
-          }
-          isTemplate.value = response.data.prototype.is_template
+        formerContent = response.data.prototype.content
+        prototypeTitle.value = response.data.prototype.title
+        const width = response.data.prototype.width
+        const height = response.data.prototype.height
+        initialSize.value = {
+          width: width,
+          height: height
+        }
+        isTemplate.value = response.data.prototype.is_template
 
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
@@ -126,13 +101,110 @@ onMounted(() => {
               }
             })
 
-            /*
-              这样行不行，只有天知道
-             */
-            // 遍历舞台上的所有节点
-            stage.find(node => {
+          /*
+            这样行不行，只有天知道
+           */
+          // 遍历舞台上的所有节点
+          // stage.find(node => {
+          //
+          //     // 检查节点的类型
+          //     if (node.attrs.defineType === 'KonvaImage') {
+          //       const myShape = new KonvaImage(node.getAttrs());
+          //       node.parent.add(myShape);
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaSwitch') {
+          //       const myShape = new KonvaSwitch(node.getAttrs());
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaButton') {
+          //       const myShape = new KonvaButton(node.getAttrs());
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaInput') {
+          //       const myShape = new KonvaInput(node.getAttrs());
+          //       // 将新创建的实例添加到舞台中
+          //       node.parent.add(myShape);
+          //       // 删除原来的节点
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaInputNumber') {
+          //       const myShape = new KonvaInputNumber(node.getAttrs());
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaRadio') {
+          //       const myShape = new KonvaRadio(node.getAttrs());
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaRect') {
+          //
+          //       const att = node.getAttrs()
+          //       console.log(att)
+          //
+          //       const myShape = new KonvaRect(att);
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //
+          //       myShape.scaleX(att.scaleX)
+          //       myShape.scaleY(att.scaleY)
+          //
+          //       node.parent.add(myShape);
+          //       // groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaSelect') {
+          //       const myShape = new KonvaSelect(node.getAttrs());
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaText') {
+          //       const myShape = new KonvaText(node.getAttrs());
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //       node.parent.add(myShape);
+          //       // groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //     else if (node.attrs.defineType === 'KonvaSlider') {
+          //       const myShape = new KonvaSlider(node.getAttrs());
+          //       myShape.on('click', (e) => {
+          //         currentElement.value = e.currentTarget
+          //       })
+          //       node.parent.add(myShape);
+          //       groups.push(myShape)
+          //       node.destroy();
+          //     }
+          //   });
 
-              // 检查节点的类型
+          const allLayers = stage.getChildren()
+
+          allLayers.forEach(currentLayer => {
+
+            const allNodes = currentLayer.children
+            console.log(allNodes)
+            allNodes.forEach(node => {
+              console.log(node)
               if (node.attrs.defineType === 'KonvaImage') {
                 const myShape = new KonvaImage(node.getAttrs());
                 node.parent.add(myShape);
@@ -177,10 +249,18 @@ onMounted(() => {
                 node.destroy();
               }
               else if (node.attrs.defineType === 'KonvaRect') {
-                const myShape = new KonvaRect(node.getAttrs());
+
+                const att = node.getAttrs()
+                console.log(att)
+
+                const myShape = new KonvaRect(att);
                 myShape.on('click', (e) => {
                   currentElement.value = e.currentTarget
                 })
+
+                myShape.scaleX(att.scaleX)
+                myShape.scaleY(att.scaleY)
+
                 node.parent.add(myShape);
                 // groups.push(myShape)
                 node.destroy();
@@ -212,145 +292,143 @@ onMounted(() => {
                 groups.push(myShape)
                 node.destroy();
               }
-            });
-
-            stage.find('Image').forEach((imageNode) => {
-              const src = imageNode.getAttr('src');
-              const image = new Image();
-              image.onload = () => {
-                imageNode.image(image);
-                imageNode.getLayer().batchDraw();
-              }
-              image.src = src;
-            });
-
-            stage.find('KonvaImage').forEach((image) => {
-              image.insertEventListener()
             })
+          })
 
-            console.log(stage.getLayers())
-            sessionStorage.removeItem('stageStringify')
-          }
-          else {
-            stage = new Konva.default.Stage({
-              container: 'canvasContainer',
-              // width: 950.4,
-              // height: 534.6,
-              width: 1920,
-              height: 1080,
-            });
-
-            const bgLayer = new Konva.default.Layer();
-            stage.add(bgLayer);
-
-            // 创建一个背景矩形
-            const backgroundRect = new Konva.default.Rect({
-              width: stage.width(),
-              height: stage.height(),
-              fill: 'white', // 设置背景颜色
-            });
-            bgLayer.add(backgroundRect);
-          }
-
-          layer = new Konva.default.Layer();
-          stage.add(layer);
-
-          stage.on('click tap', function (e) {
-
-            const isBackgroundLayer = () => {
-              const layerWidth = e.target.attrs.width
-              const layerHeight = e.target.attrs.height
-              const stageWidth = e.currentTarget.attrs.width
-              const stageHeight = e.currentTarget.attrs.height
-              return layerHeight === stageHeight && layerWidth === stageWidth;
+          stage.find('Image').forEach((imageNode) => {
+            const src = imageNode.getAttr('src');
+            const image = new Image();
+            image.onload = () => {
+              imageNode.image(image);
+              imageNode.getLayer().batchDraw();
             }
-
-            console.log(e)
-            // if click on empty area - remove all transformers
-            if (e.target === stage || isBackgroundLayer()) {
-              stage.find('Transformer').forEach(tr => tr.destroy());
-              layer.draw();
-              return;
-            }
-            // remove old transformers
-            stage.find('Transformer').forEach(tr => tr.destroy());
-
-            // create new transformer
-            const tr = new Konva.default.Transformer({
-              ignoreStroke: true,
-              padding: 5
-            });
-            layer.add(tr);
-            tr.attachTo(e.target);
+            image.src = src;
           });
 
-          // 创建一个右键菜单图层
-          const contextMenuLayer = new Konva.Layer();
-          stage.add(contextMenuLayer);
+          stage.find('KonvaImage').forEach((image) => {
+            image.insertEventListener()
+          })
 
-
-          // 监听全局鼠标右键点击事件，设置右键菜单的位置和选中项
-          window.addEventListener('contextmenu', (e) => {
-            console.log(e)
-            e.preventDefault();
-            const stageBox = stage.container().getBoundingClientRect();
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            contextMenuPosition.value = {
-              x: mouseX,
-              y: mouseY
-            }
-
-            const inStageX = e.clientX - stageBox.left
-            const inStageY = e.clientY - stageBox.top
-
-            let clickedGroup = null;
-
-            // 遍历所有组来寻找包含点击坐标的组
-            for (const group of groups) {
-              const groupBoundingBox = group.getClientRect();
-              if (
-                inStageX >= groupBoundingBox.x &&
-                inStageX <= groupBoundingBox.x + groupBoundingBox.width &&
-                inStageY >= groupBoundingBox.y &&
-                inStageY <= groupBoundingBox.y + groupBoundingBox.height
-              ) {
-                clickedGroup = group;
-                break; // 找到后立即退出循环
-              }
-            }
-
-            if (clickedGroup) {
-              isGroup = true
-              selectedItem.value = clickedGroup
-            }
-            else {
-              isGroup = false
-              selectedItem.value = stage.getIntersection({
-                x: inStageX,
-                y: inStageY
-              });
-            }
-
-            showContextMenu.value = selectedItem.value !== null;
-            contextMenuLayer.draw();
+          console.log(stage.getLayers())
+          sessionStorage.removeItem('stageStringify')
+        } else {
+          stage = new Konva.default.Stage({
+            container: 'canvasContainer',
+            // width: 950.4,
+            // height: 534.6,
+            width: 1920,
+            height: 1080,
           });
 
-          // 监听全局点击事件，隐藏右键菜单
-          window.addEventListener('click', () => {
-            showContextMenu.value = false;
-            contextMenuLayer.draw();
+          const bgLayer = new Konva.default.Layer();
+          stage.add(bgLayer);
+
+          // 创建一个背景矩形
+          const backgroundRect = new Konva.default.Rect({
+            width: stage.width(),
+            height: stage.height(),
+            fill: 'white', // 设置背景颜色
           });
-
-          // 每隔0.1秒钟重新绘制
-          setInterval(() => {
-            layer.batchDraw();
-          }, 100);
-
+          bgLayer.add(backgroundRect);
         }
-      })
-  }
+
+        layer = new Konva.default.Layer();
+        stage.add(layer);
+
+        stage.on('click tap', function (e) {
+
+          const isBackgroundLayer = () => {
+            const layerWidth = e.target.attrs.width
+            const layerHeight = e.target.attrs.height
+            const stageWidth = e.currentTarget.attrs.width
+            const stageHeight = e.currentTarget.attrs.height
+            return layerHeight === stageHeight && layerWidth === stageWidth;
+          }
+
+          console.log(e)
+          // if click on empty area - remove all transformers
+          if (e.target === stage || isBackgroundLayer()) {
+            stage.find('Transformer').forEach(tr => tr.destroy());
+            layer.draw();
+            return;
+          }
+          // remove old transformers
+          stage.find('Transformer').forEach(tr => tr.destroy());
+
+          // create new transformer
+          const tr = new Konva.default.Transformer({
+            ignoreStroke: true,
+            padding: 5
+          });
+          layer.add(tr);
+          tr.attachTo(e.target);
+        });
+
+        // 创建一个右键菜单图层
+        const contextMenuLayer = new Konva.Layer();
+        stage.add(contextMenuLayer);
+
+
+        // 监听全局鼠标右键点击事件，设置右键菜单的位置和选中项
+        window.addEventListener('contextmenu', (e) => {
+          console.log(e)
+          e.preventDefault();
+          const stageBox = stage.container().getBoundingClientRect();
+          const mouseX = e.clientX;
+          const mouseY = e.clientY;
+
+          contextMenuPosition.value = {
+            x: mouseX,
+            y: mouseY
+          }
+
+          const inStageX = e.clientX - stageBox.left
+          const inStageY = e.clientY - stageBox.top
+
+          let clickedGroup = null;
+
+          // 遍历所有组来寻找包含点击坐标的组
+          for (const group of groups) {
+            const groupBoundingBox = group.getClientRect();
+            if (
+              inStageX >= groupBoundingBox.x &&
+              inStageX <= groupBoundingBox.x + groupBoundingBox.width &&
+              inStageY >= groupBoundingBox.y &&
+              inStageY <= groupBoundingBox.y + groupBoundingBox.height
+            ) {
+              clickedGroup = group;
+              break; // 找到后立即退出循环
+            }
+          }
+
+          if (clickedGroup) {
+            isGroup = true
+            selectedItem.value = clickedGroup
+          } else {
+            isGroup = false
+            selectedItem.value = stage.getIntersection({
+              x: inStageX,
+              y: inStageY
+            });
+          }
+
+          showContextMenu.value = selectedItem.value !== null;
+          contextMenuLayer.draw();
+        });
+
+        // 监听全局点击事件，隐藏右键菜单
+        window.addEventListener('click', () => {
+          showContextMenu.value = false;
+          contextMenuLayer.draw();
+        });
+
+        // 每隔0.1秒钟重新绘制
+        setInterval(() => {
+          layer.batchDraw();
+        }, 100);
+
+      }
+    })
 
   yMap.observe((event) => {
     console.log(event)
