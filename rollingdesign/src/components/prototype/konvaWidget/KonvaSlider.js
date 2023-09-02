@@ -8,6 +8,7 @@ export default class KonvaSlider extends Konva.Group {
     this.max = config.max || 100;
     this.value = config.value || 0
     this.attrs.defineType = 'KonvaSlider'
+    this.attrs.flagId = config.flagId
 
     this.sliderRect = new Konva.Rect({
       x: -50,
