@@ -21,43 +21,44 @@
           <div class="page" style="width:98%;margin-left: 1%;">
             <!--团队信息-->
 
-            <div style="display: flex;align-items: center;">
-              <el-page-header @back="jumpToProject()">
-                <!-- <template #icon style="size: font-size:30px;" /> -->
 
-                <template #content>
-                  <el-row>
-                    <span style="font-size:larger;font-weight: 800;display: flex;align-items: center;">
-                      <span class="canClick" @click="jumpToProject()">{{ nowProject.name }}</span>
-                      &nbsp;<el-icon>
-                        <ArrowRightBold />&nbsp;
-                      </el-icon>
-                    </span>
+            <el-page-header @back="jumpToProject()">
+              <!-- <template #icon style="size: font-size:30px;" /> -->
 
-                    <span style="font-size:larger;font-weight: 800;display: flex;align-items: center;">{{ nowFolder.name
-                    }}&nbsp;<el-icon>
-                        <ArrowRightBold />
-                      </el-icon> </span>
-                  </el-row>
-                </template>
-              </el-page-header>
+              <template #content>
+                <el-row>
+                  <span style="font-size:larger;font-weight: 800;display: flex;align-items: center;">
+                    <span class="canClick" @click="jumpToProject()">{{ nowProject.name }}</span>
+                    &nbsp;<el-icon>
+                      <ArrowRightBold />&nbsp;
+                    </el-icon>
+                  </span>
 
-              <div style="display: flex;flex: 1;justify-content: flex-end;">
-                <el-button type="primary" plain @click="newDesign()">新建原型</el-button>
-                <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
-              </div>
+                  <span style="font-size:larger;font-weight: 800;display: flex;align-items: center;">{{ nowFolder.name
+                  }}&nbsp;<el-icon>
+                      <ArrowRightBold />
+                    </el-icon> </span>
+                </el-row>
+              </template>
+            </el-page-header>
+
+            <div style="display: flex;flex: 1;justify-content: flex-end;">
+              <el-button type="primary" plain @click="newDesign()">新建原型</el-button>
+              <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
             </div>
+          </div>
 
 
-            <!--团队信息结束-->
+          <!--团队信息结束-->
 
-            <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
+          <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">{{ nowProject.name }} </span>
             </el-row> -->
 
-            <!--文件-->
+          <!--文件-->
 
 
+          <div  style="display: flex;flex-direction: column;align-content: space-between;">
             <el-row v-if="fileNum"><!--如果该项目下有文件-->
               <div class="designBlock" v-for="(item, index) in fileList" :key="index">
 
@@ -130,7 +131,7 @@
             </el-row>
 
             <!--模板-->
-            <div class="draftFiles footer" style="margin-top:20px">
+            <div class="draftFiles footer" style="margin-top:20px;">
               <!--如果展示的是网页推荐模板-->
               <el-row style="margin-top:20px;margin-bottom: 30px;margin-left:24px;" v-if="webTemplateShow">
                 <!--页头-->
@@ -161,7 +162,7 @@
                         <div style="width:100%;">
                           <div style="display: flex;justify-content: center;">
                             <img src="@/assets/projects/design.png" @click="import_from_template(item.id, 'prototype')"
-                              style="width:80px;height:80px" />
+                              style="width:65px;height:65px" />
                           </div>
                           <div style="font-size: 10px;display: flex;justify-content: center;">
                             {{ item.title }}
@@ -185,7 +186,7 @@
                         <div style="width:100%;">
                           <el-row style="display: flex;justify-content: center;">
                             <img src="@/assets/projects/word.jpg" @click="import_from_template(item.id, 'document')"
-                              style="width:80px;height:80px" />
+                              style="width:65px;height:65px" />
                           </el-row>
                           <el-row style="font-size: 12px;display: flex;justify-content: center;">
                             {{ item.title }}
@@ -241,6 +242,7 @@
                     </div>
                   </div>
                 </el-col>
+
                 <el-divider direction="vertical" style="height: 170px;"></el-divider>
                 <el-col :span="11">
                   <div style="margin-left:24px">
@@ -270,10 +272,10 @@
 
               </el-row>
 
+
             </div>
-
-
           </div>
+          
         </el-main>
       </el-container>
     </el-container>
@@ -327,12 +329,12 @@ const jumpToProject = () => {
 /*跳转对应页*/
 const jumpToDesign = (id) => {
   //this.$router.push('/video/'+video_id);
-  const path_url = '/design/' + nowProject.projectId + '/'+nowFolder.id + '/' + id;
+  const path_url = '/design/' + nowProject.projectId + '/' + nowFolder.id + '/' + id;
   window.open(path_url, '_self');
 }
 
 const jumpToDoc = (id) => {
-  const path_url = '/tiptap/'+nowProject.projectId + '/' + id;
+  const path_url = '/tiptap/' + nowProject.projectId + '/' + id;
   window.open(path_url, '_self');
 }
 
@@ -504,9 +506,12 @@ const fetchAllTemplate = () => {
         console.log(design_private.value)
 
 
-        design_private_num.value = document_private.value.length;
-        document_private_num.value = design_private.value.length;
+        design_private_num.value = design_private.value.length;
+        document_private_num.value = document_private.value.length;
 
+        console.log(design_private_num.value);
+
+        cons
         return;
       }
       else {

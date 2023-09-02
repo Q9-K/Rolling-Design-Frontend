@@ -21,14 +21,14 @@
           <div class="page" style="width:98%;margin-left: 1%;">
             <!--团队信息-->
             <el-row style="margin-bottom: 30px;">
-              <span style="font-size:23px;font-weight: 500;">
+              <span style="font-size:23px;font-weight: 900;">
                 回收站
               </span>
             </el-row>
 
             <el-row class="block" style="display: flex;align-items: center;margin-bottom: 35px;">
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:19px;font-weight: 800;">已删除项目</span>
+              <span style="font-size:19px;font-weight: 600;">已删除项目</span>
 
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!-- <el-popconfirm title="此操作不可撤回，您确定要全部删除吗？" confirm-button-text="确定" cancel-button-text="取消"

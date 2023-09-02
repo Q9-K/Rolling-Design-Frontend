@@ -23,7 +23,7 @@
             <!--团队信息-->
             <div style="display: flex;align-items: center;margin-bottom: 18px;">
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:larger;font-weight: 800;display: flex;align-items: center;">{{ nowProject.name
+              <span style="font-size:23px;font-weight: 900;display: flex;align-items: center;">{{ nowProject.name
               }}&nbsp;<el-icon>
                   <ArrowRightBold />
                 </el-icon> </span>
@@ -32,11 +32,12 @@
                 <el-button type="primary" @click="newFolderDialog = true">新建文件夹</el-button>
                 <el-button type="primary" @click="newDesign()">新建原型</el-button>
                 <el-button type="primary" @click="newDoc()">新建文档</el-button>
-                <el-button v-if="activeName === 'delete'" type="primary" @click="deleteAllDelFileForever()">全部删除</el-button>
+                <el-button v-if="activeName === 'delete'" type="primary"
+                  @click="deleteAllDelFileForever()">全部删除</el-button>
               </div>
             </div>
 
-            <el-dialog v-model="newFolderDialog" title="创建文件夹" width="25%">
+            <el-dialog v-model="newFolderDialog" title="创建文件夹" width="23%" center>
               <el-input v-model="newFolderNameInput" placeholder="请输入文件夹名称" />
               <template #footer>
                 <span class="dialog-footer">
@@ -57,180 +58,115 @@
             <el-tabs v-model="activeName" class="demo-tabs" @tab-click="">
               <el-tab-pane label="文件" name="files">
 
-                <el-row v-if="fileNum"><!--如果该项目下有文件-->
-                  <div class="designBlock" v-for="(item, index) in fileList" :key="index">
+                <div style="display: flex;flex-direction: column;align-content: space-between;">
 
-                    <div class="block" @mouseover="highlightBlock(index)" @mouseleave="resetBlock(index)"
-                      :class="{ 'highlighted-row': highlightIndex === index || clickIndex === index }">
-                      <div v-if="index === highlightIndex || clickIndex === index"
-                        style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
+                  <el-row v-if="fileNum"><!--如果该项目下有文件-->
+                    <div class="designBlock" v-for="(item, index) in fileList" :key="index">
 
-                        <el-dropdown trigger="click" placement="bottom-start">
-                          <!-- <el-icon style="text-align: right;justify-self: right;justify-content:flex-end;"> -->
-                          <el-icon class="el-icon--right" @click="clickIcon(index)">
-                            <More />
-                          </el-icon>
+                      <div class="block" @mouseover="highlightBlock(index)" @mouseleave="resetBlock(index)"
+                        :class="{ 'highlighted-row': highlightIndex === index || clickIndex === index }">
+                        <div v-if="index === highlightIndex || clickIndex === index"
+                          style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
 
-                          <template #dropdown>
-                            <el-dropdown-menu v-if="item.type === 'folder'">
-                              <el-dropdown-item :icon="FolderOpened"
-                                @click="openFile(index, item.type, item.id)">打开</el-dropdown-item>
-                              <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
-                                重命名
-                              </el-dropdown-item>
-                              <!-- <el-dropdown-item :icon="CopyDocument"
+                          <el-dropdown trigger="click" placement="bottom-start">
+                            <!-- <el-icon style="text-align: right;justify-self: right;justify-content:flex-end;"> -->
+                            <el-icon class="el-icon--right" @click="clickIcon(index)">
+                              <More />
+                            </el-icon>
+
+                            <template #dropdown>
+                              <el-dropdown-menu v-if="item.type === 'folder'">
+                                <el-dropdown-item :icon="FolderOpened"
+                                  @click="openFile(index, item.type, item.id)">打开</el-dropdown-item>
+                                <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
+                                  重命名
+                                </el-dropdown-item>
+                                <!-- <el-dropdown-item :icon="CopyDocument"
                                 @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item> -->
-                              <el-dropdown-item :icon="FolderDelete"
-                                @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
-                            </el-dropdown-menu>
+                                <el-dropdown-item :icon="FolderDelete"
+                                  @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
+                              </el-dropdown-menu>
 
-                            <el-dropdown-menu v-else>
-                              <el-dropdown-item :icon="Document"
-                                @click="openFile(index, item.type, item.id)">打开</el-dropdown-item>
-                              <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
-                                重命名
-                              </el-dropdown-item>
-                              <!-- <el-dropdown-item :icon="CopyDocument"
+                              <el-dropdown-menu v-else>
+                                <el-dropdown-item :icon="Document"
+                                  @click="openFile(index, item.type, item.id)">打开</el-dropdown-item>
+                                <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
+                                  重命名
+                                </el-dropdown-item>
+                                <!-- <el-dropdown-item :icon="CopyDocument"
                                 @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item> -->
-                              <el-dropdown-item :icon="DocumentDelete"
-                                @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
+                                <el-dropdown-item :icon="DocumentDelete"
+                                  @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
 
-                            </el-dropdown-menu>
-                          </template>
+                              </el-dropdown-menu>
+                            </template>
 
-                        </el-dropdown>
-                      </div>
-                      <div v-else
-                        style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
-                        &nbsp;&nbsp;
-                      </div>
-
-                      <div class="fileBlock">
-
-                        <img v-if="item.type === 'folder'" class="img-size" src="@/assets/projects/folder.png"
-                          @click="openFile(index, item.type, item.id)" />
-                        <img v-if="item.type === 'document'" class="img-size" src="@/assets/projects/word.jpg"
-                          @click="openFile(index, item.type, item.id)" />
-                        <img v-if="item.type === 'prototype'" class="img-size" src="@/assets/projects/design.png"
-                          @click="openFile(index, item.type, item.id)" />
-
-                        <div v-if="renameInputBlock[index]">
-                          <el-input v-model="renameInput" placeholder="请输入名称"
-                            @keyup.enter="renameFile(index, item.type, item.id)" />
+                          </el-dropdown>
                         </div>
-                        <div v-else>
-                          {{ item.name }}
+                        <div v-else
+                          style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
+                          &nbsp;&nbsp;
+                        </div>
+
+                        <div class="fileBlock">
+
+                          <img v-if="item.type === 'folder'" class="img-size" src="@/assets/projects/folder.png"
+                            @click="openFile(index, item.type, item.id)" />
+                          <img v-if="item.type === 'document'" class="img-size" src="@/assets/projects/word.jpg"
+                            @click="openFile(index, item.type, item.id)" />
+                          <img v-if="item.type === 'prototype'" class="img-size" src="@/assets/projects/design.png"
+                            @click="openFile(index, item.type, item.id)" />
+
+                          <div v-if="renameInputBlock[index]">
+                            <el-input v-model="renameInput" placeholder="请输入名称"
+                              @keyup.enter="renameFile(index, item.type, item.id)" />
+                          </div>
+                          <div v-else>
+                            {{ item.name }}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </el-row>
-                <el-row v-else>
-                  <el-empty description="该项目暂无文件" style="width: 100%;">
-                    <el-button type="primary" plain @click="newFolderDialog = true">新建文件夹</el-button>
-                    <el-button type="primary" plain @click="newDesign()">新建原型</el-button>
-                    <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
-                  </el-empty>
-                </el-row>
-
-                <!--模板-->
-                <!-- <el-footer> -->
-
-                <div class="draftFiles footer" style="margin-top:20px">
-                  <!--如果展示的是网页推荐模板-->
-                  <el-row style="margin-top:20px;margin-bottom: 30px;margin-left:24px;" v-if="webTemplateShow">
-                    <!--页头-->
-                    <el-col :span="24">
-                      <el-row class="blockHeader" style="display:flex">
-                        <el-col :span="14" class="blockTitle" style="text-align: left;margin-bottom: 10px;">
-                          <span style="font-size:large;font-weight: 700;color:#409eff;"
-                            @click="webTemplateShow = true; myTemplateShow = false;">
-                            推荐模版
-                          </span>
-                          <el-divider direction="vertical" />
-                          <span style="font-size:large;font-weight: 700;"
-                            @click="webTemplateShow = false; myTemplateShow = true;">
-                            所创建模版
-                          </span>
-                        </el-col>
-                      </el-row>
-                    </el-col>
-
-                    <el-col :span="12">
-                      <div>
-                        <div style="text-align: left;font-weight: 600;margin-bottom: 12px;">
-                          原型
-                        </div>
-
-                        <el-row :gutter="3">
-                          <el-col :span="4" v-for="(item, index) in design_public" :key="index"
-                            style="margin-bottom: 20px;">
-                            <div style="width:100%;">
-                              <div style="display: flex;justify-content: center;">
-                                <img src="@/assets/projects/design.png" style="width:70px;height:70px"
-                                  @click="import_from_template(item.id, 'prototype')" />
-                              </div>
-                              <div style="font-size: 10px;display: flex;justify-content: center;">
-                                {{ item.title }}
-                              </div>
-                            </div>
-                          </el-col>
-                        </el-row>
-                      </div>
-                    </el-col>
-
-                    <el-divider direction="vertical" style="height: 170px;"></el-divider>
-
-                    <el-col :span="11">
-                      <div style="margin-left:24px">
-                        <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                          文档
-                        </div>
-                        <el-row :gutter="3">
-                          <el-col :span="4" v-for="(item, index) in document_public" :key="index"
-                            style="margin-bottom: 20px;">
-                            <div style="width:100%;">
-                              <div style="display: flex;justify-content: center;">
-                                <img src="@/assets/projects/word.jpg" style="width:70px;height:70px"
-                                  @click="import_from_template(item.id, 'document')" />
-                              </div>
-                              <div style="text-align:center;font-size: 12px;">
-                                {{ item.title }}
-                              </div>
-                            </div>
-                          </el-col>
-                        </el-row>
-                      </div>
-                    </el-col>
+                  </el-row>
+                  <el-row v-else>
+                    <el-empty description="该项目暂无文件" style="width: 100%;">
+                      <el-button type="primary" plain @click="newFolderDialog = true">新建文件夹</el-button>
+                      <el-button type="primary" plain @click="newDesign()">新建原型</el-button>
+                      <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
+                    </el-empty>
                   </el-row>
 
-                  <!--自己的模板-->
-                  <el-row style="margin-top:20px;margin-bottom: 30px;margin-left:24px;" v-else-if="myTemplateShow">
-                    <!--页头-->
-                    <el-col :span="24">
-                      <el-row class="blockHeader" style="display:flex">
-                        <el-col :span="14" class="blockTitle" style="text-align: left;margin-bottom: 10px;">
-                          <span style="font-size:large;font-weight: 700;"
-                            @click="webTemplateShow = true; myTemplateShow = false;">
-                            推荐模版
-                          </span>
-                          <el-divider direction="vertical" />
-                          <span style="font-size:large;font-weight: 700;color:#409eff;"
-                            @click="webTemplateShow = false; myTemplateShow = true;">
-                            所创建模版
-                          </span>
-                        </el-col>
-                      </el-row>
-                    </el-col>
+                  <!--模板-->
+                  <!-- <el-footer> -->
 
-                    <el-col :span="12">
-                      <div style="">
-                        <div style="text-align: left;font-weight: 600;margin-bottom: 12px;">
-                          原型
-                        </div>
-                        <div v-if="design_private_num">
+                  <div class="draftFiles footer" style="margin-top:20px;">
+                    <!--如果展示的是网页推荐模板-->
+                    <el-row style="margin-top:20px;margin-bottom: 30px;margin-left:24px;" v-if="webTemplateShow">
+                      <!--页头-->
+                      <el-col :span="24">
+                        <el-row class="blockHeader" style="display:flex">
+                          <el-col :span="14" class="blockTitle" style="text-align: left;margin-bottom: 10px;">
+                            <span style="font-size:large;font-weight: 700;color:#409eff;"
+                              @click="webTemplateShow = true; myTemplateShow = false;">
+                              推荐模版
+                            </span>
+                            <el-divider direction="vertical" />
+                            <span style="font-size:large;font-weight: 700;"
+                              @click="webTemplateShow = false; myTemplateShow = true;">
+                              所创建模版
+                            </span>
+                          </el-col>
+                        </el-row>
+                      </el-col>
+
+                      <el-col :span="12">
+                        <div>
+                          <div style="text-align: left;font-weight: 600;margin-bottom: 12px;">
+                            原型
+                          </div>
+
                           <el-row :gutter="3">
-                            <el-col v-for="(item, index) in design_private" :key="index" :span="4"
+                            <el-col :span="4" v-for="(item, index) in design_public" :key="index"
                               style="margin-bottom: 20px;">
                               <div style="width:100%;">
                                 <div style="display: flex;justify-content: center;">
@@ -244,48 +180,116 @@
                             </el-col>
                           </el-row>
                         </div>
-                        <div v-else style="display: flex;justify-content: center;">
-                          暂无模板
-                          <!-- <el-empty description="暂无创建的原型模板" style="width: 100%;height:100px;"> -->
-                          <!-- <el-button type="primary" plain @click="newProjectDialog = true">新建项目</el-button> -->
-                          <!-- </el-empty> -->
-                        </div>
-                      </div>
-                    </el-col>
-                    <el-divider direction="vertical" style="height: 170px;"></el-divider>
-                    <el-col :span="11">
-                      <div style="margin-left:24px">
-                        <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
-                          文档
-                        </div>
-                        <div v-if="document_private_num">
+                      </el-col>
+
+                      <el-divider direction="vertical" style="height: 170px;"></el-divider>
+
+                      <el-col :span="11">
+                        <div style="margin-left:24px">
+                          <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
+                            文档
+                          </div>
                           <el-row :gutter="3">
-                            <el-col :span="4" v-for="(item, index) in document_private" :key="index"
+                            <el-col :span="4" v-for="(item, index) in document_public" :key="index"
                               style="margin-bottom: 20px;">
                               <div style="width:100%;">
                                 <div style="display: flex;justify-content: center;">
                                   <img src="@/assets/projects/word.jpg" style="width:65px;height:65px"
                                     @click="import_from_template(item.id, 'document')" />
                                 </div>
-                                <div style="font-size: 12px;display: flex;justify-content: center;">
+                                <div style="text-align:center;font-size: 12px;">
                                   {{ item.title }}
                                 </div>
                               </div>
                             </el-col>
                           </el-row>
                         </div>
-                        <div v-else style="display: flex;justify-content: center;">
-                          暂无模板
-                          <!-- <el-empty description="暂无创建的文档模板" style="margin-left: 40%;width: 180px;height:70px"> -->
-                          <!-- </el-empty> -->
+                      </el-col>
+                    </el-row>
+
+                    <!--自己的模板-->
+                    <el-row style="margin-top:20px;margin-bottom: 30px;margin-left:24px;" v-else-if="myTemplateShow">
+                      <!--页头-->
+                      <el-col :span="24">
+                        <el-row class="blockHeader" style="display:flex">
+                          <el-col :span="14" class="blockTitle" style="text-align: left;margin-bottom: 10px;">
+                            <span style="font-size:large;font-weight: 700;"
+                              @click="webTemplateShow = true; myTemplateShow = false;">
+                              推荐模版
+                            </span>
+                            <el-divider direction="vertical" />
+                            <span style="font-size:large;font-weight: 700;color:#409eff;"
+                              @click="webTemplateShow = false; myTemplateShow = true;">
+                              所创建模版
+                            </span>
+                          </el-col>
+                        </el-row>
+                      </el-col>
+
+                      <el-col :span="12">
+                        <div style="">
+                          <div style="text-align: left;font-weight: 600;margin-bottom: 12px;">
+                            原型
+                          </div>
+                          <div v-if="design_private_num">
+                            <el-row :gutter="3">
+                              <el-col v-for="(item, index) in design_private" :key="index" :span="4"
+                                style="margin-bottom: 20px;">
+                                <div style="width:100%;">
+                                  <div style="display: flex;justify-content: center;">
+                                    <img src="@/assets/projects/design.png" style="width:65px;height:65px"
+                                      @click="import_from_template(item.id, 'prototype')" />
+                                  </div>
+                                  <div style="font-size: 10px;display: flex;justify-content: center;">
+                                    {{ item.title }}
+                                  </div>
+                                </div>
+                              </el-col>
+                            </el-row>
+                          </div>
+                          <div v-else style="display: flex;justify-content: center;">
+                            暂无模板
+                            <!-- <el-empty description="暂无创建的原型模板" style="width: 100%;height:100px;"> -->
+                            <!-- <el-button type="primary" plain @click="newProjectDialog = true">新建项目</el-button> -->
+                            <!-- </el-empty> -->
+                          </div>
                         </div>
-                      </div>
-                    </el-col>
+                      </el-col>
+                      <el-divider direction="vertical" style="height: 170px;"></el-divider>
+                      <el-col :span="11">
+                        <div style="margin-left:24px">
+                          <div style="text-align: left;font-weight: 500;margin-bottom: 12px;">
+                            文档
+                          </div>
+                          <div v-if="document_private_num">
+                            <el-row :gutter="3">
+                              <el-col :span="4" v-for="(item, index) in document_private" :key="index"
+                                style="margin-bottom: 20px;">
+                                <div style="width:100%;">
+                                  <div style="display: flex;justify-content: center;">
+                                    <img src="@/assets/projects/word.jpg" style="width:65px;height:65px"
+                                      @click="import_from_template(item.id, 'document')" />
+                                  </div>
+                                  <div style="font-size: 12px;display: flex;justify-content: center;">
+                                    {{ item.title }}
+                                  </div>
+                                </div>
+                              </el-col>
+                            </el-row>
+                          </div>
+                          <div v-else style="display: flex;justify-content: center;">
+                            暂无模板
+                            <!-- <el-empty description="暂无创建的文档模板" style="margin-left: 40%;width: 180px;height:70px"> -->
+                            <!-- </el-empty> -->
+                          </div>
+                        </div>
+                      </el-col>
 
-                  </el-row>
+                    </el-row>
+                  </div>
+
+
                 </div>
-
-
                 <!-- </el-footer> -->
               </el-tab-pane>
 
@@ -403,7 +407,7 @@ const fromTemplateJumpToDoc = (id) => {
   //this.$router.push('/video/'+video_id);
   const path_url = '/tiptap/' + nowProject.projectId + '/' + id;
   // window.open(path_url, '_self');
-  router.push({ path: path_url, query: { is_template:true } });
+  router.push({ path: path_url, query: { is_template: true } });
 }
 
 const jumpToDoc = (id) => {
@@ -586,8 +590,8 @@ const fetchAllTemplate = () => {
         console.log(design_private.value);
 
 
-        design_private_num.value = document_private.value.length;
-        document_private_num.value = design_private.value.length;
+        design_private_num.value = design_private.value.length;
+        document_private_num.value = document_private.value.length;
 
         return;
       }

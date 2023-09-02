@@ -418,14 +418,14 @@
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
                     </div>
-                    <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                    <div><el-button style="width:98%;margin-left: 1%;"  type="primary" @click="copyLink()">点击复制链接</el-button></div>
                   </el-popover>
                 </div>
               </el-col>
             </el-row>
 
             <!--创建新项目的对话框-->
-            <el-dialog v-model="newProjectDialog" title="创建新项目" width="26%" center>
+            <el-dialog v-model="newProjectDialog" title="创建新项目" width="23%" center>
               <span>
                 <el-input v-model="newProjectNameInput" placeholder="请输入项目名称" />
               </span>
@@ -514,13 +514,17 @@
 
                         <el-row style="width:90%;text-align: left;">
                           <el-col :span="23">
-                            <span v-if="renameProjectBlock[index]" class="designName" style="padding-left:2%;">
-                              <el-input v-model="renameProjectInput" placeholder="请输入项目名称"
+                            <el-row v-if="renameProjectBlock[index]" class="designName" style="padding-left:2%;display: flex;flex-direction: row;align-items: center;">
+                              <el-input v-model="renameProjectInput" placeholder="请输入项目名称" style="width:80%"
                                 @keyup.enter="renameProject(index, projectItem.id); renameProjectBlock[index] = false" />
-                            </span>
-                            <span v-else class="designName" style="padding-left:5%">
+                                <el-icon style="margin-right: 6px;margin-left: 6px;" @click="renameProject(index, projectItem.id);renameProjectBlock[index]=false;"><Check />
+                                </el-icon>
+                                <el-icon  @click="renameProjectInput='';renameProjectBlock[index]=false;"><Close /></el-icon>
+
+                            </el-row>
+                            <el-row v-else class="designName" style="padding-left:5%">
                               {{ projectItem.name }}
-                            </span>
+                            </el-row>
                           </el-col>
                           <el-col :span="1">
                             <span class="rightContent" style="text-align: right;">
@@ -621,23 +625,23 @@ const steps = [
   {
     attachTo: { element: '#team_info' },
     content: {
-      title: "团队信息",
+      title: "团队信息（1/9）",
       description: "点击查看团队具体信息，点击右侧图标可以切换团队；初次注册登录默认创建进入个人空间"
     },
-    popper: {
-      modifiers: {
-        offset: {
-          offset: '0, 10' // 在垂直方向上向下偏移 10 个像素
-        },
-        // preventOverflow: {
-        //   enabled: true, // 避免弹出框超出视窗边界
-        //   padding: 10 // 边界的内边距
-        // },
-        // flip: {
-        //   enabled: true // 自动翻转位置以适应视窗
-        // }
-      },
-    },
+    // popper: {
+    //   modifiers: {
+    //     offset: {
+    //       offset: '0, 10' // 在垂直方向上向下偏移 10 个像素
+    //     },
+    //     // preventOverflow: {
+    //     //   enabled: true, // 避免弹出框超出视窗边界
+    //     //   padding: 10 // 边界的内边距
+    //     // },
+    //     // flip: {
+    //     //   enabled: true // 自动翻转位置以适应视窗
+    //     // }
+    //   },
+    // },
     options: {
       labels: {
         previousButton: '上一步',   // 将 'Previous' 修改为 '上一步'
@@ -649,7 +653,7 @@ const steps = [
   {
     attachTo: { element: '#guide' },
     content: {
-      title: "导航栏",
+      title: "导航栏（2/9）",
       description: "根据需求点击导航项，进入对应页面"
     },
     options: {
@@ -663,7 +667,7 @@ const steps = [
   {
     attachTo: { element: '#user_info' },
     content: {
-      title: "个人信息",
+      title: "个人信息（3/9）",
       description: "点击这里可查看账户信息，可以退出登录"
     },
     options: {
@@ -677,7 +681,7 @@ const steps = [
   {
     attachTo: { element: '#message' },
     content: {
-      title: "消息通知",
+      title: "消息通知（4/9）",
       description: "点击查看消息通知，可一键已读所有未读消息"
     },
     options: {
@@ -705,7 +709,7 @@ const steps = [
   {
     attachTo: { element: '#beginner-guidance' },
     content: {
-      title: "新手引导",
+      title: "新手引导（5/9）",
       description: "您可以点击此处，查看新手引导"
     },
     options: {
@@ -719,7 +723,7 @@ const steps = [
   {
     attachTo: { element: '#btn' },
     content: {
-      title: "功能区",
+      title: "功能区（6/9）",
       description: "您可以在此处创建新项目开始工作；当有管理权限且当前团队非个人空间时也可以邀请成员加入当前团队"
     },
     options: {
@@ -733,7 +737,7 @@ const steps = [
   {
     attachTo: { element: '#search' },
     content: {
-      title: "搜索",
+      title: "搜索（7/9）",
       description: "您可以输入关键字搜索，快速找到您需要的文件"
     },
     options: {
@@ -747,7 +751,7 @@ const steps = [
   {
     attachTo: { element: '#sort' },
     content: {
-      title: "排序",
+      title: "排序（8/9）",
       description: "您可以设定文件的排序方式，默认排序方式为按创建时间的升序"
     },
     options: {
@@ -762,7 +766,7 @@ const steps = [
     // attachTo: { element: projectList.value[0]?'#project0':null},
     attachTo: { element: '#project_area' },
     content: {
-      title: "项目",
+      title: "项目（9/9）",
       description: "点击进入项目，可创建原型或文档"
     },
     options: {
@@ -1177,43 +1181,7 @@ const getInviteLink = () => {
 }
 
 const copyLink = () => {
-  console.log("can u see me")
-
-  navigator.clipboard.writeText(inviteLink.value)
-
-  // popper.value.hide()
-  // console.log(popper.value)
-
-  ElNotification({
-    title: 'Success',
-    message: '复制成功',
-    type: 'success',
-    duration: 1000
-  })
-
-  // // 创建 Clipboard 实例，指定要复制的文本
-  // const clipboard = new Clipboard('.copy-button', {
-  //   text: () => inviteLink.value,
-  // });
-  //
-  // // 复制成功时的处理
-  // clipboard.on('success', (e) => {
-  //   console.log('复制成功', e);
-  //   e.clearSelection(); // 清除选中状态
-  //   clipboard.destroy(); // 销毁 clipboard 实例
-  // });
-  //
-  // // 复制失败时的处理
-  // clipboard.on('error', (e) => {
-  //   console.error('复制失败', e);
-  //   clipboard.destroy(); // 销毁 clipboard 实例
-  // });
-  //
-  // // 触发点击事件，开始复制
-  // clipboard.onClick({
-  //   // 触发点击事件的元素，这里使用按钮
-  //   delegateTarget: () => $refs.copyButton,
-  // });
+  navigator.clipboard.writeText(inviteLink.value);
 }
 
 const highlightBlock = (index) => {

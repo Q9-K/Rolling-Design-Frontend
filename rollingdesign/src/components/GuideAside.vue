@@ -1,6 +1,6 @@
 <template>
   <!--侧栏-->
-  <div>
+  <div class="aside_page">
     <el-scrollbar>
       <el-col :span="24"><!--占一整列-->
         <el-menu :default-active="guideIndex" width="100%" style="height:100vh" class="el-menu-vertical-demo side-guide"
@@ -488,4 +488,12 @@ const print = (content) => {
   /* 设置横线的颜色 */
   margin: 10px 0;
   /* 可选：设置横线上下的间距 */
-}</style>
+}
+
+.aside_page{
+  /* overflow: hidden; */
+  /* background-color: aliceblue; */
+  background-color: rgb(101, 151, 195)!important;
+
+}
+</style>
