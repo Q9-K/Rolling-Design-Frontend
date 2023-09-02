@@ -20,163 +20,71 @@
         <el-main>
           <div class="page" style="width:98%;margin-left: 1%;">
             <!--团队信息-->
-            <el-row class="block" style="display: flex;align-items: center;">
-              <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" />
-              <span style="font-size:larger;font-weight: 800;">xxx的团队</span>
+            <el-row style="margin-bottom: 30px;">
+              <span style="font-size:23px;font-weight: 500;">
+                回收站
+              </span>
+            </el-row>
+
+            <el-row class="block" style="display: flex;align-items: center;margin-bottom: 35px;">
+              <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
+              <span style="font-size:19px;font-weight: 800;">已删除项目</span>
 
               <div style="display: flex;flex: 1;justify-content: flex-end;">
-                <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                <!-- <el-button type="primary" @click="centerDialogVisible = true; getLink()">邀请成员</el-button> -->
+                <!-- <el-popconfirm title="此操作不可撤回，您确定要全部删除吗？" confirm-button-text="确定" cancel-button-text="取消"
+                  @confirm="deleteAll()" >
+                  <template #reference>
+                    <el-button type="primary" >清倒</el-button>
+                  </template>
+                </el-popconfirm> -->
+
+                <el-button plain type="danger" @click="openDelAllBox()">清倒</el-button>
+                <!-- <el-button type="success" plain @click="openRecoverAllBox()">全部恢复</el-button> -->
               </div>
             </el-row>
-
             <!--团队信息结束-->
 
-            <el-row style="margin-top:40px;margin-bottom: 30px;">
+            <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">回收站</span>
-            </el-row>
-
+            </el-row> -->
 
             <!--项目部分-->
             <!--展开状态（此为默认状态）-->
-            <div v-if="projectShow">
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="projectShow = false">
-                  <el-icon>
-                    <CaretBottom />
-                  </el-icon>项目
-                </span>
-              </el-row>
-              <!--项目封面图-->
-              <!--如果有项目-->
-              <el-row v-if="projectNum">
-                <div class="designBlock" v-for="(item, index) in items" :key="index">
-                  <div style="width:100%">
-                    <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
-                  </div>
-                  <div style="display:flex;justify-content: space-between;width:90%">
-                    <span class="designName" style="padding-left:4px;display: flex;">
-                      项目名字{{ index }}
-                    </span>
-                  </div>
 
+            <!--如果有项目-->
+            <el-row v-if="delProjectNum">
+              <div class="designBlock" v-for="(item, index) in delProjectList" :key="index">
+                <div style="width:100%">
+                  <img class="round designImg" src="@/assets/projectImage.png" @click="cannotOpen(item.name)"
+                    style="width:90%;height:150px" />
                 </div>
-              </el-row>
-              <!--如果没有项目-->
-              <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-              </el-row>
-            </div>
-            <!--如果被折叠-->
-            <div v-else>
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="projectShow = true">
-                  <el-icon>
-                    <CaretRight />
-                  </el-icon>项目
-                </span>
-              </el-row>
-            </div>
+                <div style="display:flex;justify-content: space-between;width:90%">
+                  <span class="projectName" style="padding-left:4px;display: flex;">
+                    {{ item.name }}
+                  </span>
+                  <span class="rightContent">
 
-            <!--原型部分-->
-            <!--展开状态（此为默认状态）-->
-            <div v-if="designShow">
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="designShow = false">
-                  <el-icon>
-                    <CaretBottom />
-                  </el-icon>原型
-                </span>
-              </el-row>
-              <!--原型封面图-->
-              <!--如果有原型-->
-              <el-row v-if="designNum">
-                <div class="designBlock" v-for="(item, index) in items" :key="index">
-                  <div style="width:100%">
-                    <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
-                  </div>
-                  <div style="display:flex;justify-content: space-between;width:90%">
-                    <span class="designName" style="padding-left:4px;display: flex;">
-                      项目名字{{ index }}
-                    </span>
-                    <span class="rightContent">
+                    <el-dropdown trigger="click" placement="bottom-start">
+
                       <el-icon>
                         <More />
                       </el-icon>
-                    </span>
-                  </div>
-
-                  <!-- <el-popover ref="popoverOp" :virtual-ref="moreOp" trigger="click" title="With title" virtual-triggering>
-                    <span> Some content </span>
-                  </el-popover> -->
-
+                      <template #dropdown>
+                        <el-dropdown-item :icon="RemoveFilled"
+                          @click="deleteProject(index, item.id)">删除项目</el-dropdown-item>
+                        <el-dropdown-item :icon="DeleteFilled" @click="openDelAllBox()">全部删除</el-dropdown-item>
+                        <el-dropdown-item :icon="CirclePlusFilled"
+                          @click="recoverProject(index, item.id)">恢复项目</el-dropdown-item>
+                      </template>
+                    </el-dropdown>
+                  </span>
                 </div>
-              </el-row>
-              <!--如果没有原型-->
-              <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-              </el-row>
-            </div>
-            <!--如果被折叠-->
-            <div v-else>
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="designShow = true">
-                  <el-icon>
-                    <CaretRight />
-                  </el-icon>原型
-                </span>
-              </el-row>
-            </div>
-
-            <!--文档部分-->
-            <!--展开状态（此为默认状态）-->
-            <div v-if="fileShow">
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="fileShow = false">
-                  <el-icon>
-                    <CaretBottom />
-                  </el-icon>文档
-                </span>
-              </el-row>
-              <!--文档封面图-->
-              <!--如果有文档-->
-              <el-row v-if="fileNum">
-                <div class="designBlock" v-for="(item, index) in items" :key="index">
-                  <div style="width:100%">
-                    <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
-                  </div>
-                  <div style="display:flex;justify-content: space-between;width:90%">
-                    <span class="designName" style="padding-left:4px;display: flex;">
-                      文档名字{{ index }}
-                    </span>
-                    <span class="rightContent">
-                      <el-icon>
-                        <More />
-                      </el-icon>
-                    </span>
-                  </div>
-
-                  <!-- <el-popover ref="popoverOp" :virtual-ref="moreOp" trigger="click" title="With title" virtual-triggering>
-                    <span> Some content </span>
-                  </el-popover> -->
-
-                </div>
-              </el-row>
-              <!--如果没有文档-->
-              <el-row v-else>
-                <img class="round" src="@/assets/noFile.png" style="width: 100%;" />
-              </el-row>
-            </div>
-            <!--如果被折叠-->
-            <div v-else>
-              <el-row style="margin-top:40px;margin-bottom: 30px;">
-                <span style="font-size:large;font-weight: 500;" @click="fileShow = true">
-                  <el-icon>
-                    <CaretRight />
-                  </el-icon>文档
-                </span>
-              </el-row>
-            </div>
+              </div>
+            </el-row>
+            <!--如果没有项目-->
+            <el-row v-else>
+              <el-empty description="暂无项目" style="width: 100%;" />
+            </el-row>
           </div>
         </el-main>
       </el-container>
@@ -185,9 +93,11 @@
 </template>
 
 <script setup>
+import qs from 'qs'
 import { ref, unref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
 import axios from 'axios'
+import { onMounted } from 'vue'
 import { reactive, toRefs } from 'vue'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
@@ -197,61 +107,16 @@ import {
   CaretBottom,
   CaretRight,
   MoreFilled,
+  EditPen,
+  FolderDelete,
+  FolderOpened,
+  RemoveFilled,
+  DeleteFilled,
+  CirclePlusFilled,
   More,
 } from '@element-plus/icons-vue'
+import { authStore } from '@/store'
 /*侧栏*/
-
-/*切换团队*/
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
-/*新建团队*/
-const addTeamVisible = ref(false)
-const addTeamNameInput = ref('')
-const addTeamIntroductionInput = ref('')
-/*上传团队标志*/
-const imageUrl = ref('')
-
-// const handleAvatarSuccess: UploadProps['onSuccess'] = (
-//   response,
-//   uploadFile
-// ) => {
-//   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-// }
-
-// const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-//   if (rawFile.type !== 'image/jpeg') {
-//     ElMessage.error('Avatar picture must be JPG format!')
-//     return false
-//   } else if (rawFile.size / 1024 / 1024 > 2) {
-//     ElMessage.error('Avatar picture size can not exceed 2MB!')
-//     return false
-//   }
-//   return true
-// }
-/*头像*/
-
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-
-
-
-const handleRemove = (file, uploadFiles) => {
-  console.log(file, uploadFiles)
-}
-
-const handlePreview = (uploadFile) => {
-  console.log(uploadFile)
-}
-
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -260,54 +125,180 @@ const handleOpen = (key, keyPath) => {
 const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
-
-
 /*跳转对应页*/
 const jumpTo = (path) => {
   //this.$router.push('/video/'+video_id);
   const path_url = '/' + path;
   window.open(path_url, '_self');
 }
-/*侧栏导航栏结束*/
-
-/*邀请成员*/
-// import { ref } from 'vue'
-const centerDialogVisible = ref(false) /*邀请对话框*/
-const input = ref('')/*邀请成员时，输入框*/
 
 /*main*/
-const projectShow = ref(true)
-const projectNum = ref(3)//项目的数量
-const designShow = ref(true)
-const items = ref(['Item 1', 'Item 2', 'Item 3', 'Item 3', 'Item 5', 'Item 6'])
-const designNum = ref(7)//原型的数量
+let nowTeam = reactive({
+  teamId: '',
+  name: '',
+  logo: '',
+  createTime: '',
+  creator: '',
+  memberNum: '',
+  projectNum: '',
+  role_string: '',
+})
 
-const fileShow = ref(true)
-const fileNum = ref(0)//文件的数量
+const delProjectNum = ref('')//项目的数量
+const delProjectList = ref([])
+const invideLink = ref('');
 
-const projectButtonRef = ref()
-const projectPopoverRef = ref()
+onMounted(() => {
+  fetchDelProjectData();
+  fetchNowTeam();
+})
 
-const projectOut = () => {
-  // console.log(logmyButton.value.textContent)
-  console.log(projectPopoverRef)
-  console.log( unref(projectPopoverRef))
-  unref(projectPopoverRef).popperRef?.delayHide?.()
+//获取当前团队
+const fetchNowTeam = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
+    .then((response) => {
+      // console.log(response);
+
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        nowTeam.teamId = response.data.team.id;
+        nowTeam.name = response.data.team.name;
+        nowTeam.createTime = response.data.team.created_at;
+        nowTeam.creator = response.data.team.creator;
+        nowTeam.role_string = response.data.team.role_string;
+        // if ((nowTeam.role_string === 'CR' || nowTeam.role_string === 'MG') && nowTeam.name != "个人空间") {
+        //   getInviteLink();
+        // }
+        localStorage.setItem('teamId', response.data.team.id);
+        localStorage.setItem('teamName', response.data.team.name);
+
+        if (response.data.team.role_string === "CR" || response.data.team.role_string === "MR") { localStorage.setItem('isAdmin', true); }
+        else { localStorage.setItem('isAdmin', false); }
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
 }
 
-const invideLink = ref();
-/*获取邀请链接*/
-const getLink = () => {
-  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
+const fetchDelProjectData = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/team/all_deleted_project/', { headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //所有团队信息
+        response.data.projects.forEach((project, index) => {
+          delProjectList.value.push(project);/*【这样写】*/
+        })
+        // console.log(projectList.value);
+
+        delProjectNum.value = response.data.projects.length;
+        // console.log(response.data.projects.length)
+        console.log(delProjectList.value);
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+}
+
+const deleteProject = (index, projectId) => {
+  console.log(index);
+  console.log(projectId);
+  axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: projectId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+      console.log(projectId);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        let i = 0;
+        for (i = 0; i < delProjectList.value.length - 1; i++) {
+          if (i >= index) {
+            // console.log(i);
+            delProjectList.value[i] = delProjectList.value[i + 1];
+          }
+        }
+        delProjectList.value.pop();
+        // console.log(projectList.value);
+        delProjectNum.value--;
+      }
+      else {//失败
+        console.log(projectId);
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+const recoverProject = (index, projectId) => {
+  console.log(index);
+
+  console.log(projectId);
+  axios.post('http://www.aamofe.top/api/team/recover_one_project/', qs.stringify({ project_id: projectId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+      console.log(projectId);
+
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        let i = 0;
+        for (i = 0; i < delProjectList.value.length - 1; i++) {
+          if (i >= index) {
+            // console.log(i);
+            delProjectList.value[i] = delProjectList.value[i + 1];
+          }
+        }
+        delProjectList.value.pop();
+        // console.log(projectList.value);
+        delProjectNum.value--;
+      }
+      else {//失败
+        console.log(projectId);
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+
+const deleteAll = () => {
+  axios.post('http://www.aamofe.top/api/team/all_deleted_project/', {
+    headers: { Authorization: authStore().token }
+  })
     .then(res => {
       // 处理响应数据
       console.log(res);
 
       if (res.data.errno == 0)//成功
       {
-        console.log(res.data.invatation);
-        invideLink.value = res.data.invatation;
-        return;
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        delProjectList = [];
+        ElMessage.success('全部删除成功')
       }
       else {//失败
         ElMessage.error(res.data.msg);
@@ -320,6 +311,96 @@ const getLink = () => {
     });
 }
 
+const recoverAll = () => {
+  console.log(nowTeam.teamId);
+
+  axios.post('http://www.aamofe.top/api/team/recover_all_project/', qs.stringify({ team_id: nowTeam.teamId }), {
+    headers: { Authorization: authStore().token }
+  })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+      if (res.data.errno == 0)//成功
+      {
+        ElMessage.success(res.data.msg);
+        //把项目从projectList里删除
+        delProjectList = [];
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
+}
+//打开是否确认全部删除和恢复的按钮
+const openDelAllBox = () => {
+  ElMessageBox.confirm(
+    '此操作不可撤回，您确定要全部删除吗？',
+    '确认删除',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      deleteAll();
+    })
+    .catch(() => {
+    })
+}
+
+const openRecoverAllBox = () => {
+  ElMessageBox.confirm(
+    '您即将将回收站里的项目全部恢复，您确定吗？',
+    '确认恢复',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      recoverAll();
+    })
+    .catch(() => {
+    })
+}
+//【】
+const cannotOpen = (name) => {
+  ElMessageBox.alert('不能打开项目' + '"' + name + '",因为它在回收站中', '', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: 'OK',
+  })
+}
+/*获取邀请链接*/
+// const getLink = () => {
+//   axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
+//     .then(res => {
+//       // 处理响应数据
+//       console.log(res);
+
+//       if (res.data.errno == 0)//成功
+//       {
+//         console.log(res.data.invatation);
+//         invideLink.value = res.data.invatation;
+//         return;
+//       }
+//       else {//失败
+//         ElMessage.error(res.data.msg);
+//         return;
+//       }
+//     })
+//     .catch(error => {
+//       // 处理请求错误
+//       console.error(error);
+//     });
+// }
 </script>
 
 <style scoped>
@@ -349,36 +430,6 @@ const getLink = () => {
   border-radius: 10px;
   /* 设置边框圆角半径，根据需要调整 */
 }
-
-/*上传团队封面*/
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
-}
-
 
 .round {
   border-radius: 10px;

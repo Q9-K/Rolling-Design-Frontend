@@ -1,170 +1,186 @@
 <template>
   <!--侧栏-->
   <div>
-    <el-col :span="24"><!--占一整列-->
-      <el-menu :default-active="guideIndex" width="100%" style="height:100vh" class="el-menu-vertical-demo side-guide"
-        @open="handleOpen" @close="handleClose">
-        <!--logo图标-->
-        <!-- <img alt="web logo" src="@/assets/logo.svg" style="width:100%;margin-bottom: 10px;"> -->
-        <img alt="web logo" src="@/assets/webLogo.png" style="width:100%;margin-bottom: 10px;">
+    <el-scrollbar>
+      <el-col :span="24"><!--占一整列-->
+        <el-menu :default-active="guideIndex" width="100%" style="height:100vh" class="el-menu-vertical-demo side-guide"
+          @open="handleOpen" @close="handleClose">
+          <!--logo图标-->
+          <!-- <img alt="web logo" src="@/assets/logo.svg" style="width:100%;margin-bottom: 10px;"> -->
+          <img alt="web logo" src="@/assets/webLogo.png" style="width:100%;margin-bottom: 10px;">
 
-        <!--团队信息-->
-        <div
-          style="background-color:rgb(232, 247, 254);padding-left: 18px;padding-top: 18px;padding-bottom: 18px;margin-bottom: 20px;">
-          <el-row class="block" style="display: flex;justify-content: space-between;align-items: center;">
-            <div style="display: flex;align-items: center;">
-              <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span v-if="authStore().isLogin" style="font-size:larger;font-weight: 800;">{{ authStore().teamName
-              }}</span>
+          <!--团队信息-->
+          <div id="team_info"
+            style="background-color:rgb(232, 247, 254);padding-left: 18px;padding-top: 18px;padding-bottom: 18px;margin-bottom: 20px;">
+            <el-row class="block" style="display: flex;justify-content: space-between;align-items: center;">
+              <div style="display: flex;align-items: center;">
+                <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
+                <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name
+                }}</span>
+              </div>
+
+              <el-icon class="el-icon--right" style="margin-right:1%" ref="btnSwiTeam" v-click-outside="teamOutside">
+                <ArrowRightBold />
+              </el-icon>
+            </el-row>
+          </div>
+
+          <!--切换团队-->
+          <el-popover ref="popoverTeam" :virtual-ref="btnSwiTeam" trigger="click" title="" virtual-triggering
+            width="300px" placement="left">
+            <div style="margin-left:10px;">
+              <div style="font-weight:900;font-size: 18px;margin-bottom: 15px;">
+                <span style="margin-left: 6px;">切换团队</span>
+              </div>
+              <div>
+
+                <!--团队信息-->
+                <div class="block round" v-for="(teamItem, index) in teamList" :key="index" @mouseover="highlightRow(index)"
+                  @mouseleave="resetRow(index)" :class="{ 'highlighted-row': highlightedIndex === index }" style="margin-bottom: 10px;padding:4px 0 4px 5px">
+                  
+                  <div style="display: flex;flex-direction: row;align-items: center;" @click="switchToTeam(teamItem.id)">
+                    <el-avatar shape="square" :size="50" :src="teamItem.cover_url" style="" />
+                    <!--昵称和介绍-->
+                    <el-row
+                      style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 12px;">
+                      <el-col :span="24" class="in-center round-choice"
+                        style="text-align: left;font-weight: 600;font-size: 17px;margin-bottom: 5px;">{{
+                          teamItem.name }}</el-col>
+                      <!-- <el-col :span="24" style="text-align: left;color: rgb(80, 79, 79);font-size: 13px;">描述</el-col> -->
+                    </el-row>
+                  </div>
+                  <!-- <el-divider /> -->
+                  <!-- <div v-if="index < teamList.length - 2" class="my-divider"></div> -->
+                </div>
+
+                <!--团队信息结束-->
+              </div>
             </div>
-            <el-icon class="el-icon--right" style="margin-right:7%" ref="btnSwiTeam" v-click-outside="teamOutside">
-              <ArrowRight />
+          </el-popover>
+
+
+          <!--主页-->
+          <div id="guide">
+          <el-menu-item index="index" @click="jumpTo('index')">
+            <template #title>
+              <el-icon>
+                <HomeFilled />
+              </el-icon>
+              <span> 主页 </span>
+            </template>
+          </el-menu-item>
+
+          <el-menu-item index="teamPeople" @click="jumpTo('teamPeople')">
+            <template #title>
+              <el-icon>
+                <Avatar />
+              </el-icon>
+              <span> 团队成员 </span>
+            </template>
+          </el-menu-item>
+
+          <!--项目-->
+          <el-sub-menu index="project">
+            <template #title>
+              <el-icon>
+                <Grid />
+              </el-icon>
+              <span>项目</span>
+            </template>
+
+            <el-menu-item v-for="(projectItem, index) in projectList" :key="index" 
+              @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
+            <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
+          </el-sub-menu>
+
+          <!-- 回收站-->
+          <el-menu-item index="recover" @click="jumpTo('recover')">
+            <el-icon>
+              <DeleteFilled />
             </el-icon>
-          </el-row>
+            <span>回收站</span>
+          </el-menu-item>
+
+          <el-menu-item index="settings" @click="jumpTo('settings')">
+            <template #title>
+              <el-icon>
+                <Tools />
+              </el-icon>
+              <span> 团队设置 </span>
+            </template>
+          </el-menu-item>
+
+
+          <!--新建团队-->
+          <el-menu-item @click="addTeamVisible = true">
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <span>新建团队</span>
+          </el-menu-item>
         </div>
 
-        <el-popover ref="popoverTeam" :virtual-ref="btnSwiTeam" trigger="click" title="" virtual-triggering width="300px"
-          placement="left">
-          <div style="margin-left:10px;">
-            <div style="font-weight:900;font-size: 18px;margin-bottom: 15px;">
-              <span style="margin-left: 15px;">切换团队</span>
-            </div>
-            <div>
+          <!--新建团队的对话框-->
+          <el-dialog v-model="addTeamVisible" title="" width="35%" center>
+            <el-row class="tac">
+              <!--文本部分-->
+              <el-col class="textAddTeam" :span="12" style="display: flex;flex-direction: column;">
+                <div style="font-size:25px;font-weight:600;margin-bottom: 5px;">创建新团队</div>
+                <div>你可以和成员在团队中一起协作</div>
 
-              <!--团队信息-->
-              <div class="block" v-for="(teamItem, index) in teamList" :key="index" @mouseover="highlightRow(index)"
-                @mouseleave="resetRow(index)" :class="{ 'highlighted-row': highlightedIndex === index }">
-                <div style="display: flex;flex-direction: row;align-items: center;" @click="switchToTeam(teamItem.id)">
-                  <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="" /> -->
-                  <!--昵称和介绍-->
-                  <el-row
-                    style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 12px;">
-                    <el-col :span="24" class="in-center round-choice" style="text-align: left;font-weight: 600;font-size: 17px;margin-bottom: 5px;">{{
-                      teamItem.name }}</el-col>
-                    <!-- <el-col :span="24" style="text-align: left;color: rgb(80, 79, 79);font-size: 13px;">描述</el-col> -->
-                  </el-row>
+                <!--团队名称-->
+                <div style="font-size:larger;font-weight:500;margin-top: 20px;margin-bottom: 5px;">
+                  团队名称</div>
+                <div> <el-input style="width:90%" v-model="addTeamNameInput" placeholder="请输入团队名称" />
                 </div>
-                <!-- <el-divider /> -->
-                <!-- <div v-if="index < teamList.length - 2" class="my-divider"></div> -->
-              </div>
 
-              <!--团队信息结束-->
-            </div>
-          </div>
-        </el-popover>
+                <!--团队描述-->
+                <div style="font-size:larger;font-weight:500;margin-top: 20px;margin-bottom: 5px;">
+                  团队描述</div>
+                <div> <el-input style="width:90%" v-model="addTeamInfoInput" placeholder="请输入团队描述" />
+                </div>
 
 
-        <!--主页-->
-        <el-menu-item index="index" @click="jumpTo('index')">
-          <template #title>
-            <el-icon>
-              <HomeFilled />
-            </el-icon>
-            <span> 主页 </span>
-          </template>
-        </el-menu-item>
+                <div style="margin-left:8%;margin-top: 30%;margin-bottom: 10px;">
+                  <el-button style="width:84%;" type="primary" @click="buildNewTeam()">
+                    确认创建
+                  </el-button>
+                </div>
 
-        <el-menu-item index="teamPeople" @click="jumpTo('teamPeople')">
-          <template #title>
-            <el-icon>
-              <Avatar />
-            </el-icon>
-            <span> 团队成员 </span>
-          </template>
-        </el-menu-item>
+                <!--logo-->
+                <img alt="web logo" src="@/assets/webLogo.png" style="width:90%;margin-top: 10px;">
 
-        <!--项目-->
-        <el-sub-menu index="project">
-          <template #title>
-            <el-icon>
-              <Grid />
-            </el-icon>
-            <span>项目</span>
-          </template>
+              </el-col>
+              <!--图片部分-->
+              <el-col :span="12">
+                <div class="imageAddTeam">
+                  <img src="@/assets/addTeamImage.png" alt="Image" style="width:100%" />
+                </div>
+              </el-col>
+            </el-row>
 
-          <el-menu-item v-for="(projectItem, index) in projectList" :key="index" :index="'project-' + projectItem.id"
-            @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
-          <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
-        </el-sub-menu>
-
-        <!-- 回收站-->
-        <el-menu-item index="recover" @click="jumpTo('recover')">
-          <el-icon>
-            <DeleteFilled />
-          </el-icon>
-          <span>回收站</span>
-        </el-menu-item>
-
-        <!--消息中心-->
-        <el-menu-item index="message" @click="jumpTo('message')">
-          <el-icon>
-            <Comment />
-          </el-icon>
-          <span>消息中心</span>
-        </el-menu-item>
-
-        <!--新建团队-->
-        <el-menu-item @click="addTeamVisible = true">
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <span>新建团队</span>
-        </el-menu-item>
-
-        <!--新建团队的对话框-->
-        <el-dialog v-model="addTeamVisible" title="" width="35%" center>
-          <el-row class="tac">
-            <!--文本部分-->
-            <el-col class="textAddTeam" :span="12" style="display: flex;flex-direction: column;">
-              <div style="font-size:25px;font-weight:600;margin-bottom: 5px;">创建新团队</div>
-              <div>你可以和成员在团队中一起协作</div>
-
-              <!--团队名称-->
-              <div style="font-size:larger;font-weight:500;margin-top: 20px;margin-bottom: 5px;">
-                团队名称</div>
-              <div> <el-input style="width:90%" v-model="addTeamNameInput" placeholder="请输入团队名称" />
-              </div>
-
-              <div style="margin-left:8%;margin-top: 30%;margin-bottom: 10px;">
-                <el-button style="width:84%;" type="primary" @click="buildNewTeam()">
-                  确认创建
-                </el-button>
-              </div>
-
-              <!--logo-->
-              <img alt="web logo" src="@/assets/webLogo.png" style="width:90%;margin-top: 10px;">
-
-            </el-col>
-            <!--图片部分-->
-            <el-col :span="12">
-              <div class="imageAddTeam">
-                <img src="@/assets/addTeamImage.png" alt="Image" style="width:100%" />
-              </div>
-            </el-col>
-          </el-row>
-
-          <!-- <template #footer>
+            <!-- <template #footer>
             <div style="margin-bottom:0 ;">
               <el-button style="width:40%;" type="primary" @click="centerDialogVisible = false; buildNewTeam()">
                 确认创建
               </el-button>
             </div>
           </template> -->
-        </el-dialog>
+          </el-dialog>
 
-      </el-menu>
-
-
-    </el-col>
+        </el-menu>
+      </el-col>
+    </el-scrollbar>
   </div>
 </template>
 
 <script setup>
 import qs from 'qs'
 import axios from 'axios'
+// const axios = inject('axios')
 import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
-import { onMounted } from 'vue'
+import { onMounted,defineProps } from 'vue'
 import { authStore } from "../store/index.js"
 import { reactive, toRefs } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -178,7 +194,9 @@ import {
   HomeFilled,
   DeleteFilled,
   Comment,
+  Tools,
   Grid,
+  ArrowRightBold,
 } from '@element-plus/icons-vue'
 const route = useRoute()
 
@@ -190,15 +208,16 @@ const popoverTeam = ref()
 /*新建团队*/
 const addTeamVisible = ref(false)
 const addTeamNameInput = ref('')
-const addTeamIntroductionInput = ref('')
+const addTeamInfoInput = ref('')
 
 const guideIndex = ref();//侧栏导航高亮标识！！
-const highlightedIndex=ref(-1);
+const highlightedIndex = ref(-1);
 
 let nowTeam = reactive({
   teamId: '',
   name: '',
-  logo: '',
+  desription: '',
+  cover_url: '',
   createTime: '',
   creator: '',
   memberNum: '',
@@ -219,11 +238,13 @@ const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
-      console.log(response);
+      // console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         nowTeam.teamId = response.data.team.id;
         nowTeam.name = response.data.team.name;
+        nowTeam.desription = response.data.team.description;
+        nowTeam.cover_url = response.data.team.cover_url;
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         nowTeam.role_string = response.data.team.role_string;
@@ -249,12 +270,13 @@ const fetchTeamlistData = () => {
 
   axios.get('http://www.aamofe.top/api/team/all_teams/', { headers: Headers })
     .then((response) => {
-      // console.log(response);
+      console.log(response);
       if (response.data.errno == 0) {  //所有团队信息
         response.data.teams.forEach((team, index) => {
           teamList.value.push(team);/*【这样写】*/
           return;
         })
+        teamList.value.pop();
         // console.log(teamList.value);
       }
       else {
@@ -293,7 +315,7 @@ const fetchProjectData = () => {
 const switchToTeam = (team_to_id) => {
   axios.post('http://www.aamofe.top/api/team/checkout_team/', qs.stringify({ team_id: team_to_id }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      console.log(res);
+      // console.log(res);
       if (res.data.errno == 0)//成功
       {
         //重新载入数据
@@ -315,7 +337,7 @@ const switchToTeam = (team_to_id) => {
       console.error(error);
     });
 }
-
+//【】
 const buildNewTeam = () => {
   if (!(addTeamNameInput.value)) {
     console.log('不能为空');
@@ -325,7 +347,7 @@ const buildNewTeam = () => {
 
   axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      console.log(res);
+      // console.log(res);
 
       if (res.data.errno == 0)//成功
       {
@@ -382,7 +404,7 @@ const jumpTo = (path) => {
 
 const jumpToProject = (project_id) => {
   //this.$router.push('/video/'+video_id);
-  const project_show_url = '/project/' + project_id;
+  const project_show_url = '/project/'+ project_id;
   window.open(project_show_url, '_self');
 }
 
@@ -444,6 +466,10 @@ const print = (content) => {
   /* 设置边框圆角半径，根据需要调整 */
 }
 
+.round {
+  border-radius: 10px;
+  /* 设置边框圆角半径，根据需要调整 */
+}
 .my-divider {
   height: 1px;
   /* 设置横线的高度 */

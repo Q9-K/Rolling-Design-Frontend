@@ -18,21 +18,32 @@
         <el-main>
           <div class="page" style="width:98%;margin-left: 1%;">
 
-            <el-row style="margin-top:0;margin-bottom: 30px;">
+            <!-- <el-row style="margin-top:0;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">团队成员</span>
-            </el-row>
+            </el-row> -->
 
             <!--团队信息-->
             <el-row class="block" style="display: flex;align-items: center;margin-bottom: 30px;">
-              <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
+              <el-col :span="16">
+                <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
+                <span style="font-size:larger;font-weight: 800;">团队成员</span>
+              </el-col>
+              <el-col :span="8">
+                <div style="display: flex;flex:1;justify-content: flex-end;">
 
-              <div v-if="roleOperation == 'all' || roleOperation == 'admin'"
-                style="display: flex;flex: 1;justify-content: flex-end;">
-                <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                <el-button type="primary" @click="centerDialogVisible = true">邀请成员</el-button>
-              </div>
-
+                  <el-popover placement="bottom" :width="300" trigger="click">
+                    <template #reference>
+                      <el-button
+                        v-if="(nowTeam.roleString === 'CR' || nowTeam.roleString === 'MG') && nowTeam.name != '个人空间'"
+                        type="primary">邀请成员</el-button>
+                    </template>
+                    <div class="link-block" style="margin-bottom: 12px;">
+                      <div>{{ inviteLink }}</div>
+                    </div>
+                    <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                  </el-popover>
+                </div>
+              </el-col>
             </el-row>
 
             <el-dialog v-model="centerDialogVisible" title="邀请成员加入团队" width="26%" center>
@@ -50,12 +61,14 @@
                 </span>
               </template>
             </el-dialog>
+
+
             <div>
               <el-table :data="memberList" style="width: 90%">
                 <el-table-column prop="nickname" label="昵称" width="400">
                   <template #default="scope">
                     <span class="in-center" style="height:58px">
-                      <el-avatar :size="50" :src="scope.row.avatar_url" style="margin-right: 8px;"/>
+                      <el-avatar :size="50" :src="scope.row.avatar_url" style="margin-right: 8px;" />
                       {{ scope.row.nickname }}
                       <el-tag v-if="scope.row.id == authStore().userId" size="small" style="margin-left: 10px;">我</el-tag>
                     </span>
@@ -138,10 +151,10 @@
                     </span>
 
                   </template>
-                </el-table-column>
-              </el-table>
+                </el-table-column></el-table>
 
             </div>
+
 
 
           </div>
@@ -209,6 +222,9 @@ const fetchData = () => {
         nowTeam.creator = response.data.team.creator;
         nowTeam.role = response.data.team.role;
         nowTeam.roleString = response.data.team.role_string;
+        if ((nowTeam.roleString === 'CR' || nowTeam.roleString === 'MG') && nowTeam.name != "个人空间") {
+          getInviteLink();
+        }
 
         //执行获取团队所有成员
         axios.get('http://www.aamofe.top/api/team/all_members/', { params: { team_id: nowTeam.teamId }, headers: Headers })
@@ -294,6 +310,25 @@ const updateRole = (user_id, newRole) => {
       console.log('Error: ' + error);
     });
 }
+const inviteLink=ref('');
+//邀请别人加入团队
+const getInviteLink = () => {
+  let Headers = { 'Authorization': authStore().token };
+  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: nowTeam.teamId }, headers: Headers })
+    .then((response) => {
+      console.log(response);
+
+      if (response.data.errno == 0) {  //获取成功“我”的身份信息
+        inviteLink.value = response.data.invatation;
+        return;
+      }
+      else {
+        ElMessage.warning(response.data.msg);
+      }
+    }).catch(error => {
+      console.log(error);
+    })
+}
 
 const highlightRow = (index) => {
   highlightedIndex.value = index;
@@ -325,7 +360,8 @@ const print = (content) => {
 }
 
 .el-table {
-  border: none; /* 隐藏表格的所有边框，包括横向分割线 */
+  border: none;
+  /* 隐藏表格的所有边框，包括横向分割线 */
 }
 
 .hintText {
@@ -384,4 +420,5 @@ const print = (content) => {
 .form-row {
   background-color: #ccffcc;
   /* 设置背景色为绿色 */
-}</style>
+}
+</style>

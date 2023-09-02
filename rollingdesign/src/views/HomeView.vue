@@ -5,35 +5,28 @@
       <el-header>
         <!--如果已经登录-->
         <div v-if="userStore.isLogin">
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
             <!-- <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;"> -->
 
-            <img alt="web logo" src="@/assets/logo.svg" style=";margin-right: 30px;height:100px;">
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
 
-            <span style="margin-right:30px">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('index')">
               主页
             </span>
-            <span style="margin-right:30px">
-              草稿箱
-            </span>
-            <span style="margin-right:30px">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('teamPeople')">
               团队管理
             </span>
-            <span style="margin-right:30px">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('project')">
               项目
             </span>
-            <span>
+            <span class="canClick"  @click="jumpTo('chat')">
               消息中心
             </span>
-            <!-- <div style="display: flex;"> -->
 
             <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
               @click="jumpTo('index')">进入工作区</el-button>
             <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
-            <!-- </div> -->
-
-            <!-- <a href=" " target="_blank">备案号：</a>
-        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
           </div>
 
           <div>
@@ -42,9 +35,10 @@
         </div>
         <!--未登录-->
         <div v-else>
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
             <!-- <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;"> -->
-            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-24px;left:22%; height:150px;">
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
             <span style="margin-right:30px" @click="jumpTo('/index')">
               主页
             </span>
@@ -64,11 +58,6 @@
               @click="loginDialog = true">登录</el-button>
             <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large"
               @click="registerDialog = true">注册</el-button>
-
-
-            <!-- <a href=" " target="_blank">备案号：</a>
-          <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a> -->
-
 
             <!--登录-->
             <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
@@ -161,8 +150,28 @@
       </el-header>
 
       <el-main style="height:80vh">
+        <div style="position:absolute;left:14%;top:16% ;width:40%">
+
+          <div style="font-size:30px;margin-bottom:8px;font-weight: 800;">在线一体化</div>
+          <div style="font-size:45px;margin-bottom:8px;font-weight: 900;">软工开发团队协作与管理平台</div>
+          <div style="font-size:30px;margin-bottom:10px;font-weight: 800;">流转设计 &nbsp; &nbsp;让团队开发更简单</div>
+          <div style="font-size:30px;font-weight: 800;">快来使用吧～</div>
+
+          <div class="pulse" v-if="userStore.isLogin" style="margin-top: 20px;">
+            <!-- <transition name="pulse"> -->
+            <el-button color="#626aef" class="btnHover" style="z-index:1999;padding:35px 30px 35px 30px" size="large"
+              @click="jumpTo('index')">
+              <span style="font-size: 27px;">进入工作区</span>
+            </el-button>
+            <!-- </transition> -->
+          </div>
+          <div v-else style="margin-top: 20px;">
+            <el-button color="#626aef" style="z-index:1999;" size="large" @click="loginDialog = true">登录</el-button>
+          </div>
+
+        </div>
         <div>
-          <img class="show" src="@/assets/show.png" />
+          <img class="show imgHover" src="@/assets/show.png" />
         </div>
       </el-main>
       <el-footer style=" position: absolute;bottom: 0;right: 0;text-align: center;"><a href=" " target="_blank">备案号：</a>
@@ -172,6 +181,7 @@
 </template>
 
 <script setup>
+import 'animate.css';//动态效果
 import { useRouter } from 'vue-router'
 import { ref, unref, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -181,35 +191,7 @@ import { reactive, toRefs } from 'vue'
 import axios from 'axios'
 // const axios = inject('axios')
 
-
-// const incrementCount = () => {
-//   authStore.increment() // 调用 store 中的 mutation
-// }
-/*----------*/
 const router = useRouter()
-
-/**/
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
 
 /*main*/
 const loginDialog = ref(false)
@@ -226,8 +208,6 @@ const registerPwdConfrimInput = ref('')
 
 /*注册*/
 const register = () => {
-  // console.log(registerEmailInput);
-
   if (!(registerEmailInput.value && registerNameInput.value && registerPwdInput.value && registerPwdConfrimInput.value)) {
     console.log('不能为空');
     ElMessage.error('请输入所有信息，不能为空');
@@ -402,6 +382,46 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
+.pulse {
+  /* animation: btn-move 1.8s infinite; */
+}
+
+@keyframes btn-move {
+
+  /* 0% {
+        letter-spacing: 2px;
+        transform: translate(0px, 0px);
+    }
+
+    50% {
+        letter-spacing: 6px;
+        transform: translate(0px, -2px);
+    }
+
+    100% {
+        letter-spacing: 4px;
+        transform: translate(0px, 0px);
+    } */
+  /* 0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  } */
+}
 .head {
   /* font-family: SimHei;  */
   font-weight: 600;
@@ -460,10 +480,28 @@ onMounted(() => {
   width: 50%;
 }
 
+.imgHover {
+  transition: transform 0.2s;
+}
+
+.imgHover:hover {
+  transform: scale(1.04);
+}
+
+.btnHover {
+  transition: transform 0.2s;
+}
+
+.btnHover:hover {
+  transform: scale(1.04);
+}
+.canClick{
+  cursor: pointer;
+}
+
 .likeBtnBlock {
   border: 2px solid #d0dcdc9a;
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
-}
-</style>
+}</style>

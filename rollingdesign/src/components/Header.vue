@@ -1,14 +1,19 @@
 <template>
   <!--header-->
   <div>
+    <!-- <VOnboardingWrapper ref="wrapper2" :steps="steps2" /> -->
     <!--顶部-->
-    <el-row style="display: flex;justify-content: flex-end;">
+    <el-row style="display: flex;justify-content: flex-end;align-items: center;">
       <!--通知-->
-      <div @click="this.$router.push('/chat')">聊天</div>
-      <receiveMessage></receiveMessage>
+
+      <div id="chat" @click="this.$router.push('/chat')">聊天</div>
+      <span id="message">
+        <receiveMessage></receiveMessage>
+      </span>
+
 
       <!--顶部的头像-->
-      <div style="margin-left:2%">
+      <div id="user_info" style="margin-left:2%">
         <!-- <el-avatar :size="50" :src="circleUrl" ref="buttonRef" v-click-outside="onClickOutside" /> -->
         <el-avatar :size="50" :src="user.userAvatar" ref="buttonRef" v-click-outside="onClickOutside" />
         <!-- <el-avatar :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ref="buttonRef" v-click-outside="onClickOutside" /> -->
@@ -21,7 +26,8 @@
         <div style="padding-left:15px;padding-right:15px">
           <div style="display: flex;align-items: center;padding-top:10px;" @click="personMsgDialog = true;">
             <!--完善关闭悬浮-->
-            <el-avatar :size="50" :src="user.userAvatar" @click="personMsgDialog = true" style="margin-right:5px" />
+            <span class="canClick"><el-avatar :size="50" :src="user.userAvatar" @click="personMsgDialog = true"
+                style="margin-right:5px" /></span>
             <span style="font-weight:900;font-size:16px;">{{
               user.nickName }}</span>
           </div>
@@ -75,7 +81,8 @@
             <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;padding-left: 20px;">
               <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入昵称</el-col>
               <el-col :span="24">
-                <el-input v-model="nickNameConfigInput" placeholder="请输入昵称" />
+                <el-input v-model="nickNameConfigInput" @keyup.enter="nickNameConfig = false; nickNameConfigMethod()"
+                  placeholder="请输入昵称" />
               </el-col>
             </el-row>
 
@@ -189,7 +196,7 @@ import receiveMessage from './prototype/receiveMessage.vue'
 import { UserFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { reactive, toRefs } from 'vue'
-import { ref, unref } from 'vue'
+import { ref, unref, defineProps } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted } from 'vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
@@ -198,6 +205,37 @@ import {
   Tools,
   SwitchButton,
 } from '@element-plus/icons-vue'
+import { defineComponent } from 'vue'
+import { VOnboardingWrapper, useVOnboarding } from 'v-onboarding'
+import 'v-onboarding/dist/style.css'
+
+const steps2 = [
+  {
+    attachTo: { element: '#user_info' },
+    content: {
+      title: "个人信息",
+      description: "点击这里可查看账户信息，可以退出登录"
+    }
+  },
+  {
+    attachTo: { element: '#message' },
+    content: {
+      title: "消息通知",
+      description: "点击查看消息通知，可一键已读所有未读消息"
+    }
+  },
+  {
+    attachTo: { element: '#chat' },
+    content: {
+      title: "聊天页面",
+      description: "点击进入聊天页面进行聊天，除个人空间外的每个空间都有一个默认的群聊，您可以根据需要进行私聊或创建新的群聊"
+    }
+  }
+]
+// const props = defineProps({
+//   // Define a prop to pass steps2 to the parent component.
+//   steps2: Array,
+// });
 
 const user = reactive({
   userId: '',
@@ -272,7 +310,6 @@ const jumpTo = (path) => {
   window.open(path_url, '_self');
 }
 
-
 const fetchUserData = () => {
   let Headers = { 'Authorization': authStore().token };
 
@@ -288,8 +325,7 @@ const fetchUserData = () => {
         user.nickName = response.data.user_info.nickname;
         nickNameConfigInput.value = user.nickName;
         user.userAvatar = response.data.user_info.avatar_url;
-        localStorage.setItem('userAvatar', user.userAvatar)  //这是头像
-        console.log("🚀 ~ file: Header.vue:291 ~ .then ~ authStore().userAvatar:", authStore().userAvatar)
+        localStorage.setItem('userAvatar', user.userAvatar)  //头像
         user.email = response.data.user_info.email;
         return;
       }
@@ -299,27 +335,6 @@ const fetchUserData = () => {
     }).catch(error => {
       console.log(error);
     })
-
-  // axios.get('http://www.aamofe.top/api/user/personal_info/', { headers: Headers })
-  //   .then((response) => {
-  //     console.log(Headers);
-  //     console.log(response);
-
-  //     if (response.data.errno == 0) {  //获取成功“我”的身份信息
-  //       user.userId = response.data.user_info.id;
-  //       user.name = response.data.user_info.username;
-  //       user.nickName = response.data.user_info.nickname;
-  //       user.userAvatar = response.data.user_info.avatar_url;   //这是头像
-  //       user.email = response.data.user_info.email;
-  //       console.log(user);
-  //       return;
-  //     }
-  //     else {
-  //       ElMessage.warning(response.data.msg);
-  //     }
-  //   }).catch(error => {
-  //     console.log(error);
-  //   })
 }
 
 onMounted(() => {
@@ -470,5 +485,18 @@ const logout = () => {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+
+
+.imgHover {
+  transition: transform 0.2s !important;
+}
+
+.imgHover:hover {
+  transform: scale(1.04) !important;
+}
+
+.canClick {
+  cursor: pointer;
 }
 </style>

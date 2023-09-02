@@ -1,11 +1,15 @@
 <script setup>
-import textWidgetIcon from '@/assets/icon/textWidgetIcon.png'
-import imageWidgetIcon from '@/assets/icon/imageWidgetIcon.png'
-import buttonWidgetIcon from '@/assets/icon/buttonWidgetIcon.png'
-import inputWidgetIcon from '@/assets/icon/inputWidgetIcon.png'
-import choiceWidgetIcon from '@/assets/icon/choiceWidgetIcon.png'
-import rectWidgetIcon from '@/assets/icon/rectWidgetIcon.png'
-import WidgetConfig from "@/components/prototype/left/widgetConfig/WidgetConfig.vue";
+import textWidgetIcon from '../../../assets/prototypeIcon/textWidgetIcon.png'
+import imageWidgetIcon from '../../../assets/prototypeIcon/imageWidgetIcon.png'
+import buttonWidgetIcon from '../../../assets/prototypeIcon/buttonWidgetIcon.png'
+import inputWidgetIcon from '../../../assets/prototypeIcon/inputWidgetIcon.png'
+import choiceWidgetIcon from '../../../assets/prototypeIcon/choiceWidgetIcon.png'
+import rectWidgetIcon from '../../../assets/prototypeIcon/rectWidgetIcon.png'
+import switchWidgetIcon from '../../../assets/prototypeIcon/switchWidgetIcon.png'
+import sliderWidgetIcon from '../../../assets/prototypeIcon/sliderWidgetIcon.png'
+import selectWidgetIcon from '../../../assets/prototypeIcon/selectWidgetIcon.png'
+import inputNumberWidgetIcon from '../../../assets/prototypeIcon/inputNumberWidgetIcon.png'
+import WidgetConfig from "../left/widgetConfig/WidgetConfig.vue";
 
 import {ref, toRefs, watch, provide} from "vue";
 
@@ -17,8 +21,13 @@ const props = defineProps([
   'addInput',
   'addRadio',
   'addRect',
+  'addSwitch',
+  'addSlider',
+  'addSelect',
+  'addInputNumber',
   'currentElement',
   'prototypeTitle',
+  "initialSize"
 ])
 
 const widgets = [
@@ -47,7 +56,7 @@ const widgets = [
     handleClick: props.addButton
   },
   {
-    title: "选择",
+    title: "点击选择",
     icon: choiceWidgetIcon,
     key: "choice",
     handleClick: props.addRadio
@@ -57,12 +66,35 @@ const widgets = [
     icon: rectWidgetIcon,
     key: "rect",
     handleClick: props.addRect
+  },
+  {
+    title: "开关",
+    icon: switchWidgetIcon,
+    key: "switch",
+    handleClick: props.addSwitch
+  },
+  {
+    title: "滑块",
+    icon: sliderWidgetIcon,
+    key: "slider",
+    handleClick: props.addSlider
+  },
+  {
+    title: "下拉选择",
+    icon: selectWidgetIcon,
+    key: "select",
+    handleClick: props.addSelect
+  },
+  {
+    title: "数字输入",
+    icon: inputNumberWidgetIcon,
+    key: "inputNumber",
+    handleClick: props.addInputNumber
   }
 ]
 
 const prototypeName = ref('')
 const activeNames = ref(['page-config', 'add-widget'])
-const currentSize = ref("16 × 9")
 
 watch(
   () => props.currentElement,
@@ -90,27 +122,36 @@ if (props.currentElement) {
   activeNames.value = ['widget-config']
 }
 
-const sizeOptions = [
-  {
-    value: {
-      width: 950.4,
-      height: 534.6
-    },
-    label: "16 × 9",
-  },
-  {
-    value: {
-      width: 720,
-      height: 540
-    },
-    label: "4 × 3",
-  }
-]
+const graphWidth = ref()
+const graphHeight = ref()
 
-const setGraphSize = (value) => {
+if (props.initialSize) {
+  graphWidth.value = props.initialSize.width
+  graphHeight.value = props.initialSize.height
+}
+
+watch(
+  () => props.initialSize,
+  (newValue) => {
+    graphWidth.value = newValue.width
+    graphHeight.value = newValue.height
+  }
+)
+
+const handleSetGraphWidth = (value) => {
+  graphWidth.value = value
+  setGraphSize()
+}
+
+const handleSetGraphHeight = (value) => {
+  graphHeight.value = value
+  setGraphSize()
+}
+
+const setGraphSize = () => {
   props.setGraphSize({
-    width: value.width,
-    height: value.height
+    width: graphWidth.value,
+    height: graphHeight.value
   })
 }
 
@@ -138,21 +179,28 @@ const setPrototypeName = (value) => {
       <el-collapse-item name="page-config" title="设置" class="page-config">
         <div class="select-size-box">
           <p class="select-size-title">
-            画布比例
+            画布宽度
           </p>
-          <el-select
+          <el-input-number
+            v-model="graphWidth"
             class="select-size"
-            v-model="currentSize"
-            placeholder="Select"
-            @change="(value) => setGraphSize(value)"
-          >
-            <el-option
-              v-for="item in sizeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+            :min="10"
+            :max="5000"
+            @change="cur => handleSetGraphWidth(cur)"
+          />
+        </div>
+        <div style="width: 100%; height: 3vh" ></div>
+        <div class="select-size-box">
+          <p class="select-size-title">
+            画布高度
+          </p>
+          <el-input-number
+            v-model="graphHeight"
+            class="select-size"
+            :min="10"
+            :max="5000"
+            @change="cur => handleSetGraphHeight(cur)"
+          />
         </div>
       </el-collapse-item>
       <el-collapse-item name="add-widget" title="组件库" class="add-widget">
@@ -235,7 +283,7 @@ const setPrototypeName = (value) => {
         .select-size {
           height: 100%;
           width: 70%;
-          padding-right: 5%;
+          margin-right: 5%;
           display: flex;
           justify-content: center;
           align-items: center

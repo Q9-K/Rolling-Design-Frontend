@@ -20,10 +20,8 @@ const routes = [
   },
   // 项目展示页
   {
-
     path: '/project/:id',
     name: 'project',
-
     component: () => import(/* webpackChunkName: "about" */ '../views/ProjectView.vue'),
     meta: {
       index: 'project',
@@ -31,8 +29,16 @@ const routes = [
     }
   },
   {
-    // path: '/video/:id',/*注意这里*/
-    path: '/design/:id',
+    path: '/project/:projectId/folder/:id',
+    name: 'folder',
+    component: () => import(/* webpackChunkName: "about" */ '../views/FolderView.vue'),
+    meta: {
+      index: 'folder',
+      requireAuth: true
+    }
+  },
+  {
+    path: '/design/:projectId/:folderId/:id',
     name: '/design',
     component: () => import('../views/PrototypeDesign.vue'),
     meta: {
@@ -46,8 +52,7 @@ const routes = [
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
   {
-    // path: '/video/:id',/*注意这里*/
-    path: '/tiptap/:id',
+    path: '/tiptap/:proejctId/:id',
     name: '/tiptap',
     component: () => import('../views/TipTap.vue'),
     meta: {
@@ -57,6 +62,36 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/DocView.vue'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // meta: { index: 'project:id' }
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
@@ -64,7 +99,7 @@ const routes = [
   {
     path: '/teamPeople',
     name: 'teamPeople',
-    component: () => import(/* webpackChunkName: "about" */ '../views/TeamPeople.vue'),
+    component: () => import('../views/TeamPeople.vue'),
     // meta: { index: 'team:id' }/*--------*/
     // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
     meta: {
@@ -76,10 +111,7 @@ const routes = [
   {
     path: '/teamManage/:id',
     name: 'teamManage',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/TeamManage.vue'),
+    component: () => import('../views/TeamManage.vue'),
     // meta: { index: 'team:id' }/*--------*/
     // meta: (route) => ({ index: `team-${route.params.id}` }) // 使用 route.params.id 设置 meta 值
     meta: {
@@ -90,9 +122,6 @@ const routes = [
   {
     path: '/recover',
     name: 'recover',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/RecoverView.vue'),
     meta: {
       index: 'recover',
@@ -100,15 +129,26 @@ const routes = [
     }
   },
   // 消息
+  // {
+  //   path: '/message',
+  //   name: 'message',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
+  //   meta: {
+  //     index: 'message',
+  //     requireAuth: true
+  //   }
+  // },
   {
-    path: '/message',
-    name: 'message',
+    path: '/test',
+    name: 'test',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/MessageView.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
     meta: {
-      index: 'message',
       requireAuth: true
     }
   },
@@ -118,8 +158,20 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/others/AboutView.vue'),
     meta: {
+      requireAuth: true
+    }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/SettingsView.vue'),
+    meta: {
+      index: 'settings',
       requireAuth: true
     }
   },
@@ -148,9 +200,14 @@ const routes = [
     }
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/:pathMatch(.*)*', /*其他页面*/
     name: 'notFound',
     component: () => import('../views/404.vue')
+  },
+  {
+    path: '/preview/:token',
+    name: 'preview',
+    component: () => import('../views/PreviewPrototypePage.vue')
   }
 ]
 
@@ -160,7 +217,10 @@ const router = createRouter({
 })
 router.beforeEach((to, from, next) => {
   const store = authStore()
+  // console.log(store.isLogin);
+
   if (to.meta.requireAuth && !store.isLogin) {
+    // console.log(store.isLogin);
     next('/home')
   }
   else {

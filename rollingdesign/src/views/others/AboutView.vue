@@ -17,10 +17,68 @@
 
         <el-divider />
         <!--顶部结束-->
+
         <!--主页面，不同的地方-->
         <el-main>
-          <!--团队信息-->
-          lllll
+          <!--文件夹内部-->
+          <el-page-header @back="goBack">
+            <template #content>
+              <span class="text-large font-600 mr-3"> Title </span>
+            </template>
+          </el-page-header>
+          <div>
+            <el-row>
+              <div class="designBlock" v-for="item, index) in list" :key="index">
+                <!-- <div style="width:100%">
+                  <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
+                </div>
+                <div style="display:flex;justify-content: space-between;width:90%">
+                  <span class="designName" style="padding-left:4px;display: flex;">
+                    hh
+                  </span>
+                </div> -->
+                <div class="block" @mouseover="highlightBlock(index)" @mouseleave="resetBlock(index)"
+                  :class="{ 'highlighted-row': highlightIndex === index || clickIndex === index }">
+                  <div v-if="index === highlightIndex || clickIndex === index"
+                    style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
+
+                    <el-dropdown trigger="click" placement="bottom-start">
+                      <!-- <el-icon style="text-align: right;justify-self: right;justify-content:flex-end;"> -->
+                      <el-icon class="el-icon--right" @click="clickIcon(index)">
+                        <More />
+                      </el-icon>
+
+                      <template #dropdown>
+                        <el-dropdown-menu>
+                          <el-dropdown-item @click="rename(index)">Action 1</el-dropdown-item>
+                          <el-dropdown-item>
+                            Action 2
+                          </el-dropdown-item>
+                          <el-dropdown-item>Action 3</el-dropdown-item>
+                          <el-dropdown-item>Action 4</el-dropdown-item>
+                          <el-dropdown-item>Action 5</el-dropdown-item>
+                        </el-dropdown-menu>
+                      </template>
+
+                    </el-dropdown>
+                  </div>
+                  <div v-else
+                    style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
+                    &nbsp;&nbsp;
+                  </div>
+
+                  <div class="fileBlock">
+                    <!-- <img class="img-size" src="@/assets/projects/folder.png" /> -->
+                    <!-- <img class="img-size" src="@/assets/projects/word.jpg" /> -->
+                    <img class="img-size" src="@/assets/projects/design.png" />
+
+                    name
+                  </div>
+                </div>
+              </div>
+            </el-row>
+          </div>
+
 
         </el-main>
       </el-container>
@@ -56,86 +114,6 @@ import {
 /*侧栏*/
 
 /*切换团队*/
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
-/*新建团队*/
-const addTeamVisible = ref(false)
-const addTeamNameInput = ref('')
-const addTeamIntroductionInput = ref('')
-/*上传团队标志*/
-const imageUrl = ref('')
-
-// const handleAvatarSuccess: UploadProps['onSuccess'] = (
-//   response,
-//   uploadFile
-// ) => {
-//   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-// }
-
-// const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-//   if (rawFile.type !== 'image/jpeg') {
-//     ElMessage.error('Avatar picture must be JPG format!')
-//     return false
-//   } else if (rawFile.size / 1024 / 1024 > 2) {
-//     ElMessage.error('Avatar picture size can not exceed 2MB!')
-//     return false
-//   }
-//   return true
-// }
-/*头像*/
-import { reactive, toRefs } from 'vue'
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-/*点击头像，有下拉列表*/
-
-import { ClickOutside as vClickOutside } from 'element-plus'
-const buttonRef = ref()
-const popoverRef = ref()
-const onClickOutside = () => {
-  unref(popoverRef).popperRef?.delayHide?.()
-}
-/*进入账户设置*/
-const personMsgDialog = ref(false)
-const nickNameConfig = ref(false)
-const nickNameConfigInput = ref('')
-const avatarConfig = ref(false)
-const pwdConfig = ref(false)
-const pwdConfigTitle = ref('修改密码')
-const pwdConfigInput = ref('')
-const pwdSureInput = ref('')
-
-const handleRemove = (file, uploadFiles) => {
-  console.log(file, uploadFiles)
-}
-
-const handlePreview = (uploadFile) => {
-  console.log(uploadFile)
-}
-
-const handleExceed = (files, uploadFiles) => {
-  ElMessage.warning(
-    `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
-    } totally`
-  )
-}
-
-const beforeRemove = (uploadFile, uploadFiles) => {
-  return ElMessageBox.confirm(
-    `Cancel the transfer of ${uploadFile.name} ?`
-  ).then(
-    () => true,
-    () => false
-  )
-}
 
 /*侧栏导航栏*/
 const handleOpen = (key, keyPath) => {
@@ -144,7 +122,10 @@ const handleOpen = (key, keyPath) => {
 const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
-
+const goBack = () => {
+  console.log('go back');
+  router.go(-1);
+}
 
 /*跳转对应页*/
 const jumpTo = (path) => {
@@ -154,11 +135,49 @@ const jumpTo = (path) => {
 }
 /*侧栏导航栏结束*/
 
-/*邀请成员*/
-// import { ref } from 'vue'
-const centerDialogVisible = ref(false) /*邀请对话框*/
-const input = ref('')/*邀请成员时，输入框*/
+const list = ref(['item1', 'item2']);
+// import type { UploadProps } from 'element-plus'
+// const i = ref(1);
+const highlightIndex = ref(-1);
+const moreIndex = ref(-1);
+const clickIndex = ref(-1);
 
+const highlightBlock = (index) => {
+  highlightIndex.value = index;
+  moreIndex.value = index;
+  // console.log('ii:' + index);
+
+  // console.log('11--' + highlightIndex.value);
+
+};
+
+const resetBlock = (index) => {
+  // if (flag.value<0) {
+  highlightIndex.value = -1;
+  moreIndex.value = -1;
+  // }
+  // console.log('i:' + index.value);
+  // console.log('r:' + highlightIndex.value);
+  // console.log('c:' + clickIndex.value);
+
+};
+const flagtimes = ref([0, 0, 0]);
+const clickIcon = (index) => {
+  // flag.value = - flag.value;
+  clickIndex.value = index;
+  flagtimes.value[index]++;
+  // console.log('rr:' + highlightIndex.value);
+  // console.log('cc:' + clickIndex.value);
+  if (flagtimes.value[index] % 2 == 0) {
+    clickIndex.value = -1;
+  }
+
+}
+const rename = () => {
+  clickIndex.value = -1;
+  // console.log('rr:' + highlightIndex.value);
+  // console.log('cc:' + clickIndex.value);
+}
 
 </script>
 
@@ -176,6 +195,7 @@ const input = ref('')/*邀请成员时，输入框*/
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
+  border-radius: 10px;
 }
 
 .popover-customer {
@@ -190,32 +210,41 @@ const input = ref('')/*邀请成员时，输入框*/
   /* 设置边框圆角半径，根据需要调整 */
 }
 
-/*上传团队封面*/
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+.designBlock {
+  width: 18%;
+  margin-bottom: 40px;
+  margin-right: 14px;
+  /* text-align: left; */
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+.round {
+  border-radius: 10px;
+  /* 设置边框圆角半径，根据需要调整 */
 }
 
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
+
+.designImg {
+  margin-bottom: 5px;
+}
+
+.block {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  /* display: flex; */
+  /* align-items: center; */
+}
+
+.fileBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-items: center; */
+  margin-top: 8px;
+}
+.highlighted-row {
+  background-color: rgb(237, 237, 237);
 }
 </style>
