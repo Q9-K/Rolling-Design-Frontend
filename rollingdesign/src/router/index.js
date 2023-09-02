@@ -62,6 +62,36 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/DocView.vue'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // meta: { index: 'project:id' }
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
@@ -165,6 +195,11 @@ const routes = [
     path: '/:pathMatch(.*)*', /*其他页面*/
     name: 'notFound',
     component: () => import('../views/404.vue')
+  },
+  {
+    path: '/preview/:token',
+    name: 'preview',
+    component: () => import('../views/PreviewPrototypePage.vue')
   }
 ]
 

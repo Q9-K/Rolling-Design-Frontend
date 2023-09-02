@@ -4,6 +4,8 @@ export default class KonvaInput extends Konva.Group {
   constructor(config) {
     super(config);
 
+    this.attrs.defineType = 'KonvaInput'
+
     // 添加背景矩形
     const background = new Konva.Rect({
       width: config.width,
@@ -46,5 +48,24 @@ export default class KonvaInput extends Konva.Group {
     });
     this.add(placeholderText);
 
+  }
+
+  /*
+    哦天哪
+    看看这是那个小天才的解决方法
+    他竟然想到了用这样的方法导出真正的HTML
+    快看看
+    这不是天才是什么
+   */
+  exportHTMLString() {
+    return `
+      <input placeholder="请输入" style="
+        position: absolute;
+        left: ${this.attrs.x}px;
+        top: ${this.attrs.y}px;
+        width: ${this.attrs.width}px;
+        height: ${this.attrs.height}px;
+      " />
+    `
   }
 }

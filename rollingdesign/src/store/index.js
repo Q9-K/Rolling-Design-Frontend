@@ -1,3 +1,8 @@
+/*
+ * @Date: 2023-09-01 12:06:01
+ * @Author: Q9K
+ * @Description: 
+ */
 import { defineStore } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
@@ -18,6 +23,8 @@ export const authStore = defineStore({
     isAdmin: localStorage.getItem('isAdmin') ? localStorage.getItem('isAdmin') : false,//当前登录者在当前团队是否有管理权限
     projectList: localStorage.getItem('projectList') ? localStorage.getItem('projectList') : [],//初始化为一个空数组
     // memberList:localStorage.getItem('memberList') ? localStorage.getItem('memberList') : [],
+    team_members: [],
+    jwt_token: ''
   }),
   getters: {
     // getUserID() {

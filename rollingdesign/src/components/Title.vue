@@ -5,13 +5,14 @@
 -->
 <template>
     <div class="wrapper">
-        <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" class="title" />
+        <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" class="title"
+            :disabled="disabled" />
         <!-- <el-input :value="modelValue" @input="handleInput($event)"></el-input> -->
     </div>
 </template>
 
 <script setup>
-defineProps(['modelValue'])
+defineProps(['modelValue', 'disabled'])
 const emit = defineEmits(['update:modelValue'])
 </script>
 
