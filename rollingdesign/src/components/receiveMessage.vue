@@ -191,6 +191,7 @@ export default {
 }
 
 .bigbox {
+	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 
@@ -237,6 +238,7 @@ export default {
 	.messagebox {
 		// background-color: red;
 		height: 200px;
+		overflow: auto;
 
 		.one {
 			// border: 1px solid red;
