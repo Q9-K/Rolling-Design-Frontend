@@ -6,15 +6,14 @@
 <template>
     <div class="box2">
         <template v-if="dataLoaded">
-            <VTour ref="tour" :steps="steps"></VTour>
             <div class="header">
                 <div class="actions1">
-                    <el-button @click="saveAsTemplate" :disabled="!editAble">保存为模板</el-button>
                     <div class="backToCenter">
                         <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
                             <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
                         </el-tooltip>
                     </div>
+                    <el-button @click="saveAsTemplate" :disabled="!editAble">保存为模板</el-button>
                 </div>
                 <div class="fileinfo">
                     <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editAble"></Title>
@@ -29,7 +28,7 @@
                             <el-timeline>
                                 <el-timeline-item v-for="(data, index) in fileHistory" :key="index"
                                     :timestamp="data.modified_at" @click="switchToHistoryFile(index)">
-                                    {{ data.user }}
+                                    修改人:{{ data.user }}
                                 </el-timeline-item>
                             </el-timeline>
                         </template>
@@ -37,7 +36,7 @@
                 </div>
                 <div class="actions2">
                     <el-dropdown trigger="click" @command="downloadFile">
-                        <el-button type="primary" id="tourtest" :disabled="!editAble">
+                        <el-button type="primary" :disabled="!editAble">
                             下载
                         </el-button>
                         <template #dropdown>
@@ -82,9 +81,11 @@
                     </el-popover>
                 </div>
                 <div class="userAvatars">
+                    <span v-if="online_users.length > 0">当前有{{ online_users.length }}位用户正在一起编辑</span>
                     <div class="team_members">
-                        <el-avatar :src="item.avatar_url" :size="20" v-for="(item, index) in team_members" :key="item.id"
-                            @click="testat(index)"></el-avatar>
+                        <template v-for="(item, index) in online_users" :key="item.id">
+                            <el-avatar :src="item.avatar_url" :size="20" v-if="item.id != authStore().userId"></el-avatar>
+                        </template>
                     </div>
                     <div class="selfAvatars">
                         <template v-if="authStore().isLogin">
@@ -167,9 +168,7 @@ import Button from '../components/Button.vue';
 import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
 
-const tour = ref(null)
 const socketStore = useSocketStore()
-const axios = inject('axios')
 const router = useRouter()
 const route = useRoute()
 const title = ref('Rolling Document')
@@ -178,34 +177,55 @@ const dataLoaded = ref(false)
 const shareEditAble = ref(true)
 const lastEditTime = ref('')
 const fileHistory = ref()
+const axios = inject('axios')
 let editAble = false
 let socket = null
 let editorInstance
-let userCount = 0
+let online_users = ref([])
+
+const popper = ref()
+const link = ref('')
+const team_members = ref('')
+let memberSocket
+let username = authStore().username
+let document_id
 
 
 const provider = new TiptapCollabProvider({
     // url: 'ws://101.43.159.45:1234',
     appId: '8mzo739x', // get this at collab.tiptap.dev
-    name: `rolling-document-${route.params.id}`, // e.g. a uuid uuidv4();
+    name: `rolling-document-${document_id}`, // e.g. a uuid uuidv4();
     token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
     document: new Y.Doc(),
     onConnect() {
-        // console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
-        dataLoaded.value = true
+        console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
+        socket = socketStore.socket
+        if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
+            socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+            socketStore.socket = socket
+        }
+        if (authStore().isLogin) {
+            memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document_id}/document/${authStore().userId}`)
+            memberSocket.onopen = (event) => {
+                console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
+            }
+            memberSocket.onmessage = (event) => {
+                online_users.value = JSON.parse(event.data).online_users
+                if (!dataLoaded.value) {
+                    dataLoaded.value = true
+                }
+            }
+        }
+        else {
+            if (!dataLoaded.value) {
+                dataLoaded.value = true
+            }
+        }
     }
 })
 
-// console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.configuration)
-// provider.configuration.onConnect = () => {
-//     console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
-// }
 
-const popper = ref()
-const link = ref('')
-const team_members = ref('')
 
-let username = authStore().username
 
 const extensions = [
     History.configure({
@@ -281,34 +301,21 @@ const extensions = [
 onBeforeMount(async () => {
     const res = await axios.get(`/document/view_document/${route.params.id}`)
     const document = res.data.document
+
     title.value = document.title
-    // content.value = document.content
-    const time = document.modified_at
-    lastEditTime.value = new Date(time).toLocaleString()
+    document_id = document.id
+    lastEditTime.value = new Date(document.modified_at).toLocaleString()
 
     if (authStore().isLogin) {
         editAble = document.editable
-        editAble = true
-        // console.log("🚀 ~ file: TipTap.vue:295 ~ onBeforeMount ~ document.editable:", document)
-        // console.log("🚀 ~ file: TipTap.vue:287 ~ onBeforeMount ~ editAble:", editAble)
     }
-
     const res2 = await axios.get('/team/all_members/')
     authStore().team_members = res2.data.members
-    // localStorage.setItem('team_members', res2.data.members)
-    // console.log("🚀 ~ file: TipTap.vue:312 ~ onBeforeMount ~ res2.data.members:", res2.data)
     team_members.value = res2.data.members
 })
 
-onMounted(() => {
-    socket = socketStore.socket
-    if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
-        socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-        socket.onmessage = (event) => {
-            userCount = event.data
-        }
-        socketStore.socket = socket
-    }
+onMounted(async () => {
+
 })
 
 
@@ -317,6 +324,9 @@ onUnmounted(() => {
         socket.close()
         socketStore.socket = null
     }
+    if (memberSocket) {
+        memberSocket.close()
+    }
 })
 
 
@@ -324,7 +334,7 @@ onUnmounted(() => {
 const generateLink = async () => {
 
     let res = await axios.post('/document/share_document/', qs.stringify({
-        document_id: route.params.id,
+        document_id,
     }))
     link.value = res.data.data.url
 
@@ -340,16 +350,6 @@ const copyLink = () => {
     })
 }
 
-const testat = (index) => {
-    editorInstance.commands.insertContentAt(editorInstance.state.selection.$cursor.pos, team_members.value[index].username, {
-        updateSelection: true,
-        parseOptions: {
-            preserveWhitespace: 'full',
-        }
-    })
-}
-
-//TODO:现在能够支持json,html,markdown格式的导出，还需要支持pdf,doc的格式
 const downloadFile = (command) => {
     // console.log("🚀 ~ file: TipTap.vue:398 ~ downloadFile ~ command:", command)
     const fileType = command
@@ -392,12 +392,11 @@ const changeTitle = async () => {
     })
 }
 
-const saveStatus = ref(false)
 
 const showFileHistory = async () => {
     let res = await axios.get('/document/history/', {
         params: {
-            document_id: route.params.id
+            document_id,
         },
         headers: {
             Authorization: authStore().token
@@ -416,22 +415,17 @@ const switchToHistoryFile = async (index) => {
 const switchPermission = async () => {
     console.log(shareEditAble.value)
     let res = await axios.post('/document/update_document_permisson/', qs.stringify({
-        document_id: route.params.id,
+        document_id,
         editable: shareEditAble.value == true ? '1' : '0',
     }))
     console.log("🚀 ~ file: TipTap.vue:517 ~ switchPermission ~ res:", res.data)
 }
-
 
 //设置30s脱离焦点自动保存文件
 const onBlur = async ({ editor }) => {
     if (editAble == true) {
         setTimeout(() => {
             updateFile()
-            saveStatus.value = true
-            setTimeout(() => {
-                saveStatus.value = false
-            }, 1000);
             ElNotification({
                 title: 'Success',
                 message: '自动保存文件成功！',
@@ -446,15 +440,22 @@ const saveAsTemplate = async () => {
     let res = await axios.post('/document/save_as_template/', qs.stringify({
         content: content.value,
         title: title.value,
-        file_type: 'document'
+        file_type: 'document',
+        project_id: '1'
     }))
+    ElNotification({
+        title: 'Success',
+        message: '保存为模板成功！',
+        type: 'success',
+        duration: 1000
+    })
     console.log("🚀 ~ file: TipTap.vue:435 ~ saveAsTemplate ~ res:", res.data)
 }
 
 
 const onCreate = async ({ editor }) => {
     editorInstance = editor
-    const position = { from: 3, to: 3 };
+    // const position = { from: 3, to: 3 };
     // editorInstance.commands.setSelection(position)
 
     // console.log("🚀 ~ file: TipTap.vue:454 ~ onCreate ~ editorInstance:", editorInstance.state.selection.$cursor.pos)
@@ -492,17 +493,10 @@ const onCreate = async ({ editor }) => {
         const element = elements[0];
         element.style.opacity = '0.45'
         // Collaboration.config.disableSync = false 没啥用
-
     }
-
-
-
 }
 
-
-
 </script>
-
 
 <style lang="scss">
 .box2 {
@@ -528,11 +522,14 @@ const onCreate = async ({ editor }) => {
             outline: none;
             // background: red;
             width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
 
             .backToCenter {
                 // height: 80px;
                 // background-color: red;
-                margin-left: -130px;
+                margin-left: 0;
                 text-align: center;
                 // font-size: 20px;
 

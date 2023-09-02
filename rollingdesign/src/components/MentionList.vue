@@ -1,6 +1,6 @@
 <template>
     <div class="items">
-        <template v-if="items.length">
+        <template v-if="items.length > 0">
             <div class="item" :class="{ 'is-selected': index === selectedIndex }" v-for="(item, index) in items"
                 :key="item.id" @click="selectItem(index)">
                 <div class="userInfo">
@@ -19,11 +19,8 @@
 </template>
   
 <script>
-import qs from 'qs'
 import { authStore } from "../store/index.js"
-import { UserFilled } from '@element-plus/icons-vue'
 import { useSocketStore } from '../store/useSocketStore'
-// import { useRoute } from 'vue-router'
 
 const socketStore = useSocketStore()
 export default {
@@ -86,22 +83,15 @@ export default {
         selectItem(index) {
             // console.log(this.items[index])
             const item = this.items[index]
-
-            // try {
-            // let res = axios.post('/api接口')
-            // TODO:完成发送消息
-            // console.log(this.$route)
             let socket = socketStore.socket
-            // console.log(socket.readyState)
             if (socket != null && socket.readyState != 1) {
                 socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
                 socket.onopen = () => {
                     socket.send(JSON.stringify({
                         'type': 'file',
                         'user_id': item.id,
-                        'url': 'www.baidu.com',
+                        'url': window.location.href,
                         'file_id': `${this.$route.params.id}`,
-                        // 'text': '我是傻逼'
                     }))
                     console.info("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送', item.id)
                 }

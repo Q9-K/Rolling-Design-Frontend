@@ -9,6 +9,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "@hocuspocus/provider": "^2.4.0",
+    "@syncedstore/core": "^0.6.0-alpha.0",
     "@tiptap/extension-collaboration": "^2.1.7",
     "@tiptap/extension-collaboration-cursor": "^2.1.7",
     "@tiptap/extension-mention": "^2.1.7",
@@ -26,8 +27,11 @@
     "file-saver": "^2.0.5",
     "html-docx-js-typescript": "^0.1.5",
     "html2canvas": "^1.4.1",
+    "jquery": "^3.7.1",
     "jspdf": "^2.5.1",
     "konva": "^9.2.0",
+    "lodash": "^4.17.21",
+    "nanoid": "^4.0.2",
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^3.2.0",
     "qs": "^6.11.2",
@@ -40,6 +44,7 @@
     "vue-konva": "^3.0.2",
     "vue-router": "^4.2.4",
     "y-prosemirror": "^1.0.20",
+    "y-protocols": "^1.0.5",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.7"
   },

@@ -24,7 +24,7 @@ export const authStore = defineStore({
     projectList: localStorage.getItem('projectList') ? localStorage.getItem('projectList') : [],//初始化为一个空数组
     // memberList:localStorage.getItem('memberList') ? localStorage.getItem('memberList') : [],
     team_members: [],
-    jwt_token:''
+    jwt_token: ''
   }),
   getters: {
     // getUserID() {
