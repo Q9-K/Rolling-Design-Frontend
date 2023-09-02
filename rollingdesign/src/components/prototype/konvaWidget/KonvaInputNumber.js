@@ -8,6 +8,7 @@ export default class KonvaInputNumber extends Konva.Group {
     this.max = config.max || 100;
     this.value = config.value || 0;
     this.attrs.defineType = 'KonvaInputNumber'
+    this.attrs.flagId = config.flagId
 
     this.inputRect = new Konva.Rect({
       x: -40,

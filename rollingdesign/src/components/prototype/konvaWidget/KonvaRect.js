@@ -5,6 +5,39 @@ export default class KonvaRect extends Konva.Rect {
     super(config);
 
     this.attrs.defineType = 'KonvaRect'
+    this.attrs.flagId = config.flagId
+    if (config.realWidth) {
+      this.attrs.realWidth = config.realWidth
+    }
+    else {
+      this.attrs.realWidth = config.width
+    }
+    if (config.realHeight) {
+      this.attrs.realHeight = config.realHeight
+    }
+    else {
+      this.attrs.realHeight = config.height
+    }
+
+    this.insertEventListener()
+  }
+
+  insertEventListener() {
+    this.on('transform', (e) => {
+
+      console.log("-----------------------------")
+      console.log(this.height())
+      console.log(e)
+      console.log("-----------------------------")
+
+      // 更新 width 和 height 属性
+
+      this.attrs.realWidth = this.attrs.scaleX * this.attrs.width
+      this.attrs.realHeight = this.attrs.scaleY * this.attrs.height
+
+      console.log(this.attrs.realWidth)
+      console.log(this.attrs.realHeight)
+    });
   }
 
   /*
@@ -15,13 +48,15 @@ export default class KonvaRect extends Konva.Rect {
     这不是天才是什么
    */
   exportHTMLString() {
+    console.log(this)
+
     return `
       <div style="
         position: absolute;
         left: ${this.attrs.x}px;
         top: ${this.attrs.y}px;
-        width: ${this.attrs.width}px;
-        height: ${this.attrs.height}px;
+        width: ${this.attrs.realWidth}px;
+        height: ${this.attrs.realHeight}px;
         background-color: ${this.attrs.fill};
         border-radius: ${this.attrs.cornerRadius}px;
         border: ${this.attrs.strokeWidth}px ${this.attrs.stroke} solid;

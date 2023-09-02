@@ -26,7 +26,7 @@
             <el-row class="block" style="display: flex;align-items: center;margin-bottom: 30px;">
               <el-col :span="16">
                 <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-                <span style="font-size:larger;font-weight: 800;">团队成员</span>
+                <span style="font-size:23px;font-weight: 900;">团队成员</span>
               </el-col>
               <el-col :span="8">
                 <div style="display: flex;flex:1;justify-content: flex-end;">
@@ -40,7 +40,9 @@
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
                     </div>
-                    <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                    <div>
+                      <el-button style="width:98%;margin-left: 1%;" type="primary" @click="copyLink()">点击复制链接</el-button>
+                    </div>
                   </el-popover>
                 </div>
               </el-col>
@@ -328,6 +330,10 @@ const getInviteLink = () => {
     }).catch(error => {
       console.log(error);
     })
+}
+
+const copyLink = () => {
+  navigator.clipboard.writeText(inviteLink.value);
 }
 
 const highlightRow = (index) => {

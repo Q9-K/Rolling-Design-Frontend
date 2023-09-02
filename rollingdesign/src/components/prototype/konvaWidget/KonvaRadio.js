@@ -7,6 +7,7 @@ export default class KonvaRadio extends Konva.Group {
     this.attrs.options = config.options || [];
     this.value = config.value || null;
     this.attrs.defineType = 'KonvaRadio'
+    this.attrs.flagId = config.flagId
 
     this.updateRadioButtons()
   }

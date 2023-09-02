@@ -33,8 +33,8 @@
 
               <!-- <el-col :span="24"> -->
               <div class="block" style="display: flex;align-items: center;width:100%">
-                  <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
-                  <span style="font-size:21px;font-weight: 800;">{{ nowTeam.name }}</span>
+                <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
+                <span style="font-size:21px;font-weight: 800;">{{ nowTeam.name }}</span>
               </div>
               <!-- </el-col> -->
 
@@ -79,36 +79,21 @@
                       <el-input v-model="nameConfigInput" style="width:50%"
                         @keyup.enter="nameConfig = false; nameConfigMethod()" placeholder="请输入名称" />
                     </div>
-                    <div v-else style="text-align: left;font-size: 21px;">{{ nowTeam.name }}</div>
+                    <div v-else style="text-align: left;font-size: 18px;">{{ nowTeam.name }}</div>
                   </div>
                 </div>
-                <el-button v-if="nameConfig" link type="primary" size="small" style="justify-content: flex-end;"
-                  @click="nameConfig = false; nameConfigMethod()">修改完成</el-button>
-                <el-button v-else link type="primary" size="small" style="justify-content: flex-end;"
-                  @click="nameConfig = true">修改团队名称</el-button>
+                <div v-if="nameConfig">
+                  <el-button link type="primary" size="small" style=""
+                    @click="nameConfig = false; nameConfigMethod()">修改完成</el-button>
+                  <el-button v-if="nameConfig" link type="primary" size="small" style="margin-left: 10px;"
+                    @click="nameConfig = false; nameConfigInput = ''">修改取消</el-button>
+                </div>
+                <div v-else>
+                  <el-button link type="primary" size="small" style="justify-content: flex-end;"
+                    @click="nameConfig = true">修改团队名称</el-button>
+                </div>
               </el-row>
               <el-divider />
-
-              <!--昵称修改对话框-->
-              <!-- <el-dialog v-model="nickNameConfig" title="修改昵称" width="20%">
-                <el-row
-                  style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;padding-left: 20px;">
-                  <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入昵称</el-col>
-                  <el-col :span="24">
-                    <el-input v-model="nickNameConfigInput" @keyup.enter="nickNameConfig = false; nickNameConfigMethod()"
-                      placeholder="请输入昵称" />
-                  </el-col>
-                </el-row>
-
-                <template #footer>
-                  <span class="dialog-footer">
-                    <el-button @click="nickNameConfig = false">取消</el-button>
-                    <el-button type="primary" @click="nickNameConfig = false; nickNameConfigMethod()">
-                      确认
-                    </el-button>
-                  </span>
-                </template>
-              </el-dialog> -->
 
               <el-row style="display: flex;align-items: center;justify-content: space-between;">
                 <div class="leftContent" style="display: flex;justify-content:flex-start;width:80%">
@@ -118,13 +103,19 @@
                       <el-input v-model="desConfigInput" style="width:100%"
                         @keyup.enter="desConfig = false; desConfigMethod()" placeholder="请输入团队描述" />
                     </div>
-                    <div v-else style="text-align: left;font-size: 21px;">{{ nowTeam.des }}</div>
+                    <div v-else style="text-align: left;font-size: 18px;">{{ nowTeam.des }}</div>
                   </div>
                 </div>
-                <el-button v-if="desConfig" link type="primary" size="small" style="justify-content: flex-end;"
+                <div v-if="desConfig" >
+                <el-button link type="primary" size="small" style=""
                   @click="desConfig = false; desConfigMethod()">修改完成</el-button>
-                <el-button v-else link type="primary" size="small" style="justify-content: flex-end;"
+                  <el-button v-if="desConfig" link type="primary" size="small" style="margin-left: 10px;"
+                    @click="desConfig = false; desConfigInput = ''">修改取消</el-button>
+                </div>
+                <div v-else>
+                <el-button link type="primary" size="small" style="justify-content: flex-end;"
                   @click="desConfig = true">修改团队描述</el-button>
+                </div>
               </el-row>
               <el-divider />
 
@@ -133,7 +124,7 @@
                 <div class="leftContent" style="display: flex;justify-content:flex-start">
                   <div>
                     <div class="hintText" style="text-align: left;margin-bottom: 12px;">创建者</div>
-                    <div style="text-align: left;font-size: 21px;">{{ nowTeam.creator }}</div>
+                    <div style="text-align: left;font-size: 18px;">{{ nowTeam.creator }}</div>
                   </div>
                 </div>
               </el-row>
@@ -144,7 +135,7 @@
                 <div class="leftContent" style="display: flex;justify-content:flex-start">
                   <div>
                     <div class="hintText" style="text-align: left;margin-bottom: 12px;">项目数量</div>
-                    <div style="text-align: left;font-size: 21px;">共有{{ nowTeam.projectNum }}个项目</div>
+                    <div style="text-align: left;font-size: 18px;">共有&nbsp;{{ nowTeam.projectNum }}&nbsp;个项目</div>
                   </div>
                 </div>
               </el-row>
@@ -351,7 +342,7 @@ const desConfigMethod = () => {
 <style scoped>
 .hintText {
   color: gray;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
 }
 

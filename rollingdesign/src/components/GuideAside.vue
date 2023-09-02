@@ -1,6 +1,6 @@
 <template>
   <!--侧栏-->
-  <div>
+  <div class="aside_page">
     <el-scrollbar>
       <el-col :span="24"><!--占一整列-->
         <el-menu :default-active="guideIndex" width="100%" style="height:100vh" class="el-menu-vertical-demo side-guide"
@@ -355,15 +355,16 @@ const buildNewTeam = () => {
     return;
   }
 
-  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
+  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value,description:addTeamInfoInput.value }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      // console.log(res);
+      console.log(res);
 
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
         addTeamVisible.value = false;
         addTeamNameInput.value = '';
+        addTeamInfoInput.value='';
         //重新获取团队列表
         fetchTeamlistData();
         return;
@@ -488,4 +489,12 @@ const print = (content) => {
   /* 设置横线的颜色 */
   margin: 10px 0;
   /* 可选：设置横线上下的间距 */
-}</style>
+}
+
+.aside_page{
+  /* overflow: hidden; */
+  /* background-color: aliceblue; */
+  background-color: rgb(101, 151, 195)!important;
+
+}
+</style>
