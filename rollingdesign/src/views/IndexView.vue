@@ -111,7 +111,7 @@
                     <el-icon>
                       <Comment />
                     </el-icon>
-                    <span>消息中心</span>
+                    <span>聊天中心</span>
                   </el-menu-item>
 
                   <el-menu-item index="settings" @click="jumpTo('settings')">
@@ -688,20 +688,20 @@ const steps = [
       }
     }
   },
-  {
-    attachTo: { element: '#chat' },
-    content: {
-      title: "聊天页面",
-      description: "点击进入聊天页面进行聊天，除个人空间外的每个空间都有一个默认的群聊，您可以根据需要进行私聊或创建新的群聊"
-    },
-    options: {
-      labels: {
-        previousButton: '上一步',   // 将 'Previous' 修改为 '上一步'
-        nextButton: '下一步',       // 将 'Next' 修改为 '下一步'
-        finishButton: '结束'        // 将 'Finish' 修改为 '结束'
-      }
-    }
-  },
+  // {
+  //   attachTo: { element: '#chat' },
+  //   content: {
+  //     title: "聊天页面",
+  //     description: "点击进入聊天页面进行聊天，除个人空间外的每个空间都有一个默认的群聊，您可以根据需要进行私聊或创建新的群聊"
+  //   },
+  //   options: {
+  //     labels: {
+  //       previousButton: '上一步',   // 将 'Previous' 修改为 '上一步'
+  //       nextButton: '下一步',       // 将 'Next' 修改为 '下一步'
+  //       finishButton: '结束'        // 将 'Finish' 修改为 '结束'
+  //     }
+  //   }
+  // },
   {
     attachTo: { element: '#beginner-guidance' },
     content: {

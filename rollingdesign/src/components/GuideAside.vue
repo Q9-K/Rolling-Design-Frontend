@@ -35,9 +35,11 @@
               <div>
 
                 <!--团队信息-->
-                <div class="block round" v-for="(teamItem, index) in teamList" :key="index" @mouseover="highlightRow(index)"
-                  @mouseleave="resetRow(index)" :class="{ 'highlighted-row': highlightedIndex === index }" style="margin-bottom: 10px;padding:4px 0 4px 5px">
-                  
+                <div class="block round" v-for="(teamItem, index) in teamList" :key="index"
+                  @mouseover="highlightRow(index)" @mouseleave="resetRow(index)"
+                  :class="{ 'highlighted-row': highlightedIndex === index }"
+                  style="margin-bottom: 10px;padding:4px 0 4px 5px">
+
                   <div style="display: flex;flex-direction: row;align-items: center;" @click="switchToTeam(teamItem.id)">
                     <el-avatar shape="square" :size="50" :src="teamItem.cover_url" style="" />
                     <!--昵称和介绍-->
@@ -61,70 +63,72 @@
 
           <!--主页-->
           <div id="guide">
-          <el-menu-item index="index" @click="jumpTo('index')">
-            <template #title>
+            <el-menu-item index="index" @click="jumpTo('index')">
+              <template #title>
+                <el-icon>
+                  <HomeFilled />
+                </el-icon>
+                <span> 主页 </span>
+              </template>
+            </el-menu-item>
+
+            <el-menu-item index="teamPeople" @click="jumpTo('teamPeople')">
+              <template #title>
+                <el-icon>
+                  <Avatar />
+                </el-icon>
+                <span> 团队成员 </span>
+              </template>
+            </el-menu-item>
+
+            <!--项目-->
+            <el-sub-menu index="project">
+              <template #title>
+                <el-icon>
+                  <Grid />
+                </el-icon>
+                <span>项目</span>
+              </template>
+
+              <el-menu-item v-for="(projectItem, index) in projectList" :key="index"
+                @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
+              <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
+            </el-sub-menu>
+
+            <!-- 回收站-->
+            <el-menu-item index="recover" @click="jumpTo('recover')">
               <el-icon>
-                <HomeFilled />
+                <DeleteFilled />
               </el-icon>
-              <span> 主页 </span>
-            </template>
-          </el-menu-item>
+              <span>回收站</span>
+            </el-menu-item>
 
-          <el-menu-item index="teamPeople" @click="jumpTo('teamPeople')">
-            <template #title>
+
+            <el-menu-item index="chat" @click="jumpTo('chat')">
               <el-icon>
-                <Avatar />
+                <Comment />
               </el-icon>
-              <span> 团队成员 </span>
-            </template>
-          </el-menu-item>
+              <span>聊天中心</span>
+            </el-menu-item>
 
-          <!--项目-->
-          <el-sub-menu index="project">
-            <template #title>
+            <el-menu-item index="settings" @click="jumpTo('settings')">
+              <template #title>
+                <el-icon>
+                  <Tools />
+                </el-icon>
+                <span> 团队设置 </span>
+              </template>
+            </el-menu-item>
+
+
+            <!--新建团队-->
+            <el-menu-item @click="addTeamVisible = true">
               <el-icon>
-                <Grid />
+                <Plus />
               </el-icon>
-              <span>项目</span>
-            </template>
-
-            <el-menu-item v-for="(projectItem, index) in projectList" :key="index" 
-              @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
-            <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
-          </el-sub-menu>
-
-          <!-- 回收站-->
-          <el-menu-item index="recover" @click="jumpTo('recover')">
-            <el-icon>
-              <DeleteFilled />
-            </el-icon>
-            <span>回收站</span>
-          </el-menu-item>
-
-
-          <el-menu-item index="chat" @click="jumpTo('chat')">
-            <el-icon><Comment /></el-icon>
-            <span>消息中心</span>
-          </el-menu-item>
-
-          <el-menu-item index="settings" @click="jumpTo('settings')">
-            <template #title>
-              <el-icon>
-                <Tools />
-              </el-icon>
-              <span> 团队设置 </span>
-            </template>
-          </el-menu-item>
-
-
-          <!--新建团队-->
-          <el-menu-item @click="addTeamVisible = true">
-            <el-icon>
-              <Plus />
-            </el-icon>
-            <span>新建团队</span>
-          </el-menu-item>
-        </div>
+              <span>新建团队</span>
+            </el-menu-item>
+          </div>
 
           <!--新建团队的对话框-->
           <el-dialog v-model="addTeamVisible" title="" width="35%" center>
@@ -186,7 +190,7 @@ import axios from 'axios'
 // const axios = inject('axios')
 import { ref, unref } from 'vue'
 import { useRoute } from 'vue-router';
-import { onMounted,defineProps } from 'vue'
+import { onMounted, defineProps } from 'vue'
 import { authStore } from "../store/index.js"
 import { reactive, toRefs } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -410,7 +414,7 @@ const jumpTo = (path) => {
 
 const jumpToProject = (project_id) => {
   //this.$router.push('/video/'+video_id);
-  const project_show_url = '/project/'+ project_id;
+  const project_show_url = '/project/' + project_id;
   window.open(project_show_url, '_self');
 }
 
@@ -476,6 +480,7 @@ const print = (content) => {
   border-radius: 10px;
   /* 设置边框圆角半径，根据需要调整 */
 }
+
 .my-divider {
   height: 1px;
   /* 设置横线的高度 */
@@ -483,5 +488,4 @@ const print = (content) => {
   /* 设置横线的颜色 */
   margin: 10px 0;
   /* 可选：设置横线上下的间距 */
-}
-</style>
+}</style>

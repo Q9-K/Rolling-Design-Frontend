@@ -609,11 +609,11 @@ const import_from_template = (id, type) => {
         //文件列表增加一个，且跳转过去
         if (type === 'document') {
           fileList.value.push({ "id": res.data.document.id, "type": type, "name": res.data.document.name })
-          jumpToDoc(id);
+          jumpToDoc(res.data.document.id);
         }
         else if (type === 'prototype') {
           fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": res.data.prototype.name });
-          jumpToDesign(id);
+          jumpToDesign(res.data.document.id);
         }
         //跳转过去
         

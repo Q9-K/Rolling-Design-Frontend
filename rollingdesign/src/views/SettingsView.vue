@@ -33,7 +33,7 @@
               <el-row style="display: flex;align-items: center;">
                 <el-col :span="16">
                   <el-row class="block" style="display: flex;align-items: center;">
-                    <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
+                    <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
                     <span style="font-size:21px;font-weight: 800;">{{ nowTeam.name }}</span>
                   </el-row>
                 </el-col>
@@ -74,10 +74,10 @@
 
               <!--团队名称-->
               <el-row style="margin-top: 30px;display: flex;align-items: center;justify-content: space-between;">
-                <div class="leftContent" style="display: flex;justify-content:flex-start">
-                  <div>
+                <div class="leftContent" style="display: flex;justify-content:flex-start;width:80%">
+                  <div style="width:100%">
                     <div class="hintText" style="text-align: left;margin-bottom: 12px;">团队名称</div>
-                    <div v-if="nameConfig">
+                    <div v-if="nameConfig" style="width:100%">
                       <el-input v-model="nameConfigInput" style="width:50%"
                         @keyup.enter="nameConfig = false; nameConfigMethod()" placeholder="请输入名称" />
                     </div>
@@ -207,8 +207,8 @@ const jumpTo = (path) => {
 let nowTeam = reactive({
   teamId: '',
   name: '',
-  des: '默认啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦',
-  logo: '',
+  des: '',
+  cover_url: '',
   createTime: '',
   creator: '',
   memberNum: '',
@@ -232,11 +232,14 @@ const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
-      // console.log(response);
+      console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         nowTeam.teamId = response.data.team.id;
         nowTeam.name = response.data.team.name;
+        nowTeam.des = response.data.team.description;
+        nowTeam.cover_url = response.data.team.cover_url;
+
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         nowTeam.role_string = response.data.team.role_string;
@@ -261,6 +264,7 @@ const fetchNowTeam = () => {
     })
 }
 
+const inviteLink = ref('');
 //邀请别人加入团队
 const getInviteLink = () => {
   let Headers = { 'Authorization': authStore().token };
@@ -281,12 +285,66 @@ const getInviteLink = () => {
 }
 
 const nameConfigMethod = () => {
-  console.log('1');
+  if (!(nameConfigInput.value)) {
+    console.log('团队名称不能为空');
+    ElMessage.warning('请输入团队名称');
+    return;
+  }
+  axios.post('http://www.aamofe.top/api/team/update_team/',
+    qs.stringify({ team_name: nameConfigInput.value }), { headers: { Authorization: authStore().token } })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        nowTeam.name = nameConfigInput.value;
+        nameConfig.value = false;
+        nameConfigInput.value = '';
+        window.location.reload();
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 
 const desConfigMethod = () => {
-  console.log('2');
+  if (!(desConfigInput.value)) {
+    console.log('团队描述不能为空');
+    ElMessage.warning('请输入团队描述');
+    return;
+  }
+  axios.post('http://www.aamofe.top/api/team/update_team/',
+    qs.stringify({ description: desConfigInput.value }), { headers: { Authorization: authStore().token } })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
+
+      if (res.data.errno == 0)//成功
+      {
+        nowTeam.des = desConfigInput.value;
+        desConfig.value = false;
+        desConfigInput.value = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
+
 
 </script>
 
