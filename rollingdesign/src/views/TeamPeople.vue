@@ -335,6 +335,7 @@ const getInviteLink = () => {
 
 const copyLink = () => {
   navigator.clipboard.writeText(inviteLink.value);
+  ElMessage.success('邀请链接已复制到剪切板上')
 }
 
 const highlightRow = (index) => {
