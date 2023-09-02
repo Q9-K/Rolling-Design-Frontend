@@ -616,6 +616,37 @@ const addTextLocal = () => {
     currentElement.value = e.currentTarget
   })
 
+  text.on('dblclick', () => {
+    const textPosition = text.getAbsolutePosition();
+    const stageBox = stage.container().getBoundingClientRect();
+
+    const areaPosition = {
+      x: stageBox.left + textPosition.x,
+      y: stageBox.top + textPosition.y
+    };
+
+    // create textarea and style it
+    const textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+
+    textarea.value = text.text();
+    textarea.style.position = 'absolute';
+    textarea.style.top = areaPosition.y + 'px';
+    textarea.style.left = areaPosition.x + 'px';
+    textarea.style.width = text.width();
+
+    textarea.focus();
+
+    textarea.addEventListener('keydown', function (e) {
+      // hide on enter
+      if (e.keyCode === 13) {
+        text.text(textarea.value);
+        layer.draw();
+        document.body.removeChild(textarea);
+      }
+    });
+  });
+
   text.on('dragmove', (e) => {
     console.log(e)
     yMap.set('changePosition', {
