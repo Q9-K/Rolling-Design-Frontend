@@ -9,8 +9,12 @@
 			popper-style="padding: 0;width:400px; max-height=800px;overflow-y:auto;">
 			<template #reference>
 				<div class="box">
-					<i class="iconfont icon-xiaoxitongzhi"></i>
+					<i class="iconfont icon-xiaoxitongzhi" style="font-size: 32px;cursor: pointer;"></i>
+					<!-- <div class="count" v-if="unReadMessageCount > 0"> -->
+					{{ unReadMessageCount }}
+					<!-- </div> -->
 				</div>
+
 			</template>
 			<template #default>
 				<div class="bigbox">
@@ -26,7 +30,7 @@
 						<div class="one" v-for='(dataitem, index) in storeData' :key=dataitem.id>
 							<template v-if="dataitem.is_read == showMessageType">
 								<div class="message_content">
-									<span>张三</span>在<a href='#' @click="dataitem.is_read == false ? markRead(index) : ''">{{
+									<span>张三</span>在<a href="#" @click="dataitem.is_read == false ? markRead(index) : ''">{{
 										dataitem.type }}</a>中@了你
 								</div>
 								<div class="actions">
@@ -64,35 +68,45 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import { authStore } from "../store/index.js"
 import { useSocketStore } from '../store/useSocketStore.js'
+let isMounted = false
 export default {
 	data() {
 		return {
 			storeData: [],
-			showMessageType: false
+			showMessageType: false,
+			unReadMessageCount: 0,
 		}
 	},
-	async beforeCreate() {
+	async mounted() {
 		let res = await axios.get(`http://www.aamofe.top/api/chat/${authStore().userId}`)
-		console.log("🚀 ~ file: receiveMessage.vue:173 ~ onMounted ~ res:", res.data)
+		console.log("🚀 ~ file: receiveMessage.vue:173 ~ onMounted ~ res:", res.data[0])
 		this.storeData = res.data
+		this.storeData.forEach((item) => {
+			if (item.is_read == false) {
+				this.unReadMessageCount++
+			}
+		})
 		const socketStore = useSocketStore()
 		let socket = socketStore.socket
 		if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
 			socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
 			socketStore.socket = socket
 			socket.onmessage = (event) => {
-				console.log("🚀 ~ file: receiveMessage.vue:95 ~ beforeCreate ~ event:", event.data)
-				this.storeData.unshift(event.data)
+				// this.unReadMessageCount++
+				this.storeData.splice(0, 0, event.data)
 			}
 		}
+		isMounted = true
 
 	},
 	methods: {
 		setRead() {
+			// this.unReadMessageCount = 0
 			this.showMessageType = true//显示已读
 		},
 		setUnRead() {
@@ -129,6 +143,18 @@ export default {
 			})
 			console.log("🚀 ~ file: receiveMessage.vue:131 ~ deleteAllRead ~ res:", res)
 		}
+	},
+	watch: {
+		storeData: {
+			handler(newval, oldval) {
+				console.log(isMounted)
+				if (isMounted && (newval.length > oldval.length)) {
+					// console.log(1)
+					this.unReadMessageCount++
+				}
+			},
+			deep: true
+		}
 	}
 }
 
@@ -136,6 +162,12 @@ export default {
 </script>
 
 <style lang="scss">
+.icon-xiaoxitongzhi {
+	&:hover {
+		color: red;
+	}
+}
+
 .bigbox {
 	display: flex;
 	flex-direction: column;
