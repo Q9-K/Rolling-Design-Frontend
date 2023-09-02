@@ -78,7 +78,7 @@ export default class KonvaSelect extends Konva.Group {
 
     this.listRect = new Konva.Rect({
       width: 100,
-      height: this.options.length * 30,
+      height: this.attrs.options.length * 30,
       fill: '#fff',
       stroke: '#ddd',
       strokeWidth: 2,
@@ -128,7 +128,7 @@ export default class KonvaSelect extends Konva.Group {
     // console.log("can u see me")
     // this.attrs.options.push(newOptions)
     this.attrs.options.push(newOptions)
-    console.log(this.options)
+    console.log(this.attrs.options)
     this.updateListTexts(this.layer)
     this.draw()
   }
