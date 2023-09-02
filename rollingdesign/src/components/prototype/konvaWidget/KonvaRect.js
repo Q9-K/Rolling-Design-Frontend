@@ -21,8 +21,8 @@ export default class KonvaRect extends Konva.Rect {
         position: absolute;
         left: ${this.attrs.x}px;
         top: ${this.attrs.y}px;
-        width: ${this.attrs.width}px;
-        height: ${this.attrs.height}px;
+        width: ${this.width}px;
+        height: ${this.height}px;
         background-color: ${this.attrs.fill};
         border-radius: ${this.attrs.cornerRadius}px;
         border: ${this.attrs.strokeWidth}px ${this.attrs.stroke} solid;
