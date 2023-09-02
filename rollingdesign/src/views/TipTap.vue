@@ -4,23 +4,27 @@
  * @Description: 协同编辑器的基本实现，使用了element-tiptap和yjs
 -->
 <template>
+    <VOnboardingWrapper ref="wrapper" :steps="steps">
+    </VOnboardingWrapper>
     <div class="box2">
+        <!-- 这个元素主要是为了引导动画 -->
+        <div id="blank" style="position: absolute; top:50%;left: 50%;"></div>
         <template v-if="dataLoaded">
-            <div class="header">
-                <div class="actions1">
+            <div class="header" id="header">
+                <div class="actions1" id="foo">
                     <div class="backToCenter">
                         <el-tooltip class="box-item" effect="dark" content="返回个人中心" placement="bottom-end">
                             <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
                         </el-tooltip>
                     </div>
-                    <el-button @click="saveAsTemplate" :disabled="!editAble">保存为模板</el-button>
+                    <el-button @click="saveAsTemplate" :disabled="!editAble" id="template">保存为模板</el-button>
                 </div>
                 <div class="fileinfo">
-                    <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editAble"></Title>
+                    <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editAble" id="title"></Title>
                     <el-popover :disabled="!editAble" :width="300" trigger="click" ref='popper'
                         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
-                            <span class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
+                            <span id="history" class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
                  box-sizing: border-box; " @click="editAble ? showFileHistory() : ''">Last Modified: {{ lastEditTime
                  }}</span>
                         </template>
@@ -36,7 +40,7 @@
                 </div>
                 <div class="actions2">
                     <el-dropdown trigger="click" @command="downloadFile">
-                        <el-button type="primary" :disabled="!editAble">
+                        <el-button type="primary" :disabled="!editAble" id="downloadButton">
                             下载
                         </el-button>
                         <template #dropdown>
@@ -49,13 +53,13 @@
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-                    <el-button @click="updateFileAndInform()" :disabled="!editAble">
+                    <el-button @click="updateFileAndInform()" :disabled="!editAble" id="syncButton">
                         同步
                     </el-button>
                     <el-popover :width="300" trigger="click" ref='popper'
                         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
-                            <el-button @click="generateLink()" :disabled="!editAble">
+                            <el-button @click="generateLink()" :disabled="!editAble" id="shareButton">
                                 分享
                             </el-button>
                         </template>
@@ -110,21 +114,12 @@
 </template>
   
 
-<!-- <script>
-export default {
-    beforeRouteEnter() {
-
-    }
-}
-</script> -->
-
 <script setup>
 import outputFile from '../utils/output'
 import qs from 'qs'
 import { UserFilled } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import { ref, onMounted, inject, nextTick, onBeforeMount, onUnmounted } from 'vue';
-// import { ArrowLeftBold, Download } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'
 
@@ -170,7 +165,96 @@ import suggestion from '../utils/suggestion.js'
 import Button from '../components/Button.vue';
 import { useSocketStore } from '../store/useSocketStore'
 import { authStore } from "../store/index.js"
-
+import { VOnboardingWrapper, VOnboardingStep, useVOnboarding } from 'v-onboarding'
+import 'v-onboarding/dist/style.css'
+const wrapper = ref(null)
+const { start, goToStep, finish } = useVOnboarding(wrapper)
+const steps = [
+    {
+        attachTo: {
+            element: '#blank',
+        },
+        content: {
+            title: '欢迎使用Rolling Markdown Editor!',
+            description: '可以点击关闭按钮跳过引导步骤！'
+        },
+    },
+    {
+        attachTo: {
+            element: '.backToCenter',
+        },
+        content: {
+            title: '1/8',
+            description: '点击此处返回工作台页面'
+        },
+    },
+    {
+        attachTo: {
+            element: '#template',
+        },
+        content: {
+            title: '2/8',
+            description: '你可以选择将文档存储为模板，方便二次使用'
+        }
+    },
+    {
+        attachTo: {
+            element: '#title',
+        },
+        content: {
+            title: '3/8',
+            description: '在这里你可以修改文档标题'
+        }
+    },
+    {
+        attachTo: {
+            element: '#history',
+        },
+        content: {
+            title: '4/8',
+            description: '我们保存了文档最近的10次编辑历史，方便你进行版本回退'
+        }
+    },
+    {
+        attachTo: {
+            element: '.el-dropdown',
+        },
+        content: {
+            title: '5/8',
+            description: '点击可以下载当前文档，支持pdf,json,html,doc,markdown等5种格式的导出！'
+        }
+    },
+    {
+        attachTo: {
+            element: '#syncButton',
+        },
+        content: {
+            title: '6/8',
+            description: '点击可以保存文档至服务器，按ctrl+s也可以保存，不过不用担心，当脱离编辑状态20s文档会自动保存！'
+        }
+    },
+    {
+        attachTo: {
+            element: '#shareButton',
+        },
+        content: {
+            title: '7/8',
+            description: '点击可以通过生成链接分享给他人查看，同时你可以修改文档的编辑权限！'
+        }
+    },
+    {
+        attachTo: {
+            element: '.el-tiptap-editor__content'
+        },
+        content: {
+            title: '8/8',
+            description: '在这里你可以愉快地使用markdown语法！并且输入@符号可以通知团队其他成员，开始你的创意吧！'
+        },
+        options: {
+            popper: { placement: 'right' },
+        }
+    }
+]
 const socketStore = useSocketStore()
 const router = useRouter()
 const route = useRoute()
@@ -226,9 +310,6 @@ const provider = new TiptapCollabProvider({
         }
     }
 })
-
-
-
 
 const extensions = [
     History.configure({
@@ -426,8 +507,8 @@ const switchPermission = async () => {
 
 //设置30s脱离焦点自动保存文件
 const onBlur = async ({ editor }) => {
-    if (editAble == true) {
-        setTimeout(() => {
+    setTimeout(() => {
+        if (editAble == true) {
             updateFile()
             ElNotification({
                 title: 'Success',
@@ -435,8 +516,8 @@ const onBlur = async ({ editor }) => {
                 type: 'success',
                 duration: 1000
             })
-        }, 60000)
-    }
+        }
+    }, 20000)
 }
 
 const saveAsTemplate = async () => {
@@ -457,6 +538,7 @@ const saveAsTemplate = async () => {
 
 
 const onCreate = async ({ editor }) => {
+    start()
     editorInstance = editor
     // const position = { from: 3, to: 3 };
     // editorInstance.commands.setSelection(position)
