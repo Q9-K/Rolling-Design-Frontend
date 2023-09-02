@@ -20,9 +20,15 @@
         <el-main>
           <div class="page" style="width:98%;margin-left: 1%;">
             <!--团队信息-->
-            <el-row class="block" style="display: flex;align-items: center;">
+            <el-row style="margin-bottom: 30px;">
+              <span style="font-size:23px;font-weight: 500;">
+                回收站
+              </span>
+            </el-row>
+
+            <el-row class="block" style="display: flex;align-items: center;margin-bottom: 35px;">
               <!-- <el-avatar shape="square" :size="50" :src="squareUrl" style="margin-right:20px" /> -->
-              <span style="font-size:larger;font-weight: 800;">{{ nowTeam.name }}</span>
+              <span style="font-size:19px;font-weight: 800;">已删除项目</span>
 
               <div style="display: flex;flex: 1;justify-content: flex-end;">
                 <!-- <el-popconfirm title="此操作不可撤回，您确定要全部删除吗？" confirm-button-text="确定" cancel-button-text="取消"
@@ -32,34 +38,45 @@
                   </template>
                 </el-popconfirm> -->
 
-                <el-button type="primary" @click="openDelAllBox()">清倒</el-button>
-                <el-button type="primary" @click="openRecoverAllBox()">全部恢复</el-button>
+                <el-button plain type="danger" @click="openDelAllBox()">清倒</el-button>
+                <!-- <el-button type="success" plain @click="openRecoverAllBox()">全部恢复</el-button> -->
               </div>
             </el-row>
             <!--团队信息结束-->
 
-            <el-row style="margin-top:40px;margin-bottom: 30px;">
+            <!-- <el-row style="margin-top:40px;margin-bottom: 30px;">
               <span style="font-size:large;font-weight: 500;">回收站</span>
-            </el-row>
+            </el-row> -->
 
             <!--项目部分-->
             <!--展开状态（此为默认状态）-->
-            <el-row style="margin-top:40px;margin-bottom: 30px;">
-              <span style="font-size:large;font-weight: 500;" @click="delProjectShow = false">
-                项目
-              </span>
-            </el-row>
 
-            <!--项目封面图-->
             <!--如果有项目-->
             <el-row v-if="delProjectNum">
               <div class="designBlock" v-for="(item, index) in delProjectList" :key="index">
                 <div style="width:100%">
-                  <img class="round designImg" src="@/assets/projectImage.png" style="width:90%;height:150px" />
+                  <img class="round designImg" src="@/assets/projectImage.png" @click="cannotOpen(item.name)"
+                    style="width:90%;height:150px" />
                 </div>
                 <div style="display:flex;justify-content: space-between;width:90%">
-                  <span class="designName" style="padding-left:4px;display: flex;">
+                  <span class="projectName" style="padding-left:4px;display: flex;">
                     {{ item.name }}
+                  </span>
+                  <span class="rightContent">
+
+                    <el-dropdown trigger="click" placement="bottom-start">
+
+                      <el-icon>
+                        <More />
+                      </el-icon>
+                      <template #dropdown>
+                        <el-dropdown-item :icon="RemoveFilled"
+                          @click="deleteProject(index, item.id)">删除项目</el-dropdown-item>
+                        <el-dropdown-item :icon="DeleteFilled" @click="openDelAllBox()">全部删除</el-dropdown-item>
+                        <el-dropdown-item :icon="CirclePlusFilled"
+                          @click="recoverProject(index, item.id)">恢复项目</el-dropdown-item>
+                      </template>
+                    </el-dropdown>
                   </span>
                 </div>
               </div>
@@ -90,6 +107,12 @@ import {
   CaretBottom,
   CaretRight,
   MoreFilled,
+  EditPen,
+  FolderDelete,
+  FolderOpened,
+  RemoveFilled,
+  DeleteFilled,
+  CirclePlusFilled,
   More,
 } from '@element-plus/icons-vue'
 import { authStore } from '@/store'
@@ -135,7 +158,7 @@ const fetchNowTeam = () => {
   let Headers = { 'Authorization': authStore().token };
   axios.get('http://www.aamofe.top/api/team/get_current_team/', { params: { user_id: authStore().userId }, headers: Headers })
     .then((response) => {
-      console.log(response);
+      // console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         nowTeam.teamId = response.data.team.id;
@@ -143,9 +166,9 @@ const fetchNowTeam = () => {
         nowTeam.createTime = response.data.team.created_at;
         nowTeam.creator = response.data.team.creator;
         nowTeam.role_string = response.data.team.role_string;
-        if ((nowTeam.role_string === 'CR' || nowTeam.role_string === 'MG') && nowTeam.name != "个人空间") {
-          getInviteLink();
-        }
+        // if ((nowTeam.role_string === 'CR' || nowTeam.role_string === 'MG') && nowTeam.name != "个人空间") {
+        //   getInviteLink();
+        // }
         localStorage.setItem('teamId', response.data.team.id);
         localStorage.setItem('teamName', response.data.team.name);
 
@@ -174,8 +197,8 @@ const fetchDelProjectData = () => {
         // console.log(projectList.value);
 
         delProjectNum.value = response.data.projects.length;
-        console.log(response.data.projects.length)
-        // console.log(projectNum);
+        // console.log(response.data.projects.length)
+        console.log(delProjectList.value);
         return;
       }
       else {
@@ -186,7 +209,8 @@ const fetchDelProjectData = () => {
     })
 }
 
-const deleteProject = (projectId) => {
+const deleteProject = (index, projectId) => {
+  console.log(index);
   console.log(projectId);
   axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: projectId }), {
     headers: { Authorization: authStore().token }
@@ -199,10 +223,16 @@ const deleteProject = (projectId) => {
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
-        //把项目从projectList里删除
-        if (index >= 0 && index < delProjectList.value.length) {
-          delProjectList.value.splice(index, 1);
-        }//【】
+        let i = 0;
+        for (i = 0; i < delProjectList.value.length - 1; i++) {
+          if (i >= index) {
+            // console.log(i);
+            delProjectList.value[i] = delProjectList.value[i + 1];
+          }
+        }
+        delProjectList.value.pop();
+        // console.log(projectList.value);
+        delProjectNum.value--;
       }
       else {//失败
         console.log(projectId);
@@ -216,7 +246,9 @@ const deleteProject = (projectId) => {
     });
 }
 
-const recoverProject = (projectId) => {
+const recoverProject = (index, projectId) => {
+  console.log(index);
+
   console.log(projectId);
   axios.post('http://www.aamofe.top/api/team/recover_one_project/', qs.stringify({ project_id: projectId }), {
     headers: { Authorization: authStore().token }
@@ -230,9 +262,16 @@ const recoverProject = (projectId) => {
       {
         ElMessage.success(res.data.msg);
         //把项目从projectList里删除
-        if (index >= 0 && index < delProjectList.value.length) {
-          delProjectList.value.splice(index, 1);
-        }//【】
+        let i = 0;
+        for (i = 0; i < delProjectList.value.length - 1; i++) {
+          if (i >= index) {
+            // console.log(i);
+            delProjectList.value[i] = delProjectList.value[i + 1];
+          }
+        }
+        delProjectList.value.pop();
+        // console.log(projectList.value);
+        delProjectNum.value--;
       }
       else {//失败
         console.log(projectId);
@@ -273,9 +312,9 @@ const deleteAll = () => {
 }
 
 const recoverAll = () => {
-  console.log(authStore().teamId);
+  console.log(nowTeam.teamId);
 
-  axios.post('http://www.aamofe.top/api/team/recover_all_project/', qs.stringify({ team_id: authStore().teamId }), {
+  axios.post('http://www.aamofe.top/api/team/recover_all_project/', qs.stringify({ team_id: nowTeam.teamId }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
@@ -297,7 +336,7 @@ const recoverAll = () => {
       console.error(error);
     });
 }
-
+//打开是否确认全部删除和恢复的按钮
 const openDelAllBox = () => {
   ElMessageBox.confirm(
     '此操作不可撤回，您确定要全部删除吗？',
@@ -331,30 +370,37 @@ const openRecoverAllBox = () => {
     .catch(() => {
     })
 }
-
-/*获取邀请链接*/
-const getLink = () => {
-  axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
-    .then(res => {
-      // 处理响应数据
-      console.log(res);
-
-      if (res.data.errno == 0)//成功
-      {
-        console.log(res.data.invatation);
-        invideLink.value = res.data.invatation;
-        return;
-      }
-      else {//失败
-        ElMessage.error(res.data.msg);
-        return;
-      }
-    })
-    .catch(error => {
-      // 处理请求错误
-      console.error(error);
-    });
+//【】
+const cannotOpen = (name) => {
+  ElMessageBox.alert('不能打开项目' + '"' + name + '",因为它在回收站中', '', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: 'OK',
+  })
 }
+/*获取邀请链接*/
+// const getLink = () => {
+//   axios.get('http://www.aamofe.top/api/team/get_invitation/', { params: { team_id: 1 }, headers: { Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTM0ODQ1NDUsImlkIjoxfQ.8ZA60G5SWc793QCzywrXKW4lrEzFW26DqSVj7vj-7FI" } })
+//     .then(res => {
+//       // 处理响应数据
+//       console.log(res);
+
+//       if (res.data.errno == 0)//成功
+//       {
+//         console.log(res.data.invatation);
+//         invideLink.value = res.data.invatation;
+//         return;
+//       }
+//       else {//失败
+//         ElMessage.error(res.data.msg);
+//         return;
+//       }
+//     })
+//     .catch(error => {
+//       // 处理请求错误
+//       console.error(error);
+//     });
+// }
 </script>
 
 <style scoped>

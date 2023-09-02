@@ -11,16 +11,16 @@
 
             <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
 
-            <span style="margin-right:30px" @click="jumpTo('index')">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('index')">
               主页
             </span>
-            <span style="margin-right:30px" @click="jumpTo('teamPeople')">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('teamPeople')">
               团队管理
             </span>
-            <span style="margin-right:30px" @click="jumpTo('project')">
+            <span class="canClick" style="margin-right:30px" @click="jumpTo('project')">
               项目
             </span>
-            <span @click="jumpTo('chat')">
+            <span class="canClick"  @click="jumpTo('chat')">
               消息中心
             </span>
 
@@ -156,10 +156,14 @@
           <div style="font-size:45px;margin-bottom:8px;font-weight: 900;">软工开发团队协作与管理平台</div>
           <div style="font-size:30px;margin-bottom:10px;font-weight: 800;">流转设计 &nbsp; &nbsp;让团队开发更简单</div>
           <div style="font-size:30px;font-weight: 800;">快来使用吧～</div>
-          <div v-if="userStore.isLogin" style="margin-top: 20px;">
-            <el-button color="#626aef" style="z-index:1999;padding:35px 30px 35px 30px" size="large" @click="jumpTo('index')">
+
+          <div class="pulse" v-if="userStore.isLogin" style="margin-top: 20px;">
+            <!-- <transition name="pulse"> -->
+            <el-button color="#626aef" class="btnHover" style="z-index:1999;padding:35px 30px 35px 30px" size="large"
+              @click="jumpTo('index')">
               <span style="font-size: 27px;">进入工作区</span>
             </el-button>
+            <!-- </transition> -->
           </div>
           <div v-else style="margin-top: 20px;">
             <el-button color="#626aef" style="z-index:1999;" size="large" @click="loginDialog = true">登录</el-button>
@@ -167,7 +171,7 @@
 
         </div>
         <div>
-          <img class="show" src="@/assets/show.png" />
+          <img class="show imgHover" src="@/assets/show.png" />
         </div>
       </el-main>
       <el-footer style=" position: absolute;bottom: 0;right: 0;text-align: center;"><a href=" " target="_blank">备案号：</a>
@@ -177,6 +181,7 @@
 </template>
 
 <script setup>
+import 'animate.css';//动态效果
 import { useRouter } from 'vue-router'
 import { ref, unref, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -377,6 +382,46 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
+.pulse {
+  /* animation: btn-move 1.8s infinite; */
+}
+
+@keyframes btn-move {
+
+  /* 0% {
+        letter-spacing: 2px;
+        transform: translate(0px, 0px);
+    }
+
+    50% {
+        letter-spacing: 6px;
+        transform: translate(0px, -2px);
+    }
+
+    100% {
+        letter-spacing: 4px;
+        transform: translate(0px, 0px);
+    } */
+  /* 0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  } */
+}
 .head {
   /* font-family: SimHei;  */
   font-weight: 600;
@@ -435,10 +480,28 @@ onMounted(() => {
   width: 50%;
 }
 
+.imgHover {
+  transition: transform 0.2s;
+}
+
+.imgHover:hover {
+  transform: scale(1.04);
+}
+
+.btnHover {
+  transition: transform 0.2s;
+}
+
+.btnHover:hover {
+  transform: scale(1.04);
+}
+.canClick{
+  cursor: pointer;
+}
+
 .likeBtnBlock {
   border: 2px solid #d0dcdc9a;
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
-}
-</style>
+}</style>

@@ -15,6 +15,7 @@ import axios from 'axios';
 import { createPinia } from 'pinia';
 import './assets/css/main.css'
 import './assets/icons/iconfont.css'
+import { useVOnboarding } from 'v-onboarding';
 
 const pinia = createPinia();
 const app = createApp(App)
@@ -23,6 +24,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(ElementTiptapPlugin)
 app.use(router).use(ElementPlus).use(pinia).mount('#app')
+
+const wrapper = ref(null)
+const { start, goToStep, finish } = useVOnboarding(wrapper)
 
 
 

@@ -29,7 +29,16 @@ const routes = [
     }
   },
   {
-    path: '/design/:id/:id',
+    path: '/project/:projectId/folder/:id',
+    name: 'folder',
+    component: () => import(/* webpackChunkName: "about" */ '../views/FolderView.vue'),
+    meta: {
+      index: 'folder',
+      requireAuth: true
+    }
+  },
+  {
+    path: '/design/:projectId/:folderId/:id',
     name: '/design',
     component: () => import('../views/PrototypeDesign.vue'),
     meta: {
@@ -43,7 +52,7 @@ const routes = [
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
   {
-    path: '/tiptap/:id',
+    path: '/tiptap/:proejctId/:id',
     name: '/tiptap',
     component: () => import('../views/TipTap.vue'),
     meta: {
@@ -103,13 +112,36 @@ const routes = [
   //   }
   // },
   {
-    path: '/about',
-    name: 'about',
+    path: '/test',
+    name: 'test',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/others/TestView.vue'),
     meta: {
+      requireAuth: true
+    }
+  },
+  {
+    path: '/about',
+    name: 'about',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/others/AboutView.vue'),
+    meta: {
+      requireAuth: true
+    }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/SettingsView.vue'),
+    meta: {
+      index: 'settings',
       requireAuth: true
     }
   },
@@ -142,7 +174,10 @@ const router = createRouter({
 })
 router.beforeEach((to, from, next) => {
   const store = authStore()
+  // console.log(store.isLogin);
+
   if (to.meta.requireAuth && !store.isLogin) {
+    // console.log(store.isLogin);
     next('/home')
   }
   else {
