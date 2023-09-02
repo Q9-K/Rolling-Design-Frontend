@@ -74,15 +74,15 @@
                                 </template>
                                 <template #default>
                                     <div disabled style="text-align: center;">
-                                        <el-input v-model="link" disabled></el-input>
+                                        <el-input v-model="link"></el-input>
                                         <div>
-                                            <div>分享权限</div>
+                                            <div style="margin-top: 10px;">分享权限</div>
                                             <el-switch v-model="shareeditable" class="ml-2" active-text='可以编辑'
                                                 inactive-text="不可编辑"
                                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                                                 @change="switchPermission()" />
                                         </div>
-                                        <div style="color: #d2d3d7;text-align: left;
+                                        <div style="color: #d2d3d7;text-align: center;
                             margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
                                         </div>
                                     </div>
