@@ -119,7 +119,8 @@
                                 </el-icon>
                             </div>
                             <el-input v-show="showSearch" ref="searchInput"
-                                style="margin-left: 20px;margin-right:30px; margin-top:5px;width:200px">搜索</el-input>
+                                style="margin-left: 20px;margin-right:30px; margin-top:5px;width:200px;"
+                                @keyup.enter="updateGroupName" v-model="newGroupName">搜索</el-input>
                         </div>
                     </div>
                 </div>
@@ -143,7 +144,23 @@
                         </div>
                         <div class="addRoomLeftBody">
                             <ul>
-                                <li v-for="(item, index) in searchForwardRoom" :key="index" class="addRoomUser">
+
+                                <li v-for="(item, index) in searchForwardRoom" :key="index" class="addRoomUser"
+                                    style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #ddd;">
+                                    <input type="checkbox" v-model="item.checked"
+                                        @change="handleForwardCheckboxChange(item)"
+                                        style="flex: 1 0 auto; margin-right: 10px; border-radius: 50%;">
+                                    <div
+                                        style="flex: 0 0 auto; display: flex; justify-content: center; align-items: center; height: 40px;">
+                                        <img :src="item.avatar" alt="Avatar"
+                                            style="height: 25px; width: 25px; text-align: center;">
+                                    </div>
+                                    <div style="flex: 6; display: flex; align-items: center; margin-left: 10px;">
+                                        <span>{{ item.roomName }}</span>
+                                    </div>
+                                </li>
+
+                                <!-- <li v-for="(item, index) in searchForwardRoom" :key="index" class="addRoomUser">
                                     <input type="checkbox" v-model="item.checked"
                                         @change="handleForwardCheckboxChange(item)" style="flex-grow: 1;border-radius: 50%">
                                     <div
@@ -155,7 +172,7 @@
                                         style="display: flex; justify-content: flex-start; align-items: center; height: 40px; flex-grow:6">
                                         <span style="text-align: center;">{{ item.roomName }}</span>
                                     </div>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -179,11 +196,10 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="addRoomRightFoot">
-                            <el-button @click="sendAddRoom" class="addRoomRightFootButton">完成</el-button>
-                            <el-button @click="closeForward" class="addRoomRightFootButton">取消</el-button>
+                            <el-button @click="sendMergedForward()" class="addRoomRightFootButton">完成</el-button>
+                            <el-button @click="closeForward()" class="addRoomRightFootButton">取消</el-button>
                         </div>
                     </div>
                 </div>
@@ -200,7 +216,7 @@
                         </div>
                         <div class="addRoomLeftBody">
                             <ul>
-                                <li v-for="(item, index) in searchAddRoomUsers" :key="index" class="addRoomUser">
+                                <!-- <li v-for="(item, index) in searchAddRoomUsers" :key="index" class="addRoomUser">
                                     <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)"
                                         style="flex-grow: 1;border-radius: 50%">
                                     <div
@@ -211,6 +227,19 @@
                                     <div
                                         style="display: flex; justify-content: flex-start; align-items: center; height: 40px; flex-grow:6">
                                         <span style="text-align: center;">{{ item.username }}</span>
+                                    </div>
+                                </li> -->
+                                <li v-for="(item, index) in searchAddRoomUsers" :key="index" class="addRoomUser"
+                                    style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #ddd;">
+                                    <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)"
+                                        style="flex: 1 0 auto; margin-right: 10px; border-radius: 50%;">
+                                    <div
+                                        style="flex: 0 0 auto; display: flex; justify-content: center; align-items: center; height: 40px;">
+                                        <img :src="item.avatar_url" alt="Avatar"
+                                            style="height: 25px; width: 25px; text-align: center;">
+                                    </div>
+                                    <div style="flex: 6; display: flex; align-items: center; margin-left: 10px;">
+                                        <span>{{ item.username }}</span>
                                     </div>
                                 </li>
                             </ul>
@@ -301,6 +330,45 @@
                     </div>
                 </div>
             </div>
+            <div v-if="isForwardMessages" class="forward-overlay">
+                <div style="height:10%">
+                    聊天记录
+                </div>
+                <div style="height:80%">
+                    <ul>
+                        <li v-for="(item, index) in receiveForwardMessages" :key="index" class="message">
+                            <div v-if="item.forwarded_messages.length === 0">
+                                <!-- <img :src="item.avatar_url" alt="Avatar">
+                                <span>{{ item.message }}</span>
+                                <span>{{ item.user_name }}</span> -->
+                                <div style="display: flex; align-items: center; height: 40px;">
+                                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center;">
+                                        <img :src="item.avatar_url" alt="Avatar" style="height: 40px; width:40px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; flex-grow: 6;">
+                                        <div style="text-align: left;">{{ item.user_name }}</div>
+                                        <div style="text-align: left;">{{ item.message }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else @click="handleClick(item.forwarded_messages)">
+                                <div style="display: flex; align-items: center; height: 40px;">
+                                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center;">
+                                        聊天记录
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; flex-grow: 6;">
+                                        <div style="text-align: left;">{{ item.user_name }}</div>
+                                        <div style="text-align: left;">{{ item.message }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div style="height:10%">
+                    <el-button @click="this.isForwardMessages = false">退出</el-button>
+                </div>
+            </div>
         </div>
     </div>
 </template>  
@@ -331,8 +399,10 @@ export default {
         return {
             theme: 'dark',
             showSearch: false,
+            isForwardMessages: false,
             isMerge: false,
             isOneByOne: false,
+            newGroupName: '',
             group_id: '',
             addUserKey: '',
             searchAddRoomKey: '',
@@ -345,6 +415,8 @@ export default {
             showInviteUsers: false,
             messagesPerPage: 20,
             currentTeam: '',
+            saveReceiveForwardMessages: [],
+            receiveForwardMessages: [],
             saveSearchAddRoomUsers: [],
             searchAddRoomUsers: [], //创建和添加共用
             saveSearchInviteUsers: [],
@@ -355,7 +427,7 @@ export default {
             drawer: ref(false),
             currentUserId: '1',
             roomId: '1', //默认进入的id
-            selectedRoom: '13', //当前选中群聊id
+            selectedRoom: '', //当前选中群聊id
             lastRoomId: '',
             lastUser: '',
             messagesLoaded: false,
@@ -371,6 +443,8 @@ export default {
             tag: true,
             addRoomButton: true,
             showRoomInformation: false,
+            forwardMessages: [],
+            initRooms: [],
             teams: [], //存储该用户所参加的群聊
             sockets: [], //存储建立的websocket
             noticeWs: '',
@@ -385,6 +459,7 @@ export default {
             forwardSelectedRooms: [],
             forwardRooms: [],
             currentUsers: [],
+            mergedMessages: [],
             messageSelectionActions: [
                 {
                     name: 'deleteMessages',
@@ -456,33 +531,44 @@ export default {
                 try {
                     const { data: res } = await axios.get(`http://www.aamofe.top/api/chat/initial/` + this.currentUserId);
                     console.log(`http://101.43.159.45:8001/api/chat/initial/` + this.currentUserId)
-                    // console.log(`获取到的消息` + res);
-                    this.rooms = ref([...res.rooms]);
                     console.log(res)
+                    this.rooms = ref([...res.rooms]);
+                    this.initRooms = this.rooms
                     // await this.$nextTick
                     console.log('所有群聊')
-                    //console.log(res.rooms)
+                    console.log(this.initRooms)
                     console.log(this.rooms);
+                    // for (let room of this.rooms) {
+                    //     // const userExists = room.users.some(user => user.id == '9999');
+                    //     // if (!userExists) {
+                    //     //     const newUser = { _id: 9999, name: "所有人" };
+                    //     //     room.users.push(newUser);
+                    //     // }
+                    //     if (room.roomId == this.selectedRoom) {
+                    //         const identification = room.users.find(user => user._id == this.currentUserId).role
+                    //         room.users = room.users.filter(user => user._id != this.currentUserId);
+                    //         room.unreadCount = 0;
+                    //         console.log(room.users);
+                    //         const hasUserWithId = room.users.some(user => user._id == '9999');
+                    //         if ((!hasUserWithId && identification == 'CR')) {
+                    //             let all = {
+                    //                 username: '所有人',
+                    //                 _id: '9999',
+                    //             }
+                    //             room.users.push(all)
+                    //             // const userIndex = room.users.findIndex(user => user._id == '9999');
+                    //             // // 如果找到用户，则将其从数组中删除
+                    //             // if (userIndex !== -1) {
+                    //             //     room.users.splice(userIndex, 1);
+                    //             // }
+                    //         }
+                    //         break; // 如果 roomId 是唯一的，找到后就跳出循环
+                    //     }
+                    //     // room.users
+                    // }
                 }
                 catch (error) {
                     console.log(error);
-                }
-                for (let room of this.rooms) {
-                    if (room.roomId == this.selectedRoom) {
-                        const identification = room.users.find(user => user._id == this.currentUserId).role
-                        room.users = room.users.filter(user => user._id != this.currentUserId);
-                        room.unreadCount = 0;
-                        console.log(room.users);
-                        const hasUserWithId = room.users.some(user => user._id == 9999);
-                        if (!hasUserWithId && identification == 'CR') {
-                            let all = {
-                                username: '所有人',
-                                _id: '9999',
-                            }
-                            room.users.push(all)
-                        }
-                        break; // 如果 roomId 是唯一的，找到后就跳出循环
-                    }
                 }
             }, 0)
         },
@@ -569,15 +655,16 @@ export default {
             setTimeout(() => {
                 const url = `ws://101.43.159.45:8001/notice/${this.currentUserId}`
                 const ws = new WebSocket(url);
+                console.log(url)
                 ws.onopen = () => {
                     console.log(`Notice Connected to the websocket server`);
                 };
                 ws.onerror = (error) => {
-                    console.error(`WebSocket for team ${team} encountered an error:`, error);
+                    console.error(`WebSocket for team notice encountered an error:`, error);
                 };
                 ws.onmessage = this.onMessageReceived;
                 ws.onclose = (event) => {
-                    console.log(`WebSocket for team ${team} is closed.`);
+                    console.log(`WebSocket for notice is closed.`);
                     console.log(event)
                 };
                 // 将 WebSocket 实例添加到 sockets 数组中
@@ -619,7 +706,7 @@ export default {
                     console.log('添加成员的users')
                     console.log(this.currentUsers)
                     //修改群聊信息里的user数组
-                    room.users = room.users.filter(user => user._id != this.currentUserId);
+                    //room.users = room.users.filter(user => user._id != this.currentUserId);
                     room.unreadCount = 0;
                     console.log(room.users);
                     const hasUserWithId = room.users.some(user => user._id == 9999);
@@ -635,7 +722,6 @@ export default {
             //解散群聊
             if (parsedData.type === 'chat_delete_all') {
                 let foundRoom = null;
-
                 for (let i = 0; i < this.rooms.length; i++) {
                     if (this.rooms[i].roomId == parsedData.roomID) {
                         foundRoom = this.rooms[i];
@@ -655,7 +741,6 @@ export default {
                 if (room) {
                     // 从群聊的 users 数组中移除 userid 为 uid 的人
                     room.users = room.users.filter(user => user._id != parsedData.deleter_id);
-
                     console.log(room.users)
                 }
                 console.log('删除成功')
@@ -694,9 +779,21 @@ export default {
                         avatar: parsedData.avatar_url,
                         _id: parsedData.message_id,
                         date: parsedData.date,
-                        username: parsedData.username,
+                        username: parsedData.user_name,
+                        // date: parsedData.date
+                        // replyMessage: parsedData.replyMessage,
                         files: parsedData.files.filter(file => file !== null)
                     }
+                    // if (parsedData.replyMessage != null) {
+                    //     // console.log('麻了')
+                    //     // const parsedObject = JSON.parse(parsedData.messages[i].replyMessage);
+                    //     // const replyMessage = {
+                    //     //     content : parsedObject.content,
+                    //     //     sender_id : parsedObject.sender_id,
+                    //     //     _id : parsedObject._id
+                    //     // }
+                    //     message.replyMessage = parsedData.replyMessage
+                    // }
                     console.log('获得的消息')
                     console.log(message)
 
@@ -718,17 +815,64 @@ export default {
                     }))
                 }
             }
+            if (parsedData.type == 'chat_forward_message') {
+                if (parsedData.team_id == this.selectedRoom) {
+                    const message = {
+                        senderId: String(parsedData.message.user_id),
+                        content: parsedData.message.message,
+                        timestamp: parsedData.message.time,
+                        avatar: parsedData.message.avatar_url,
+                        _id: parsedData.message.message_id,
+                        date: parsedData.message.date,
+                        username: parsedData.message.user_name,
+                        files: parsedData.message.files.filter(file => file !== null),
+                        forwarded_messages: parsedData.message.forwarded_messages,
+                        replyMessage: parsedData.message.replyMessage
+                    }
+                    console.log('获得的消息')
+                    console.log(message)
+
+                    const proxyMessage = new Proxy(message, {});
+
+                    this.messages = [
+                        ...this.messages,
+                        proxyMessage
+                    ];
+                    this.sockets[this.selectedRoom].send(JSON.stringify({
+                        clean: 'clean'
+                    }))
+                    setTimeout(() => {
+                        const tag = document.getElementsByTagName('vue-advanced-chat')[0]
+
+                        const located = tag.shadowRoot.getElementById(parsedData.message.message_id)
+
+                        const innerElement = located.querySelector('.vac-format-message-wrapper span span');
+                        console.log(innerElement)
+                        //innerElement.addEventListener('click', this.handleClick(event));
+                        located.addEventListener("contextmenu", (event) => {
+                            this.isForwardMessages = true;
+                            console.log(this.isForwardMessages);
+                            this.receiveForwardMessages = parsedData.message.forwarded_messages;
+                            console.log(parsedData.message.forwarded_messages);
+                            console.log('显示成功');
+                        });
+                    }, 200);
+                }
+            }
             //改变群聊状态信息
             if (parsedData.type === 'chat_status') {
                 for (let room of this.rooms) {
                     if (room.roomId == parsedData.team_id) {
-                        room.lastMessage.content = parsedData.latest_message;
+                        //room.lastMessage.content = parsedData.latest_message;
                         room.lastMessage.username = parsedData.username;
                         room.lastMessage.timestamp = parsedData.time;
                         room.unreadCount = parsedData.unread_count;
                         room.index = parsedData.index
                         if (this.selectedRoom == parsedData.team_id) {
                             room.unreadCount = 0;
+                        }
+                        if (parsedData.latest_message != null) {
+                            room.lastMessage.content = parsedData.latest_message;
                         }
                         console.log(room.index)
                         break; // 如果 roomId 是唯一的，找到后就跳出循环
@@ -749,8 +893,38 @@ export default {
                                 date: parsedData.messages[i].date,
                                 _id: parsedData.messages[i].message_id,
                                 username: parsedData.messages[i].username,
-                                files: parsedData.messages[i].files
+                                files: parsedData.messages[i].files,
+                                forwarded_messages: parsedData.messages[i].forwarded_messages,
+
                             };
+                            // if (parsedData.messages[i].replyMessage!= '{}'){
+                            //     console.log('麻了')
+                            //     const parsedObject = JSON.parse(parsedData.messages[i].replyMessage);
+                            //     const replyMessage = {
+                            //         content : parsedObject.content,
+                            //         sender_id : parsedObject.sender_id,
+                            //         _id : parsedObject._id
+                            //     }
+                            //     message.replyMessage = replyMessage
+                            // }
+                            if (parsedData.messages[i].forwarded_messages.length != 0) {
+                                setTimeout(() => {
+                                    const tag = document.getElementsByTagName('vue-advanced-chat')[0]
+
+                                    const located = tag.shadowRoot.getElementById(parsedData.messages[i].message_id)
+                                    console.log(parsedData.messages[i])
+                                    const innerElement = located.querySelector('.vac-format-message-wrapper span span');
+                                    console.log(innerElement)
+                                    //innerElement.addEventListener('click', this.handleClick(event));
+                                    located.addEventListener("contextmenu", (event) => {
+                                        this.isForwardMessages = true;
+                                        console.log(this.isForwardMessages);
+                                        this.receiveForwardMessages = parsedData.messages[i].forwarded_messages;
+                                        console.log(parsedData.messages[i].forwarded_messages);
+                                        console.log('显示成功');
+                                    });
+                                }, 200);
+                            }
                             messages.push(message);
                         }
                         this.messages = messages
@@ -759,6 +933,14 @@ export default {
                     console.log(error)
                 }
             }
+        },
+        handleClick(forwardedMessages) {
+            this.receiveForwardMessages = forwardedMessages
+            this.isForwardMessages = false
+            setTimeout(() => {
+                this.isForwardMessages = true
+            }, 1000);
+            console.log(this.receiveForwardMessages)
         },
         requestData(selectedRoom) {
             if (this.sockets[selectedRoom] && this.sockets[selectedRoom].readyState === WebSocket.OPEN) {
@@ -775,26 +957,30 @@ export default {
                 // 如果发送的数据是对象，可以先将其转换为JSON字符串
                 const dataStr = JSON.stringify(data);
                 this.sockets[roomId].send(dataStr);
-                const containsAt = data.message.includes("@");
-                const containsAtAll = data.message.includes("@所有人");
-
+                const containsAt = data.message.includes("usertag");
+                const containsAtAll = data.message.includes("9999");
+                const regex = /<usertag>(.*?)<\/usertag>/;
+                const match = data.message.match(regex);
+                const value = match ? match[1] : null;
                 if (containsAt) {
                     if (containsAtAll) {
-                        this.sockets[roomId].send(JSON.stringify({
+                        console.log('@所有人')
+                        this.noticeWs.send(JSON.stringify({
                             type: 'chat',
                             range: 'all',
-                            roomId: roomId,
+                            roomID: roomId,
                             url: 'http://localhost:8081/chat',
                         }));
                     }
                     else {
-                        const user = this.rooms[Id].users.find(user => user.username === username);
-                        this.sockets[roomId].send(JSON.stringify({
+                        console.log(value)
+                        console.log('@单个人')
+                        this.noticeWs.send(JSON.stringify({
                             type: 'chat',
                             range: 'individual',
-                            roomId: roomId,
+                            roomID: roomId,
                             url: 'http://localhost:8081/chat',
-                            user_id: user.id
+                            user_id: value
                         }));
                     }
                 }
@@ -900,10 +1086,13 @@ export default {
                 if (options.reset) {
                     this.resetMessages()
                     try {
-                        if (this.rooms.length !== 0) {
-                            const room = this.rooms.find(room => room.roomId === this.selectedRoom);
+                        if (this.rooms.length !== 0 && this.selectedRoom != null) {
+                            const room = this.rooms.find(room => room.roomId == this.selectedRoom);
+                            const roomIndex = this.initRooms.find(room => room.roomId == this.selectedRoom);
                             console.log(room)
                             this.currentUsers = room ? room.users : [];
+                            this.currentUsers = this.currentUsers.filter(user => user._id != '9999')
+                            console.log('this.currentUsers')
                             console.log(this.currentUsers)
                             if (room.type == "group" && room.creator_id == this.currentUserId) {
                                 this.menuActions = [
@@ -928,7 +1117,6 @@ export default {
                             }
                             else {
                                 this.menuActions = [
-                                    { name: 'deleteRoom', title: '解散私聊' },
                                     { name: 'searchMessage', title: '搜索消息' },
                                     { name: 'roomInformation', title: '群聊信息' }
                                 ]
@@ -938,14 +1126,14 @@ export default {
                         console.log(error)
                     }
                     //把上次的room恢复user，存lastRoomId,lastUser
-                    for (let room of this.rooms) {
-                        if (room.roomId == this.lastRoomId) {
-                            room.users = [...room.users, this.lastUser]
-                            console.log('恢复后的room')
-                            console.log(room)
-                            break; // 如果 roomId 是唯一的，找到后就跳出循环
-                        }
-                    }
+                    // for (let room of this.rooms) {
+                    //     if (room.roomId == this.lastRoomId) {
+                    //         room.users = [...room.users, this.lastUser]
+                    //         console.log('恢复后的room')
+                    //         console.log(room)
+                    //         break; // 如果 roomId 是唯一的，找到后就跳出循环
+                    //     }
+                    // }
                     for (let room of this.rooms) {
                         if (room.roomId == this.selectedRoom) {
                             console.log('room群聊')
@@ -955,7 +1143,7 @@ export default {
                             console.log("lastUser")
                             console.log(this.lastUser)
                             const identification = room.users.find(user => user._id == this.currentUserId).role
-                            room.users = room.users.filter(user => user._id != this.currentUserId);
+                            //room.users = room.users.filter(user => user._id != this.currentUserId);
                             room.unreadCount = 0;
                             console.log(room.users);
                             const hasUserWithId = room.users.some(user => user._id == 9999);
@@ -971,7 +1159,7 @@ export default {
                     }
                     this.requestData(this.selectedRoom)
                     console.log(this.messages)
-                    console.log('当前群聊的id' + room.roomId)
+                    console.log('当前群聊的id' + this.selectedRoom)
                     setTimeout(() => {
                         console.log('群聊长度' + this.messages.length)
                         if (this.messages.length == 0 || this.messages.length < this.messagesPerPage) {
@@ -989,7 +1177,7 @@ export default {
             console.log('发送消息的群聊id:' + this.selectedRoom)
             const date = new Date();
             const day = date.getDate();
-            const month = date.toLocaleString('default', { month: 'long' });
+            const month = date.toLocaleString('en-US', { month: 'long' });
             const formattedDate = `${day} ${month}`;
             console.log('日期' + formattedDate)
             const messageData = {
@@ -1074,6 +1262,8 @@ export default {
                     return this.ExitRoom(roomId)
                 case 'deleteRoom':
                     return this.dissolveRoom(roomId)
+                case 'deleteSingleRoom':
+                    return this.dissolveSingleRoom(roomId)
                 case 'searchMessage':
                     return this.searchMessage()
                 case 'roomInformation':
@@ -1128,27 +1318,32 @@ export default {
                         return this.deleteMessage({ message, roomId })
                     })
                 case 'forwardMessagesOneByOne':
-                    return this.forwardMessagesOneByOne(messages, this.roomId)
+                    return this.forwardMessagesOneByOne(messages)
                 case 'forwardMergedMessages':
-                    messages.forEach(message => {
-                        return this.forwardMergedMessages()
-                    })
+                    // messages.forEach(message => {
+                    //     return this.forwardMergedMessages()
+                    // })
+                    return this.forwardMergedMessages(messages)
             }
         },
-        async forwardMessagesOneByOne(messages, roomId) {
-            this.showForward = true
-        },
-        forwardMergedMessages() {
+        // async forwardMessagesOneByOne(messages, roomId) {
+        //     this.showForward = true
+        // },
+        forwardMergedMessages(messages) {
             this.isMerge = true
             this.showForward = true
-            this.searchForwardRoom = this.rooms.filter(room => room.roomId != this.selectedRoom)
+            this.forwardMessages = messages
+            console.log(messages)
+            this.searchForwardRoom = this.rooms
             console.log('被搜索的群聊')
             console.log(this.searchForwardRoom)
         },
-        forwardMessagesOneByOne() {
+        forwardMessagesOneByOne(messages) {
             this.isOneByOne = true
             this.showForward = true
-            this.searchForwardRoom = this.rooms.filter(room => room.roomId != this.selectedRoom)
+            this.forwardMessages = messages
+            console.log(messages)
+            this.searchForwardRoom = this.rooms
             console.log('被搜索的群聊')
             console.log(this.searchForwardRoom)
         },
@@ -1248,6 +1443,17 @@ export default {
             console.log(this.rooms.length)
             return this.$message.success(`群聊解散成功`);
         },
+        dissolveSingleRoom(){
+            const messageData = {
+                delete_all: '2',
+                room_id: this.currentUserId,
+            };
+            this.sockets[this.selectedRoom].send(JSON.stringify(messageData))
+            this.rooms = this.rooms.filter(room => room.roomId != this.selectedRoom)
+            console.log('解散群聊成功')
+            console.log(this.rooms.length)
+            return this.$message.success(`私聊解散成功`);
+        },
         ExitRoom(roomId) {
             const messageData = {
                 delete_personal: '2',
@@ -1312,9 +1518,12 @@ export default {
                     invitee_id: item._id,
                 }
                 const { data: res } = await axios.post('http://www.aamofe.top/api/chat/make_private_chat', addRoomData);
-                this.group_id = res.group_id
+                //this.group_id = res.group_id
+                //this.selectedRoom = this.group_id
+                //this.roomId = this.group_id
                 console.log('进行私聊')
                 console.log(this.group_id)
+                return this.$message.success(`与用户${item._id}建立私聊成功`)
             }
 
         },
@@ -1345,6 +1554,36 @@ export default {
             const searchMessagesArray = this.currentUsers.filter(messages => messages.username.toLowerCase().includes(searchMessage));
             this.searchCurrentUsers = searchMessagesArray.map((message) => ({ avatar: message.avatar, id: message.id, username: message.username }));
             console.log(this.searchInviteUsers)
+        },
+        updateGroupName() {
+
+        },
+        //forwardMessages,forwardRooms
+        sendMergedForward() {
+            const date = new Date();
+            const day = date.getDate();
+            const month = date.toLocaleString('en-US', { month: 'long' });
+            const formattedDate = `${day} ${month}`;
+            const messages_ids = this.forwardMessages.map(item => item._id)
+            //const group_id = this.forwardRooms.map(item => item.roomId)
+            if (this.isMerge) {
+                const group_id = this.forwardRooms[0].roomId
+                this.sockets[this.selectedRoom].send(JSON.stringify({
+                    forward_all: "",
+                    message_ids: messages_ids,
+                    group_id: group_id,
+                }))
+                this.forwardMessages = []
+                this.showForward = false
+            }
+            else if (this.isOneByOne) {
+                const group_id = this.this.forwardRooms[0].roomId
+                this.sockets[this.selectedRoom].send(JSON.stringify({
+                    forward_single: "",
+                    message_ids: messages_ids,
+                    group_id: group_id,
+                }))
+            }
         }
     }
 }
