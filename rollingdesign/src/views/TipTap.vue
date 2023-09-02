@@ -289,6 +289,8 @@ let socket = null
 let editorInstance
 let online_users = ref([])
 
+
+const contentTemplate = ref('')
 const popper = ref()
 const link = ref('')
 const team_members = ref('')
@@ -307,6 +309,7 @@ onBeforeMount(async () => {
     const document = res.data.document
     title.value = document.title
     document_id = document.id
+    contentTemplate.value = document.content
     lastEditTime.value = new Date(document.modified_at).toLocaleString()
 
     if (authStore().isLogin) {
@@ -580,7 +583,7 @@ const onCreate = async ({ editor }) => {
 
     // console.log("🚀 ~ file: TipTap.vue:579 ~ onCreate ~ route.query.is:", route.query.hasOwnProperty('is'))
     if (route.query.hasOwnProperty('is_template')) {
-        editorInstance.commands.setContent(content.value)
+        editorInstance.commands.setContent(contentTemplate.value)
     }
     if (editable == false) {
         editorInstance.extensionManager.extensions.find((extension) => extension.name === 'collaborationCursor').options.user.name = ''
