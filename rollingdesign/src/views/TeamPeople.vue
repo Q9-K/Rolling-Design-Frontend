@@ -421,4 +421,13 @@ const print = (content) => {
   background-color: #ccffcc;
   /* 设置背景色为绿色 */
 }
+
+.link-block {
+  border: 2px solid #d0dcdc9a;
+  border-radius: 10px;
+  padding: 10px 0 10px 0;
+  box-shadow: 0 .5px 0 .5px#e7f6f69a;
+
+  background-color: #f3f1f1fe;
+}
 </style>
