@@ -296,7 +296,7 @@ onBeforeMount(async () => {
     provider = new TiptapCollabProvider({
         // url: 'ws://101.43.159.45:1234',
         appId: '8mzo739x', // get this at collab.tiptap.dev
-        name: `rolling-document-${document_id}`, // e.g. a uuid uuidv4();
+        name: `rolling-document-${document.id}`, // e.g. a uuid uuidv4();
         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
         document: new Y.Doc(),
         onConnect() {
@@ -307,7 +307,7 @@ onBeforeMount(async () => {
                 socketStore.socket = socket
             }
             if (authStore().isLogin) {
-                memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document_id}/document/${authStore().userId}`)
+                memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document.id}/document/${authStore().userId}`)
                 memberSocket.onopen = (event) => {
                     console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
                 }
