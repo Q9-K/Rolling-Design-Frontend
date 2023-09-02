@@ -91,7 +91,7 @@
               </template>
 
               <el-menu-item v-for="(projectItem, index) in projectList" :key="index"
-                @click="jumpToProject(projectItem.id)">{{ projectItem.name }}</el-menu-item>
+                @click="jumpToProject(projectItem.id)" :index="'project-'+projectItem.id">{{ projectItem.name }}</el-menu-item>
               <!-- <el-menu-item index="1-2">项目2</el-menu-item> -->
             </el-sub-menu>
 

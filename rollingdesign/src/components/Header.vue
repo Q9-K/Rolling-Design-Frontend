@@ -10,13 +10,11 @@
         <receiveMessage></receiveMessage>
       </span>
 
-
       <!--顶部的头像-->
       <div id="user_info" style="margin-left:2%">
         <!-- <el-avatar :size="50" :src="circleUrl" ref="buttonRef" v-click-outside="onClickOutside" /> -->
         <el-avatar :size="50" :src="user.userAvatar" ref="buttonRef" v-click-outside="onClickOutside" />
         <!-- <el-avatar :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ref="buttonRef" v-click-outside="onClickOutside" /> -->
-
       </div>
 
       <!--点击头像，出现悬浮板-->
@@ -356,8 +354,8 @@ const nickNameConfigMethod = () => {
 
       if (res.data.errno == 0)//成功
       {
-        user.nickName = nickNameConfigInput.value;
-        nickNameConfig = false;
+        user.value.nickName = nickNameConfigInput.value;
+        nickNameConfig.value = false;
         nickNameConfigInput.value = '';
         return;
       }

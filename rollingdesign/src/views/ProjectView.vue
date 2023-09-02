@@ -32,11 +32,11 @@
                 <el-button type="primary" @click="newFolderDialog = true">新建文件夹</el-button>
                 <el-button type="primary" @click="newDesign()">新建原型</el-button>
                 <el-button type="primary" @click="newDoc()">新建文档</el-button>
-                <el-button v-if="activeName==='delete'" type="primary" @click="deleteAllDelFileForever()">全部删除</el-button>
+                <el-button v-if="activeName === 'delete'" type="primary" @click="deleteAllDelFileForever()">全部删除</el-button>
               </div>
             </div>
 
-            <el-dialog v-model="newFolderDialog" title="创建文件夹" width="30%">
+            <el-dialog v-model="newFolderDialog" title="创建文件夹" width="25%">
               <el-input v-model="newFolderNameInput" placeholder="请输入文件夹名称" />
               <template #footer>
                 <span class="dialog-footer">
@@ -127,7 +127,7 @@
                 </el-row>
                 <el-row v-else>
                   <el-empty description="该项目暂无文件" style="width: 100%;">
-                    <el-button type="primary" plain @click="newFolder()">新建文件夹</el-button>
+                    <el-button type="primary" plain @click="newFolderDialog = true">新建文件夹</el-button>
                     <el-button type="primary" plain @click="newDesign()">新建原型</el-button>
                     <el-button type="primary" plain @click="newDoc()">新建文档</el-button>
                   </el-empty>
@@ -234,7 +234,7 @@
                               style="margin-bottom: 20px;">
                               <div style="width:100%;">
                                 <div style="display: flex;justify-content: center;">
-                                  <img src="@/assets/projects/design.png" style="width:70px;height:70px"
+                                  <img src="@/assets/projects/design.png" style="width:65px;height:65px"
                                     @click="import_from_template(item.id, 'prototype')" />
                                 </div>
                                 <div style="font-size: 10px;display: flex;justify-content: center;">
@@ -264,7 +264,7 @@
                               style="margin-bottom: 20px;">
                               <div style="width:100%;">
                                 <div style="display: flex;justify-content: center;">
-                                  <img src="@/assets/projects/word.jpg" style="width:70px;height:70px"
+                                  <img src="@/assets/projects/word.jpg" style="width:65px;height:65px"
                                     @click="import_from_template(item.id, 'document')" />
                                 </div>
                                 <div style="font-size: 12px;display: flex;justify-content: center;">
@@ -397,6 +397,13 @@ const jumpToDesign = (id) => {
   //this.$router.push('/video/'+video_id);
   const path_url = '/design/' + nowProject.projectId + '/' + nowProject.folderId + '/' + id;
   window.open(path_url, '_self');
+}
+
+const fromTemplateJumpToDoc = (id) => {
+  //this.$router.push('/video/'+video_id);
+  const path_url = '/tiptap/' + nowProject.projectId + '/' + id;
+  // window.open(path_url, '_self');
+  router.push({ path: path_url, query: { is_template:true } });
 }
 
 const jumpToDoc = (id) => {
@@ -594,8 +601,8 @@ const fetchAllTemplate = () => {
 
 //点击模版
 const import_from_template = (id, type) => {
-  console.log(id);
-  console.log(type)
+  // console.log(id);
+  // console.log(type)
   axios.post('http://www.aamofe.top/api/document/import_from_template/', qs.stringify({ file_id: id, file_type: type, parent_folder_id: nowProject.folderId }), {
     headers: { Authorization: authStore().token }
   })
@@ -609,14 +616,15 @@ const import_from_template = (id, type) => {
         //文件列表增加一个，且跳转过去
         if (type === 'document') {
           fileList.value.push({ "id": res.data.document.id, "type": type, "name": res.data.document.name })
-          jumpToDoc(res.data.document.id);
+          // jumpToDoc(res.data.document.id);
+          fromTemplateJumpToDoc(res.data.document.id);
         }
         else if (type === 'prototype') {
           fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": res.data.prototype.name });
           jumpToDesign(res.data.prototype.id);
         }
         //跳转过去
-        
+
       }
       else {//失败
         ElMessage.error(res.data.msg);
@@ -707,9 +715,9 @@ const deleteFile = (index, type, id) => {
         delFileNum.value++;
 
         let i = 0;
-        for (i =index; i < fileNum.value - 1; i++) {
+        for (i = index; i < fileNum.value - 1; i++) {
           console.log(i);
-            fileList.value[i] = fileList.value[i + 1];
+          fileList.value[i] = fileList.value[i + 1];
         }
         fileList.value.pop();
         // console.log(projectList.value);
@@ -922,7 +930,7 @@ const deleteDelFileForever = (index, type, id, item) => {
         delFileList.value.pop();
         // console.log(projectList.value);
         delFileNum.value--;
-        
+
         console.log(delFileList.value);
 
         closeClickIcon(index);
@@ -940,7 +948,7 @@ const deleteDelFileForever = (index, type, id, item) => {
 
 const deleteAllDelFileForever = (index, type, id, item) => {
   console.log(nowProject.projectId)
-  axios.post('http://www.aamofe.top/api/document/delete_permanently/', qs.stringify({ project_id:nowProject.projectId }), {
+  axios.post('http://www.aamofe.top/api/document/delete_permanently/', qs.stringify({ project_id: nowProject.projectId }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
@@ -952,7 +960,7 @@ const deleteAllDelFileForever = (index, type, id, item) => {
         ElMessage.success(res.data.msg);
         //把项目从projectList里删除
         delFileList.value = [];
-        delFileNum.value=0;
+        delFileNum.value = 0;
       }
       else {//失败
         ElMessage.error(res.data.msg);

@@ -227,7 +227,7 @@
                           style="margin-bottom: 20px;">
                           <div style="width:100%;">
                             <div style="display: flex;justify-content: center;">
-                              <img src="@/assets/projects/design.png" style="width:80px;height:80px" />
+                              <img src="@/assets/projects/design.png" style="width:65px;height:65px" />
                             </div>
                             <div style="font-size: 10px;display: flex;justify-content: center;">
                               {{ item.title }}
@@ -253,7 +253,7 @@
                           style="margin-bottom: 20px;">
                           <div style="width:100%;">
                             <div style="display: flex;justify-content: center;">
-                              <img src="@/assets/projects/word.jpg" style="width:70px;height:70px" />
+                              <img src="@/assets/projects/word.jpg" style="width:65px;height:65px" />
                             </div>
                             <div style="font-size: 12px;display: flex;justify-content: center;">
                               {{ item.title }}
@@ -327,12 +327,12 @@ const jumpToProject = () => {
 /*跳转对应页*/
 const jumpToDesign = (id) => {
   //this.$router.push('/video/'+video_id);
-  const path_url = '/design/' + nowProject.projectId + '/' + id;
+  const path_url = '/design/' + nowProject.projectId + '/'+nowFolder.id + '/' + id;
   window.open(path_url, '_self');
 }
 
 const jumpToDoc = (id) => {
-  const path_url = '/tiptap/' + id;
+  const path_url = '/tiptap/'+nowProject.projectId + '/' + id;
   window.open(path_url, '_self');
 }
 
@@ -448,7 +448,7 @@ const fetchAllFile = () => {
   // console.log(route.params.id)
   //直接用nowProject.projectId可能会有顺序问题
   //默认为按最近获取时间
-  axios.get('http://www.aamofe.top/api/document/view_folder/', { params: { parent_folder_id: route.params.id, sorted_by: '-created_at' }, headers: Headers })
+  axios.get('http://www.aamofe.top/api/document/view_folder/', { params: { parent_folder_id: route.params.id, sorted_by: 'created_at' }, headers: Headers })
     .then((response) => {
       console.log(response);
 
@@ -533,12 +533,14 @@ const import_from_template = (id, type) => {
         //文件列表增加一个，且跳转过去
         if (type === 'document') {
           fileList.value.push({ "id": res.data.document.id, "type": type, "name": '新建文档', })
+          jumpToDoc(res.data.document.id);
         }
         else if (type === 'prototype') {
           fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": '新建原型', })
+          jumpToDesign(res.data.prototype.id);
         }
         //跳转过去
-        jumpToDesign(id);
+
       }
       else {//失败
         ElMessage.error(res.data.msg);
@@ -625,7 +627,7 @@ const deleteFile = (index, type, id) => {
         ElMessage.success(res.data.msg);
         console.log(index);
         let i = 0;
-        for (i = 0; i < fileNum - 1; i++) {
+        for (i = 0; i < fileNum.value - 1; i++) {
           if (i >= index) {
             fileList.value[i] = fileList.value[i + 1];
           }
@@ -655,7 +657,7 @@ const newDesign = () => {
   //   return;
   // }
 
-  axios.post('http://www.aamofe.top/api/document/create/', qs.stringify({ file_type: 'prototype', parent_folder_id: nowProject.projectId, title: '新建原型' }), {
+  axios.post('http://www.aamofe.top/api/document/create/', qs.stringify({ file_type: 'prototype', parent_folder_id: nowFolder.id, title: '新建原型' }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
@@ -685,7 +687,7 @@ const newDesign = () => {
 
 const newDoc = () => {
   axios.post('http://www.aamofe.top/api/document/create/', qs.stringify(
-    { file_type: 'document', parent_folder_id: nowProject.projectId, title: '新建文档' }
+    { file_type: 'document', parent_folder_id: nowFolder.id, title: '新建文档' }
   ),
     {
       headers: {

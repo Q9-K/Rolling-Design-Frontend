@@ -1045,20 +1045,20 @@ const sortSwitch = (type, way) => {
 }
 
 
-const renameProject = (index, projectId) => {
+const renameProject = async(index, projectId) => {
   if (!(renameProjectInput.value)) {
     console.log('不能为空');
     ElMessage.warning('请输入名称');
     return;
   }
-  axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
+ let res=await axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
     name: renameProjectInput.value, project_id: projectId
   }), {
     headers: {
       Authorization: authStore().token
     }
   })
-    .then(res => {
+    // .then(res => {
       // 处理响应数据
       console.log(res);
 
@@ -1067,6 +1067,7 @@ const renameProject = (index, projectId) => {
         ElMessage.success(res.data.msg);
         renameProjectDialog.value = false;
         renameProjectBlock.value[index] = false;
+
         // projectList.value[index].name=renameProjectInput.value;
         // projectList.value[index].cover_url=res.data.project.cover_url;
 
@@ -1075,7 +1076,7 @@ const renameProject = (index, projectId) => {
         projectList.value[index] = { "folder_id": projectList.value[index].folder_id, "name": renameProjectInput.value, "id": projectId, "cover_url": res.data.project.cover_url };
         window.location.reload();//重载页面
 
-        // console.log(projectList.value);
+        console.log(projectList.value);
         renameProjectInput.value = '';
         return;
       }
@@ -1083,11 +1084,11 @@ const renameProject = (index, projectId) => {
         ElMessage.error(res.data.msg);
         return;
       }
-    })
-    .catch(error => {
-      // 处理请求错误
-      console.error(error);
-    });
+    // })
+    // .catch(error => {
+    //   // 处理请求错误
+    //   console.error(error);
+    // });
 }
 
 const deleteProject = (index, projectId) => {

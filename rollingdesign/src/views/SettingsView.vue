@@ -30,19 +30,17 @@
                 </span>
               </el-row>
 
-              <el-row style="display: flex;align-items: center;">
-                <el-col :span="16">
-                  <el-row class="block" style="display: flex;align-items: center;">
-                    <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
-                    <span style="font-size:21px;font-weight: 800;">{{ nowTeam.name }}</span>
-                  </el-row>
-                </el-col>
 
-                <!--功能按钮-->
-                <el-col :span="8">
+              <!-- <el-col :span="24"> -->
+              <div class="block" style="display: flex;align-items: center;width:100%">
+                  <el-avatar shape="square" :size="50" :src="nowTeam.cover_url" style="margin-right:20px" />
+                  <span style="font-size:21px;font-weight: 800;">{{ nowTeam.name }}</span>
+              </div>
+              <!-- </el-col> -->
+
+              <!--功能按钮-->
+              <!-- <el-col :span="8">
                   <div style="display: flex;flex:1;justify-content: flex-end;">
-                    <!--如果是管理员有“邀请”这一项，判断登陆者在该团队中的身份-->
-                    <!--邀请成员的框-->
                     <el-popover placement="bottom" :width="300" trigger="click">
                       <template #reference>
                         <el-button
@@ -52,11 +50,11 @@
                       <div class="link-block" style="margin-bottom: 12px;">
                         <div>{{ inviteLink }}</div>
                       </div>
-                      <div><el-button type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                      <div><el-butn type="primary" @click="copyLink()">点击复制链接</el-butn></div>
                     </el-popover>
                   </div>
-                </el-col>
-              </el-row>
+                </el-col> -->
+
 
               <!--信息展示-->
               <!-- <div style="width:90%;padding-left:5%"> -->
@@ -73,7 +71,7 @@
               </div> -->
 
               <!--团队名称-->
-              <el-row style="margin-top: 30px;display: flex;align-items: center;justify-content: space-between;">
+              <el-row style="margin-top: 50px;display: flex;align-items: center;justify-content: space-between;">
                 <div class="leftContent" style="display: flex;justify-content:flex-start;width:80%">
                   <div style="width:100%">
                     <div class="hintText" style="text-align: left;margin-bottom: 12px;">团队名称</div>
@@ -84,7 +82,9 @@
                     <div v-else style="text-align: left;font-size: 21px;">{{ nowTeam.name }}</div>
                   </div>
                 </div>
-                <el-button link type="primary" size="small" style="justify-content: flex-end;"
+                <el-button v-if="nameConfig" link type="primary" size="small" style="justify-content: flex-end;"
+                  @click="nameConfig = false; nameConfigMethod()">修改完成</el-button>
+                <el-button v-else link type="primary" size="small" style="justify-content: flex-end;"
                   @click="nameConfig = true">修改团队名称</el-button>
               </el-row>
               <el-divider />
