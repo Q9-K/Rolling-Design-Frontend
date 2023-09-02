@@ -423,8 +423,8 @@ onBeforeMount(async () => {
     }, 500);
 })
 
-onMounted(async () => {
-
+onMounted(() => {
+    // localStorage.setItem('isNewWriter', true)
 })
 
 
@@ -564,7 +564,10 @@ const saveAsTemplate = async () => {
 
 
 const onCreate = async ({ editor }) => {
-    start()
+    if (!localStorage.getItem('isNewWriter')) {
+        start()
+        localStorage.setItem('isNewWriter', 'test')
+    }
     editorInstance = editor
     // const position = { from: 3, to: 3 };
     // editorInstance.commands.setSelection(position)
@@ -574,7 +577,11 @@ const onCreate = async ({ editor }) => {
     if (socketStore.socket != null && socketStore.socket.readyState == 1) {
         console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
     }
-    // editorInstance.commands.setContent(fileContent)
+
+    // console.log("🚀 ~ file: TipTap.vue:579 ~ onCreate ~ route.query.is:", route.query.hasOwnProperty('is'))
+    if (route.query.hasOwnProperty('is_template')) {
+        editorInstance.commands.setContent(content.value)
+    }
     if (editable == false) {
         editorInstance.extensionManager.extensions.find((extension) => extension.name === 'collaborationCursor').options.user.name = ''
         let elements = window.document.getElementsByClassName("el-tiptap-editor");
