@@ -74,19 +74,15 @@
                                 </div>
                                 <div style="color: #d2d3d7;text-align: left;
                             margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
+                                </div>
                             </div>
-                        </div>
-                        <button @click="copyLink" class="copyLink"
-                            style="text-align: center; 
+                            <button @click="copyLink" class="copyLink"
+                                style="text-align: center; 
                             background-color: #3671ff;
                             outline: none;
                         margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
-                    </template>
-                </el-popover>
-            </div>
-            <div class="userAvatars">
-                <div class="team_members">
-                    <el-avatar :src="item.avatar_url" :size="20" v-for="item in team_members" :key="item.id"></el-avatar>
+                        </template>
+                    </el-popover>
                 </div>
                 <div class="userAvatars">
                     <span v-if="online_users.length > 0">当前有{{ online_users.length }}位用户正在一起编辑</span>
@@ -99,10 +95,11 @@
                         <template v-if="authStore().isLogin">
                             <el-avatar :size="40" :src='authStore().userAvatar' style="font-size: 30px;"></el-avatar>
 
-                    </template>
-                    <template v-else>
-                        <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
-                    </template>
+                        </template>
+                        <template v-else>
+                            <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
+                        </template>
+                    </div>
                 </div>
             </div>
 
