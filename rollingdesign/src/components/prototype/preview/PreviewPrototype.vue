@@ -34,15 +34,6 @@ onMounted(() => {
       if (response.status === 200) {
         if (response.data.errno === 0) {
           const prototypeList = response.data.prototype
-          // previewList.value = prototypeList.map((item, index) => {
-          //   return {
-          //     id: item.id,
-          //     title: item.title,
-          //     content: item.content,
-          //     stage: null,
-          //     width: item.width,
-          //     height: item.length            }
-          // })
           const length = prototypeList.length
           for (let i = 0; i < length - 1; i++) {
             const item = prototypeList[i]
@@ -67,7 +58,7 @@ onMounted(() => {
             if ( containerHeight / preview.height < delta ) {
               delta = containerHeight / preview.height
             }
-            preview.stage = Konva.Node.create(stageJSON, '' + preview.id)
+            preview.stage = Konva.Node.create(stageJSON, container)
             console.log(delta)
             preview.stage.scale({
               x: delta,
@@ -85,9 +76,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="preview">
+  <div class="preview-outer">
     <div class="preview-carousel-outer">
-      <el-carousel height="100%" class="preview-carousel" :autoplay="false">
+      <el-carousel class="preview-carousel" :autoplay="false">
         <el-carousel-item  v-for="preview in previewList" :key="preview.id">
           <div class="preview-container-outer">
             <div :id="preview.id" class="preview-container">
@@ -107,7 +98,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.preview {
+.preview-outer {
   height: 100%;
   width: 100%;
   display: flex;
@@ -116,29 +107,7 @@ onMounted(() => {
   .preview-carousel-outer {
     height: 100%;
     width: 80%;
-    .preview-carousel {
-      margin: 4% 5%;
-      width: 92%;
-      height: 90%;
-      .el-carousel__container {
-        width: 100%;
-        height: 100%;
-        .preview-container-outer {
-          width: 90%;
-          height: 92%;
-          margin: 4% 5%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          .preview-container {
-            background-color: white;
-            max-width: 100%;
-            max-height: 100%;
-            overflow: auto;
-          }
-        }
-      }
-    }
+
   }
   .preview-share-outer {
     height: 100%;

@@ -29,12 +29,12 @@ let stage, layer
 let isGroup
 
 const currentElement = ref(null)
-const isPreviewOpen = ref(false)
+// const isPreviewOpen = ref(false)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
-const previewPrototypeToken = ref('')
+// const previewPrototypeToken = ref('')
 const initialSize = ref(null)
 const isTemplate = ref(false)
 
@@ -697,16 +697,6 @@ const addRadio = () => {
 }
 
 const addRect = () => {
-  // const rect = new Konva.default.Rect({
-  //   x: 100,
-  //   y: 100,
-  //   width: 150,
-  //   height: 100,
-  //   fill: "#7f9ac7",
-  //   strokeWidth: 0.01,
-  //   stroke: "#000000",
-  //   draggable: true
-  // })
 
   const rect = new KonvaRect({
     x: 100,
@@ -842,9 +832,10 @@ const handlePreviewPrototype = () => {
     .then((response) => {
       if (response.status === 200) {
         if (response.data.errno === 0) {
-          previewPrototypeToken.value = response.data.token
-          console.log(previewPrototypeToken.value)
-          isPreviewOpen.value = true
+          // previewPrototypeToken.value = response.data.token
+          // console.log(previewPrototypeToken.value)
+          // isPreviewOpen.value = true
+          console.log(response.data)
         }
       }
     })
@@ -894,9 +885,13 @@ const handlePreviewPrototype = () => {
       </div>
     </div>
   </div>
-  <el-dialog style="height: 70vh; width: 60vw; background-color: #8c939d" v-model="isPreviewOpen">
-    <PreviewPrototype :prototype-token="previewPrototypeToken"/>
-  </el-dialog>
+<!--  <el-dialog-->
+<!--    class="preview-prototype-dialog"-->
+<!--    v-model="isPreviewOpen"-->
+<!--    top="4vh"-->
+<!--  >-->
+<!--    <PreviewPrototype :prototype-token="previewPrototypeToken"/>-->
+<!--  </el-dialog>-->
   <div v-if="showContextMenu" :style="{
     position: 'absolute',
     left: `${contextMenuPosition.x + 10}px`,
@@ -955,5 +950,10 @@ const handlePreviewPrototype = () => {
       }
     }
   }
+}
+.preview-prototype-dialog {
+  height: 70vh;
+  width: 60vw;
+  background-color: #8c939d
 }
 </style>

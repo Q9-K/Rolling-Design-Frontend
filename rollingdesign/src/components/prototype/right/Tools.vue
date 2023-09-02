@@ -24,6 +24,9 @@ const props = defineProps([
 
 console.log(props.currentElement)
 
+const isShare = ref(false)
+const prototypeShareToken = ref('')
+
 const handleExportPNG = () => {
   props.exportPng()
 }
@@ -103,13 +106,42 @@ watch(
     <div style="width: 100%; height: 2vh"></div>
     <div v-for="tool in toolsList" class="single-tool">
       <el-tooltip
+        v-if="tool.title !== '预览'"
         :content="tool.title"
         effect="light"
         placement="right"
       >
         <img @click="tool.handleClick" class="tool-icon" :src="tool.imageSrc" :alt="tool.title">
       </el-tooltip>
+      <el-popover
+        v-if="tool.title === '预览'"
+        placement="left"
+        trigger="click"
+        popper-style="width: 300px; height: 200px; box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
+      >
+        <template #reference>
+          <img @click="tool.handleClick" class="tool-icon" :src="tool.imageSrc" :alt="tool.title">
+        </template>
+        <template #default>
+          <div style="display: flex; flex-wrap: wrap">
+            <div>
+              <el-switch
+                v-model="isShare"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                active-text="分享预览"
+                inactive-text="取消分享"
+              />
+            </div>
+            <div>
+              <el-input
+
+              />
+            </div>
+          </div>
+        </template>
+      </el-popover>
     </div>
+
   </div>
 </template>
 
