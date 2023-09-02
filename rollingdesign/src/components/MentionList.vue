@@ -82,32 +82,35 @@ export default {
 
         selectItem(index) {
             // console.log(this.items[index])
-            const item = this.items[index]
-            let socket = socketStore.socket
-            if (socket != null && socket.readyState != 1) {
-                socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-                socket.onopen = () => {
+            if (this.items.length > 0) {
+                const item = this.items[index]
+                let socket = socketStore.socket
+                if (socket != null && socket.readyState != 1) {
+                    socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+                    socket.onopen = () => {
+                        socket.send(JSON.stringify({
+                            'type': 'file',
+                            'user_id': item.id,
+                            'url': window.location.href,
+                            'file_id': `${this.$route.params.id}`,
+                        }))
+                        console.info("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送', item.id)
+                    }
+                    socketStore.socket = socket
+                }
+                else {
                     socket.send(JSON.stringify({
                         'type': 'file',
                         'user_id': item.id,
                         'url': window.location.href,
                         'file_id': `${this.$route.params.id}`,
+                        // 'text': '我是傻逼'
                     }))
-                    console.info("🚀 ~ file: MentionList.vue:107 ~ selectItem ~ user_id:", '重新连接socket发送', item.id)
+                    console.info("🚀 ~ file: MentionList.vue:119 ~ selectItem ~ user_id:", '直接发送成功', item.id)
                 }
-                socketStore.socket = socket
+                this.command({ id: item.username })
             }
-            else {
-                socket.send(JSON.stringify({
-                    'type': 'file',
-                    'user_id': item.id,
-                    'url': 'www.baidu.com',
-                    'file_id': `${this.$route.params.id}`,
-                    // 'text': '我是傻逼'
-                }))
-                console.info("🚀 ~ file: MentionList.vue:119 ~ selectItem ~ user_id:", '直接发送成功', item.id)
-            }
-            this.command({ id: item.username })
+
 
         },
     },
