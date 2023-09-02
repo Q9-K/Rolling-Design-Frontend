@@ -11,7 +11,6 @@ import {authStore} from "../store/index";
 import axios from "axios";
 import {useRoute} from 'vue-router';
 import qs from "qs";
-import PreviewPrototype from "../components/prototype/preview/PreviewPrototype.vue";
 import KonvaRect from "@/components/prototype/konvaWidget/KonvaRect";
 import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
 import KonvaSwitch from "@/components/prototype/konvaWidget/KonvaSwitch";
@@ -730,7 +729,7 @@ const addButton = () => {
     }
   })
 
-  addButtonLocal()
+  // addButtonLocal()
 }
 
 const addInputLocal = () => {
@@ -758,7 +757,7 @@ const addInput = () => {
     }
   })
 
-  addInputLocal()
+  // addInputLocal()
 
 }
 
@@ -798,7 +797,7 @@ const addRadio = () => {
     }
   })
 
-  addRadioLocal()
+  // addRadioLocal()
 }
 
 const addRectLocal = () => {
@@ -836,7 +835,7 @@ const addRect = () => {
     }
   })
 
-  addRectLocal()
+  // addRectLocal()
 
 }
 
@@ -862,7 +861,7 @@ const addSwitch = () => {
     }
   })
 
-  addSwitchLocal()
+  // addSwitchLocal()
 
 }
 
@@ -901,7 +900,7 @@ const addSlider = () => {
     }
   })
 
-  addSliderLocal()
+  // addSliderLocal()
 
 }
 
@@ -936,7 +935,7 @@ const addSelect = () => {
     }
   })
 
-  addSelectLocal()
+  // addSelectLocal()
 
 }
 
@@ -975,7 +974,7 @@ const addInputNumber = () => {
     }
   })
 
-  addInputNumberLocal()
+  // addInputNumberLocal()
 }
 
 const setGraphSize = ({ width, height }) => {
@@ -1068,6 +1067,7 @@ const handlePreviewPrototype = () => {
               :save-as-template="saveAsTemplate"
               :preview-prototype="handlePreviewPrototype"
               :is-template="isTemplate"
+              :design-id="designId"
             />
           </div>
         </div>
