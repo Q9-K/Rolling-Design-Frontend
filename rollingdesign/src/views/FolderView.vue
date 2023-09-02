@@ -79,8 +79,6 @@
                           <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
                             重命名
                           </el-dropdown-item>
-                          <el-dropdown-item :icon="CopyDocument"
-                            @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item>
                           <el-dropdown-item :icon="FolderDelete"
                             @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
                         </el-dropdown-menu>
@@ -91,8 +89,6 @@
                           <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
                             重命名
                           </el-dropdown-item>
-                          <el-dropdown-item :icon="CopyDocument"
-                            @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item>
                           <el-dropdown-item :icon="DocumentDelete"
                             @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
 

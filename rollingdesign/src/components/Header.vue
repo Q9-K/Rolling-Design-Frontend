@@ -6,7 +6,6 @@
     <el-row style="display: flex;justify-content: flex-end;align-items: center;">
       <!--通知-->
 
-      <div id="chat" @click="this.$router.push('/chat')">聊天</div>
       <span id="message">
         <receiveMessage></receiveMessage>
       </span>

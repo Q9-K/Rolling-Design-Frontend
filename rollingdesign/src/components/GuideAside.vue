@@ -101,6 +101,12 @@
             <span>回收站</span>
           </el-menu-item>
 
+
+          <el-menu-item index="chat" @click="jumpTo('chat')">
+            <el-icon><Comment /></el-icon>
+            <span>消息中心</span>
+          </el-menu-item>
+
           <el-menu-item index="settings" @click="jumpTo('settings')">
             <template #title>
               <el-icon>

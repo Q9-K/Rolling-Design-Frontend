@@ -107,13 +107,18 @@
                     <span>回收站</span>
                   </el-menu-item>
 
+                  <el-menu-item index="chat" @click="jumpTo('chat')">
+                    <el-icon>
+                      <Comment />
+                    </el-icon>
+                    <span>消息中心</span>
+                  </el-menu-item>
+
                   <el-menu-item index="settings" @click="jumpTo('settings')">
-                    <template #title>
-                      <el-icon>
-                        <Tools />
-                      </el-icon>
-                      <span> 团队设置 </span>
-                    </template>
+                    <el-icon>
+                      <Tools />
+                    </el-icon>
+                    <span> 团队设置 </span>
                   </el-menu-item>
 
                   <!--新建团队-->
@@ -181,12 +186,12 @@
               <div>
                 <span id="beginner-guidance" @click="start">新手引导</span>
               </div>
-              <div id="chat" style="margin-left: 50px;" @click="this.$router.push('/chat')">聊天</div>
-              <span id="message">
+              <!-- <div id="chat" style="margin-left: 50px;" @click="this.$router.push('/chat')">聊天</div> -->
+              <span id="message" style="margin-left: 3%;">
                 <receiveMessage></receiveMessage>
               </span>
 
-              <div id="user_info" style="margin-left:2%">
+              <div id="user_info" style="margin-left:3%">
                 <el-avatar :size="50" :src="user.userAvatar" ref="buttonRef" v-click-outside="onClickOutside" />
               </div>
 
@@ -592,6 +597,7 @@ import {
   Plus,
   CopyDocument,
   EditPen,
+  Comment,
   FolderDelete,
   FolderOpened,
   HomeFilled,
@@ -831,6 +837,10 @@ onMounted(() => {
   fetchTeamlistData();
   fetchProjectData();
   highLight();
+  if (authStore().is_new) {
+    beginner_guide_show.value = true;
+    authStore().is_new = false;
+  }
   // console.log(wrapper.labels.previousButton);
 
   // const {myConst}=GuideAside.setup();
@@ -899,7 +909,7 @@ const fetchProjectData = () => {
   projectList.value = [];
   axios.get('http://www.aamofe.top/api/team/all_projects/', { params: { sort_by: 'created_at' }, headers: Headers })
     .then((response) => {
-      // console.log(response);
+      console.log(response);
 
       if (response.data.errno == 0) {  //所有团队信息
         response.data.projects.forEach((project, index) => {
@@ -950,7 +960,7 @@ const createNewProject = () => {
       {
         ElMessage.success(res.data.msg);
         newProjectDialog.value = false;
-        projectList.value.push({ "id": res.data.project.id, "name": newProjectNameInput.value })
+        projectList.value.push({ "id": res.data.project.id, "name": res.data.project.name, "cover_url": res.data.project.cover_url, "folder_id": res.data.project.folder_id })
         projectNum.value++;
         newProjectNameInput.value = '';
         // window.location.reload();
@@ -1057,7 +1067,15 @@ const renameProject = (index, projectId) => {
         ElMessage.success(res.data.msg);
         renameProjectDialog.value = false;
         renameProjectBlock.value[index] = false;
-        projectList.value[index] = { "name": renameProjectInput.value, "id": projectId };
+        // projectList.value[index].name=renameProjectInput.value;
+        // projectList.value[index].cover_url=res.data.project.cover_url;
+
+
+        // projectList.value[index] = '';
+        projectList.value[index] = { "folder_id": projectList.value[index].folder_id, "name": renameProjectInput.value, "id": projectId, "cover_url": res.data.project.cover_url };
+        window.location.reload();//重载页面
+
+        // console.log(projectList.value);
         renameProjectInput.value = '';
         return;
       }
@@ -1079,8 +1097,8 @@ const deleteProject = (index, projectId) => {
   })
     .then(res => {
       // 处理响应数据
-      console.log(res);
-      console.log(projectId);
+      // console.log(res);
+      // console.log(projectId);
 
       if (res.data.errno == 0)//成功
       {
@@ -1096,7 +1114,7 @@ const deleteProject = (index, projectId) => {
         }
         projectList.value.pop();
         // console.log(projectList.value);
-        projectNum--;
+        projectNum.value--;
       }
       else {//失败
         console.log(projectId);
@@ -1116,14 +1134,14 @@ const copyProject = (index, projectId) => {
   })
     .then(res => {
       // 处理响应数据
-      console.log(res);
-      console.log(projectId);
+      // console.log(res);
+      // console.log(projectId);
 
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
 
-        projectList.value.push({ "id": res.data.project1.id, "name": res.data.project1.name });
+        projectList.value.push({ "id": res.data.project.id, "name": res.data.project.name, "cover_url": res.data.project.cover_url, "folder_id": res.data.project.folder_id });
         console.log(projectList.value);
         projectNum.value++;
       }
@@ -1146,7 +1164,7 @@ const getInviteLink = () => {
       console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
-        inviteLink.value = response.data.invatation;
+        inviteLink.value = response.data.token;
         return;
       }
       else {

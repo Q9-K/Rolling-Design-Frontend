@@ -11,16 +11,16 @@
 
             <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
 
-            <span class="canClick" style="margin-right:30px" @click="jumpTo('index')">
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('index')">
               主页
             </span>
-            <span class="canClick" style="margin-right:30px" @click="jumpTo('teamPeople')">
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('teamPeople')">
               团队管理
             </span>
-            <span class="canClick" style="margin-right:30px" @click="jumpTo('project')">
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('project')">
               项目
             </span>
-            <span class="canClick"  @click="jumpTo('chat')">
+            <span class="canClick textBtn"  @click="jumpTo('chat')">
               消息中心
             </span>
 
@@ -60,7 +60,7 @@
               @click="registerDialog = true">注册</el-button>
 
             <!--登录-->
-            <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
+            <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="23%">
               <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱登录</el-col>
                 <el-col :span="24">
@@ -85,7 +85,7 @@
             </el-dialog>
 
             <!--注册-->
-            <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="20%">
+            <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="23%">
               <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱注册</el-col>
                 <el-col :span="24">
@@ -276,9 +276,11 @@ const login = () => {
         //ElMessage.success('登录成功');//也许会有跳转失败
         //登录状态
         userStore.isLogin = true;
+        userStore.is_new=res.data.user_info.is_new;
         localStorage.setItem('token', res.data.user_info.token);
         localStorage.setItem('isLogin', true);
         localStorage.setItem('userId', res.data.user_info.user_id);
+        // localStorage.setItem('is_new',res.data.user_info.is_new);
         // localStorage.setItem('userAvatar', res.data.user_info.avatar_url)
         //id
         userStore.userId = res.data.user_info.user_id;
@@ -330,7 +332,7 @@ const logout = () => {
   userStore.userId = '';
   userStore.teamId = '';
   userStore.teamName = '';
-  userStore.peojectList = [];
+  userStore.projectList = [];
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
@@ -504,4 +506,12 @@ onMounted(() => {
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
-}</style>
+}
+
+.textBtn:hover {
+  color: rgb(0, 102, 255);
+  /*这个颜色比较接近链接的颜色*/
+  cursor: pointer;
+}
+
+</style>
