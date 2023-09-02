@@ -1,15 +1,15 @@
 <script setup>
-import textWidgetIcon from '@/assets/prototypeIcon/textWidgetIcon.png'
-import imageWidgetIcon from '@/assets/prototypeIcon/imageWidgetIcon.png'
-import buttonWidgetIcon from '@/assets/prototypeIcon/buttonWidgetIcon.png'
-import inputWidgetIcon from '@/assets/prototypeIcon/inputWidgetIcon.png'
-import choiceWidgetIcon from '@/assets/prototypeIcon/choiceWidgetIcon.png'
-import rectWidgetIcon from '@/assets/prototypeIcon/rectWidgetIcon.png'
-import switchWidgetIcon from '@/assets/prototypeIcon/switchWidgetIcon.png'
-import sliderWidgetIcon from '@/assets/prototypeIcon/sliderWidgetIcon.png'
-import selectWidgetIcon from '@/assets/prototypeIcon/selectWidgetIcon.png'
-import inputNumberWidgetIcon from '@/assets/prototypeIcon/inputNumberWidgetIcon.png'
-import WidgetConfig from "@/components/prototype/left/widgetConfig/WidgetConfig.vue";
+import textWidgetIcon from '../../../assets/prototypeIcon/textWidgetIcon.png'
+import imageWidgetIcon from '../../../assets/prototypeIcon/imageWidgetIcon.png'
+import buttonWidgetIcon from '../../../assets/prototypeIcon/buttonWidgetIcon.png'
+import inputWidgetIcon from '../../../assets/prototypeIcon/inputWidgetIcon.png'
+import choiceWidgetIcon from '../../../assets/prototypeIcon/choiceWidgetIcon.png'
+import rectWidgetIcon from '../../../assets/prototypeIcon/rectWidgetIcon.png'
+import switchWidgetIcon from '../../../assets/prototypeIcon/switchWidgetIcon.png'
+import sliderWidgetIcon from '../../../assets/prototypeIcon/sliderWidgetIcon.png'
+import selectWidgetIcon from '../../../assets/prototypeIcon/selectWidgetIcon.png'
+import inputNumberWidgetIcon from '../../../assets/prototypeIcon/inputNumberWidgetIcon.png'
+import WidgetConfig from "../left/widgetConfig/WidgetConfig.vue";
 
 import {ref, toRefs, watch, provide} from "vue";
 

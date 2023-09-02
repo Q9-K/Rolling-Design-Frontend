@@ -5,9 +5,9 @@ import {authStore} from "@/store";
 import axios from "axios";
 import Konva from "konva";
 
-import sharePreviewLinkIcon from '@/assets/prototypeIcon/sharePreviewLinkIcon.png'
+import sharePreviewLinkIcon from '../assets/prototypeIcon/sharePreviewLinkIcon.png'
 import {ElMessage, ElNotification} from "element-plus";
-import PrototypeHeader from "@/components/prototype/header/PrototypeHeader.vue";
+import PrototypeHeader from "../components/prototype/header/PrototypeHeader.vue";
 
 const route = useRoute()
 const prototypeShareToken = route.params.token

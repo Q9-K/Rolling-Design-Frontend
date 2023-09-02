@@ -1,5 +1,5 @@
 <script setup>
-import logo from '@/assets/prototypeIcon/logo_without_background.png'
+import logo from '../../../assets/prototypeIcon/logo_without_background.png'
 
 </script>
 
