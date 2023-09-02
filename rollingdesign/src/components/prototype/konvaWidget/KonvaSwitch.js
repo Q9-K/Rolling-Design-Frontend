@@ -6,6 +6,7 @@ export default class KonvaSwitch extends Konva.Group {
 
     this.isOn = false;
     this.attrs.defineType = 'KonvaSwitch'
+    this.attrs.flagId = config.flagId
 
     this.switchRect = new Konva.Rect({
       x: -50,

@@ -5,6 +5,7 @@ export default class KonvaRect extends Konva.Rect {
     super(config);
 
     this.attrs.defineType = 'KonvaRect'
+    this.attrs.flagId = config.flagId
   }
 
   /*

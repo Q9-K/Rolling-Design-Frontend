@@ -33,6 +33,7 @@ const websocketProvider = new WebsocketProvider(
   'ws://localhost:1234', designId, ydoc
 )
 
+let flagId = 0
 let stage, layer
 let isGroup
 
@@ -399,6 +400,11 @@ onMounted(() => {
       console.log("🚀 ~ yMap.observe ~ f:", content)
       addSwitchLocal()
     }
+    else if (event.keysChanged.has('changePosition')) {
+      const content = yMap.get('changePosition')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      updateChangedPosition(content)
+    }
     // if (key == 'addShape') {
     //   const shape = new Konva.Rect(value)
     //   layer.add(shape)
@@ -407,6 +413,22 @@ onMounted(() => {
   })
 
 })
+
+const updateChangedPosition = (content) => {
+
+  stage.children.forEach(layerItem => {
+    layerItem.children.forEach(shape => {
+      if (shape.attrs.flagId && shape.attrs.flagId === content.content.flagId) {
+        console.log("唤醒波罗的海！")
+        shape.x(content.content.x)
+        shape.y(content.content.y)
+        console.log(shape)
+      }
+    })
+  })
+  stage.draw()
+
+}
 
 const deleteSelectedItem = () => {
 
@@ -594,6 +616,17 @@ const addTextLocal = () => {
     currentElement.value = e.currentTarget
   })
 
+  text.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
+  })
+
   adjustMouseState(text)
 
   layer.add(text)
@@ -610,6 +643,7 @@ const addText = () => {
       fontFamily: 'Arial',
       fill: 'black',
       draggable: true,
+      flagId: flagId
     },
   })
 
@@ -688,6 +722,8 @@ const addImage = () => {
 }
 
 const addButtonLocal = () => {
+  flagId ++
+
   const button = new KonvaButton({
     x: 100,
     y: 100,
@@ -697,6 +733,7 @@ const addButtonLocal = () => {
     draggable: true,
     cornerRadius: 50,
     fill: 'lightgray',
+    flagId: flagId,
     onClick: () => {
       console.log("哈哈哈哈哈")
       // alert('Button Clicked!');
@@ -706,6 +743,17 @@ const addButtonLocal = () => {
   button.on('click', (e) => {
     console.log(e.target)
     currentElement.value = e.target.parent.children[0]
+  })
+
+  button.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(button)
@@ -724,6 +772,7 @@ const addButton = () => {
       draggable: true,
       cornerRadius: 50,
       fill: 'lightgray',
+      flagId: flagId,
       onClick: () => {
         console.log("哈哈哈哈哈")
         // alert('Button Clicked!');
@@ -735,12 +784,26 @@ const addButton = () => {
 }
 
 const addInputLocal = () => {
+  flagId ++
+
   const input = new KonvaInput({
     x: 100,
     y: 100,
     width: 200,
     height: 30,
-    draggable: true
+    draggable: true,
+    flagId: flagId
+  })
+
+  input.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(input)
@@ -755,7 +818,8 @@ const addInput = () => {
       y: 100,
       width: 200,
       height: 30,
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 
@@ -764,12 +828,15 @@ const addInput = () => {
 }
 
 const addRadioLocal = () => {
+  flagId ++
+
   const radio = new KonvaRadio({
     x: 100,
     y: 100,
     width: 200,
     height: 30,
     draggable: true,
+    flagId: flagId,
     options: [
       { label: 'Option A', value: 'Option A' }
     ],
@@ -778,6 +845,17 @@ const addRadioLocal = () => {
   radio.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
+  })
+
+  radio.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(radio)
@@ -793,6 +871,7 @@ const addRadio = () => {
       width: 200,
       height: 30,
       draggable: true,
+      flagId: flagId,
       options: [
         { label: 'Option A', value: 'Option A' }
       ],
@@ -803,6 +882,8 @@ const addRadio = () => {
 }
 
 const addRectLocal = () => {
+  flagId ++
+
   const rect = new KonvaRect({
     x: 100,
     y: 100,
@@ -811,12 +892,24 @@ const addRectLocal = () => {
     fill: "#7f9ac7",
     strokeWidth: 0.01,
     stroke: "#000000",
-    draggable: true
+    draggable: true,
+    flagId: flagId
   })
 
   rect.on('click', (e) => {
     console.log(e.target)
     currentElement.value = e.target
+  })
+
+  rect.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   layer.add(rect)
@@ -833,7 +926,8 @@ const addRect = () => {
       fill: "#7f9ac7",
       strokeWidth: 0.01,
       stroke: "#000000",
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 
@@ -842,10 +936,24 @@ const addRect = () => {
 }
 
 const addSwitchLocal = () => {
+  flagId ++
+
   const newSwitch = new KonvaSwitch({
     x: 100,
     y: 100,
-    draggable: true
+    draggable: true,
+    flagId: flagId
+  })
+
+  newSwitch.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(newSwitch)
@@ -859,7 +967,8 @@ const addSwitch = () => {
     content: {
       x: 100,
       y: 100,
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 
@@ -868,6 +977,8 @@ const addSwitch = () => {
 }
 
 const addSliderLocal = () => {
+  flagId ++
+
   const slider = new KonvaSlider({
     x: 100,
     y: 100,
@@ -875,12 +986,24 @@ const addSliderLocal = () => {
     height: 10,
     min: -10,
     max: 10,
-    draggable: true
+    draggable: true,
+    flagId: flagId
   })
 
   slider.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
+  })
+
+  slider.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(slider)
@@ -898,7 +1021,8 @@ const addSlider = () => {
       height: 10,
       min: -10,
       max: 10,
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 
@@ -907,18 +1031,32 @@ const addSlider = () => {
 }
 
 const addSelectLocal = () => {
+  flagId ++
+
   const select = new KonvaSelect({
     x: 100,
     y: 100,
     options: [
       { label: 'Option A', value: 'Option A' },
     ],
-    draggable: true
+    draggable: true,
+    flagId: flagId
   }, layer)
 
   select.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
+  })
+
+  select.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   layer.add(select)
@@ -933,7 +1071,8 @@ const addSelect = () => {
       options: [
         { label: 'Option A', value: 'Option A' },
       ],
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 
@@ -942,6 +1081,8 @@ const addSelect = () => {
 }
 
 const addInputNumberLocal = () => {
+  flagId ++
+
   const inputNumber = new KonvaInputNumber({
     x: 100,
     y: 100,
@@ -949,12 +1090,24 @@ const addInputNumberLocal = () => {
     height: 30,
     min: 0,
     max: 100,
-    draggable: true
+    draggable: true,
+    flagId: flagId
   })
 
   inputNumber.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
+  })
+
+  inputNumber.on('dragmove', (e) => {
+    console.log(e)
+    yMap.set('changePosition', {
+      content: {
+        x: e.target.attrs.x,
+        y: e.target.attrs.y,
+        flagId: flagId
+      }
+    })
   })
 
   groups.push(inputNumber)
@@ -972,7 +1125,8 @@ const addInputNumber = () => {
       height: 30,
       min: 0,
       max: 100,
-      draggable: true
+      draggable: true,
+      flagId: flagId
     }
   })
 

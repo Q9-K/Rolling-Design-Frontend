@@ -8,6 +8,7 @@ export default class KonvaSelect extends Konva.Group {
     this.value = config.value || null;
     this.layer = layer
     this.attrs.defineType = 'KonvaSelect'
+    this.attrs.flagId = config.flagId
 
     this.updateListTexts(layer)
 

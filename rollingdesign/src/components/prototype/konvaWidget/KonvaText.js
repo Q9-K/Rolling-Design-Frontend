@@ -5,6 +5,7 @@ export default class KonvaText extends Konva.Text {
     super(config);
 
     this.attrs.defineType = 'KonvaText'
+    this.attrs.flagId = config.flagId
 
     this.on('dblclick', () => {
       const textPosition = this.getAbsolutePosition();
