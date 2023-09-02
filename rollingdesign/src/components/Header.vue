@@ -192,7 +192,7 @@
 <script setup>
 import qs from 'qs'
 // import { UserFiled } from 'element-plus/'
-import receiveMessage from './prototype/receiveMessage.vue'
+import receiveMessage from './receiveMessage.vue'
 import { UserFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { reactive, toRefs } from 'vue'

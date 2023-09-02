@@ -38,7 +38,7 @@ export default async function (fileType, fileContent, title, editorContentDom, e
         blob = new Blob([htmlContent], { type: 'text/html' })
     }
     else if (fileType == 'pdf') {
-        console.log("🚀 ~ file: output.js:47 ~ editorInstance:", editorContentDom)
+        // console.log("🚀 ~ file: output.js:47 ~ editorInstance:", editorContentDom)
         let canvas = await html2canvas(editorContentDom, {
             useCORS: true,
             allowTaint: true

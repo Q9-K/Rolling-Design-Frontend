@@ -272,111 +272,12 @@ const link = ref('')
 const team_members = ref('')
 let memberSocket
 let username = authStore().username
-let document_id
+let document_id = 'test'
+let extensions = []
+let provider = null
 
 
-const provider = new TiptapCollabProvider({
-    // url: 'ws://101.43.159.45:1234',
-    appId: '8mzo739x', // get this at collab.tiptap.dev
-    name: `rolling-document-${document_id}`, // e.g. a uuid uuidv4();
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
-    document: new Y.Doc(),
-    onConnect() {
-        console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
-        socket = socketStore.socket
-        if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
-            socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-            socketStore.socket = socket
-        }
-        if (authStore().isLogin) {
-            memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document_id}/document/${authStore().userId}`)
-            memberSocket.onopen = (event) => {
-                console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
-            }
-            memberSocket.onmessage = (event) => {
-                online_users.value = JSON.parse(event.data).online_users
-                if (!dataLoaded.value) {
-                    dataLoaded.value = true
-                }
-            }
-        }
-        else {
-            if (!dataLoaded.value) {
-                dataLoaded.value = true
-            }
-        }
-    }
-})
 
-const extensions = [
-    History.configure({
-        history: false
-    }),
-    Document,
-    Text,
-    Paragraph,
-    Heading,
-    Bold.configure({
-        bubble: true
-    }),
-    Italic.configure({
-        bubble: true
-    }),
-    Strike,
-    Underline.configure({
-        bubble: true
-    }),
-    Image.configure({
-        inline: true,
-        draggable: true,
-        uploadRequest(file) {
-            const fd = new FormData()
-            fd.append('file', file)
-            fd.append('file_type', 'document')
-            //这里似乎用浏览器原生的formdata速度足够快，不会出现先创建img节点的问题，又或者是我的写法的问题
-            // 这里 return 是返回 Promise 对象
-            return axios.post('/document/upload/', fd).then(({ data: res }) => {
-                // 这个 return 是返回最后的结果
-                return res.url
-            })
-        },
-    }),
-    CodeBlock,
-    Blockquote,
-    BulletList,
-    OrderedList,
-    TaskList,
-    TextAlign,
-    Indent,
-    HardBreak,
-    HorizontalRule,
-    Color,
-    Print,
-    Highlight,
-    SelectAll,
-    FontSize,
-    FontFamily,
-    Fullscreen,
-    Typography,
-    Mention.configure({
-        HTMLAttributes: {
-            class: 'mention',
-        },
-        suggestion,
-    }),
-    Collaboration.configure({
-        document: provider.document,
-    }),
-    // Register the collaboration cursor extension
-    CollaborationCursor.configure({
-        provider: provider,
-        user: {
-            //TODO:通过状态管理获取用户名
-            name: username,
-            color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
-        },
-    }),
-];
 
 // Collaboration.config.disableSync = true;//为了防止协作文档重复写入,但是没卵用
 onBeforeMount(async () => {
@@ -392,6 +293,108 @@ onBeforeMount(async () => {
     const res2 = await axios.get('/team/all_members/')
     authStore().team_members = res2.data.members
     team_members.value = res2.data.members
+    provider = new TiptapCollabProvider({
+        // url: 'ws://101.43.159.45:1234',
+        appId: '8mzo739x', // get this at collab.tiptap.dev
+        name: `rolling-document-${document_id}`, // e.g. a uuid uuidv4();
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
+        document: new Y.Doc(),
+        onConnect() {
+            console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
+            socket = socketStore.socket
+            if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
+                socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+                socketStore.socket = socket
+            }
+            if (authStore().isLogin) {
+                memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document_id}/document/${authStore().userId}`)
+                memberSocket.onopen = (event) => {
+                    console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
+                }
+                memberSocket.onmessage = (event) => {
+                    online_users.value = JSON.parse(event.data).online_users
+                    if (!dataLoaded.value) {
+                        dataLoaded.value = true
+                    }
+                }
+            }
+            else {
+                if (!dataLoaded.value) {
+                    dataLoaded.value = true
+                }
+            }
+
+        }
+    })
+    extensions = [
+        History.configure({
+            history: false
+        }),
+        Document,
+        Text,
+        Paragraph,
+        Heading,
+        Bold.configure({
+            bubble: true
+        }),
+        Italic.configure({
+            bubble: true
+        }),
+        Strike,
+        Underline.configure({
+            bubble: true
+        }),
+        Image.configure({
+            inline: true,
+            draggable: true,
+            uploadRequest(file) {
+                const fd = new FormData()
+                fd.append('file', file)
+                fd.append('file_type', 'document')
+                //这里似乎用浏览器原生的formdata速度足够快，不会出现先创建img节点的问题，又或者是我的写法的问题
+                // 这里 return 是返回 Promise 对象
+                return axios.post('/document/upload/', fd).then(({ data: res }) => {
+                    // 这个 return 是返回最后的结果
+                    return res.url
+                })
+            },
+        }),
+        CodeBlock,
+        Blockquote,
+        BulletList,
+        OrderedList,
+        TaskList,
+        TextAlign,
+        Indent,
+        HardBreak,
+        HorizontalRule,
+        Color,
+        Print,
+        Highlight,
+        SelectAll,
+        FontSize,
+        FontFamily,
+        Fullscreen,
+        Typography,
+        Mention.configure({
+            HTMLAttributes: {
+                class: 'mention',
+            },
+            suggestion,
+        }),
+        Collaboration.configure({
+            document: provider.document,
+        }),
+        // Register the collaboration cursor extension
+        CollaborationCursor.configure({
+            provider: provider,
+            user: {
+                //TODO:通过状态管理获取用户名
+                name: username,
+                color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
+            },
+        }),
+    ];
 })
 
 onMounted(async () => {
@@ -434,7 +437,7 @@ const copyLink = () => {
 const downloadFile = (command) => {
     // console.log("🚀 ~ file: TipTap.vue:398 ~ downloadFile ~ command:", command)
     const fileType = command
-    const editorContentDOM = document.querySelector('.el-tiptap-editor__content')
+    const editorContentDOM = window.document.querySelector('.el-tiptap-editor__content')
     console.log("🚀 ~ file: TipTap.vue:338 ~ downloadFile ~ content:", content)
     outputFile(fileType, content.value, title.value, editorContentDOM, editorInstance)
 }
@@ -518,7 +521,6 @@ const onBlur = async ({ editor }) => {
 }
 
 const saveAsTemplate = async () => {
-    console.log(route.params.projectId)
     let res = await axios.post('/document/save_as_template/', qs.stringify({
         content: content.value,
         title: title.value,

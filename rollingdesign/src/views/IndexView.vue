@@ -375,11 +375,13 @@
                 <el-row>
                   <el-col :span="12">
                     <img src="@/assets/img1.svg" style="width: 100%;height:500px" />
-                    <el-button style="width: 80%;margin-left: 10%;"  plain @click="beginner_guide_show = false;">我不需要新手引导</el-button>
+                    <el-button style="width: 80%;margin-left: 10%;" plain
+                      @click="beginner_guide_show = false;">我不需要新手引导</el-button>
                   </el-col>
                   <el-col :span="12">
                     <img src="@/assets/img2.svg" style="width: 96%;height:500px" />
-                    <el-button  style="width: 80%;margin-left: 10%;" color="#626aef" @click="beginner_guide_show = false; start()">
+                    <el-button style="width: 80%;margin-left: 10%;" color="#626aef"
+                      @click="beginner_guide_show = false; start()">
                       开始
                     </el-button>
                   </el-col>
@@ -454,7 +456,9 @@
                 <el-col :span="4" id="sort">
                   <el-dropdown trigger="click">
                     <span class="el-dropdown-link" style="display: flex;justify-content: center;">
-                      <el-icon><Sort /></el-icon>&nbsp;{{ nowSortType }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                      <el-icon>
+                        <Sort />
+                      </el-icon>&nbsp;{{ nowSortType }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
                     </span>
                     <template #dropdown>
                       <el-dropdown-menu>
@@ -576,7 +580,7 @@ import { ClickOutside as vClickOutside } from 'element-plus'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
-import receiveMessage from '@/components/prototype/receiveMessage.vue'
+import receiveMessage from '@/components/receiveMessage.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import Clipboard from 'clipboard';
 import {
@@ -800,7 +804,7 @@ const jumpTo = (path) => {
 
 const jumpToProject = (id) => {
   //this.$router.push('/video/'+id);
-  const path_url = '/project/'+ id;
+  const path_url = '/project/' + id;
   window.open(path_url, '_self');
 }
 
@@ -1600,5 +1604,4 @@ const logout = () => {
   width: 178px;
   height: 178px;
   display: block;
-}
-</style>
+}</style>
