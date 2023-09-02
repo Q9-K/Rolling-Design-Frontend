@@ -613,7 +613,7 @@ const import_from_template = (id, type) => {
         }
         else if (type === 'prototype') {
           fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": res.data.prototype.name });
-          jumpToDesign(res.data.document.id);
+          jumpToDesign(res.data.prototype.id);
         }
         //跳转过去
         
