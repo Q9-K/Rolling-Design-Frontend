@@ -89,6 +89,7 @@ import { provide, onMounted, onBeforeMount, ref, reactive } from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import { useSocketStore } from '../../store/useSocketStore'
+import { authStore } from '@/store'
 export default {
 	data() {
 		return {
@@ -98,7 +99,7 @@ export default {
 		}
 	},
 	async mounted() {
-		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/1');
+		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/'+authStore().userId);
 		console.log(res)
 		this.storeData = res
 		//this.datalist = this.storeData.filter(obj => obj.is_read === false)
