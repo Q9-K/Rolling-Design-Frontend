@@ -398,6 +398,7 @@ export default {
     data() {
         return {
             theme: 'dark',
+            newGroupName: '',
             showSearch: false,
             isForwardMessages: false,
             isMerge: false,
@@ -861,7 +862,8 @@ export default {
             }
             //改变群聊状态信息
             if (parsedData.type === 'chat_status') {
-                for (let room of this.rooms) {
+                try {
+                    for (let room of this.rooms) {
                     if (room.roomId == parsedData.team_id) {
                         //room.lastMessage.content = parsedData.latest_message;
                         room.lastMessage.username = parsedData.username;
@@ -877,6 +879,9 @@ export default {
                         console.log(room.index)
                         break; // 如果 roomId 是唯一的，找到后就跳出循环
                     }
+                }
+                } catch (error) {
+                    console.log(error)
                 }
             }
             //获取消息
@@ -1556,7 +1561,8 @@ export default {
             console.log(this.searchInviteUsers)
         },
         updateGroupName() {
-
+            const room = this.rooms.find(room => room.roomId = this.selectedRoom)
+            room.roomName = this.updateGroupName
         },
         //forwardMessages,forwardRooms
         sendMergedForward() {
@@ -1577,7 +1583,7 @@ export default {
                 this.showForward = false
             }
             else if (this.isOneByOne) {
-                const group_id = this.this.forwardRooms[0].roomId
+                const group_id = this.forwardRooms[0].roomId
                 this.sockets[this.selectedRoom].send(JSON.stringify({
                     forward_single: "",
                     message_ids: messages_ids,

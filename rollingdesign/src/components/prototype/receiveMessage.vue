@@ -51,7 +51,7 @@
 
 
 								<div class="message_content">
-									<span>张三</span>在<a target="_blank" href='/chat'>{{ dataitem.type }}</a>中@了你
+									<span>张三</span>在<a target="_blank" href='http://www.aamofe.top/chat'>{{ dataitem.type }}</a>中@了你
 								</div>
 								<div class="actions">
 									<template v-if="dataitem.type == false">
