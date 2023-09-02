@@ -321,7 +321,8 @@ const getInviteLink = () => {
       console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
-        inviteLink.value = response.data.token;
+        const baserUrl = 'www.aamofe.top'//or 'localhost:8080'
+        inviteLink.value =  baserUrl + '/team/'+response.data.token;
         return;
       }
       else {

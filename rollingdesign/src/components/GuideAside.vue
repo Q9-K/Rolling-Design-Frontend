@@ -467,7 +467,7 @@ const print = (content) => {
 
 
 .popover-customer {
-  background-color: #0084ff !important;
+  /* background-color: #0084ff !important; */
   /* 设置背景颜色 */
 }
 
@@ -494,7 +494,7 @@ const print = (content) => {
 .aside_page{
   /* overflow: hidden; */
   /* background-color: aliceblue; */
-  background-color: rgb(101, 151, 195)!important;
+  /* background-color: rgb(101, 151, 195)!important; */
 
 }
 </style>

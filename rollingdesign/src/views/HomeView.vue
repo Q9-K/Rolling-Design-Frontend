@@ -75,9 +75,9 @@
               </el-row>
 
               <div style="margin-top:25px;width: 100%;">
-                <el-button type="primary" style="width:90%" @click="login()">登录</el-button>
+                <el-button type="primary" style="width:90%;margin-left: 5%;" @click="login()">登录</el-button>
               </div>
-              <div style="margin-top:25px;width: 90%;padding-left: 20px;">
+              <div style="margin-top:25px;width: 90%;margin-left:5%;">
                 <div style="display: flex;justify-content: center;">
                   <el-button link size="small" @click="loginDialog = false; registerDialog = true">还没有账号？去注册</el-button>
                 </div>
@@ -120,23 +120,8 @@
                 </el-col>
               </el-row>
 
-              <!-- <el-row style="margin-top:25px;justify-items: flex-start;width: 90%;margin-left: 5%;">
-          <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">验证码2分钟内有效</el-col>
-          <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="15">
-                <el-input v-model="registerCode" placeholder="验证码" />
-              </el-col>
-              <el-col :span="4">
-                <el-button plain @click="sendCode">获取验证码</el-button>
-              </el-col>
-              <el-col :span="5"></el-col>
-            </el-row>
-          </el-col>
-        </el-row> -->
-
               <div style="margin-top:25px;width: 100%;">
-                <el-button type="primary" style="width:90%" @click="register">注册</el-button>
+                <el-button type="primary" style="width:90%;margin-left: 5%;" @click="register()">注册</el-button>
               </div>
               <div style="margin-top:25px;width: 90%;padding-left: 20px;">
                 <div style="display: flex;justify-content: center;">
@@ -231,6 +216,7 @@ const register = () => {
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
+        registerDialog.value=false;
         return;
       }
       else {//失败
@@ -294,7 +280,7 @@ const login = () => {
         // setTimeout(() => {
         window.open('/index', '_self');
         // }, 3000); // 3秒后执行
-        loginDialog = false;
+        loginDialog.value = false;
 
         return;
       }
@@ -309,7 +295,7 @@ const login = () => {
     });
 }
 
-console.log('hhh' + userStore.isLogin);
+// console.log('hhh' + userStore.isLogin);
 /*跳转对应页*/
 const jumpTo = (path) => {
   //this.$router.push('/video/'+video_id);
