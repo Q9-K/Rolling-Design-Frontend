@@ -52,7 +52,7 @@ const routes = [
     // meta: (route) => ({ index: `project-${route.params.id}` })// 使用 route.params.id 设置 meta 值
   },
   {
-    path: '/tiptap/:proejctId/:id',
+    path: '/tiptap/:projectId/:id',
     name: '/tiptap',
     component: () => import('../views/TipTap.vue'),
     meta: {

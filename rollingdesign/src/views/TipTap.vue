@@ -382,7 +382,6 @@ const extensions = [
 onBeforeMount(async () => {
     const res = await axios.get(`/document/view_document/${route.params.id}`)
     const document = res.data.document
-
     title.value = document.title
     document_id = document.id
     lastEditTime.value = new Date(document.modified_at).toLocaleString()
@@ -417,7 +416,8 @@ const generateLink = async () => {
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id,
     }))
-    link.value = res.data.data.url
+    link.value = "localhost:8080" + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
+    console.log("🚀 ~ file: TipTap.vue:421 ~ generateLink ~ res.data.data.url:", res.data.data.token)
 
 }
 const copyLink = () => {
@@ -518,11 +518,12 @@ const onBlur = async ({ editor }) => {
 }
 
 const saveAsTemplate = async () => {
+    console.log(route.params.projectId)
     let res = await axios.post('/document/save_as_template/', qs.stringify({
         content: content.value,
         title: title.value,
         file_type: 'document',
-        project_id: '1'
+        project_id: route.params.projectId
     }))
     ElNotification({
         title: 'Success',
