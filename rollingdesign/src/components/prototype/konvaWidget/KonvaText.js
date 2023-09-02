@@ -1,10 +1,41 @@
 import Konva from "konva";
 
 export default class KonvaText extends Konva.Text {
-  constructor(config) {
+  constructor(config, stage, layer) {
     super(config);
 
     this.attrs.defineType = 'KonvaText'
+
+    this.on('dblclick', () => {
+      const textPosition = this.getAbsolutePosition();
+      const stageBox = stage.container().getBoundingClientRect();
+
+      const areaPosition = {
+        x: stageBox.left + textPosition.x,
+        y: stageBox.top + textPosition.y
+      };
+
+      // create textarea and style it
+      const textarea = document.createElement('textarea');
+      document.body.appendChild(textarea);
+
+      textarea.value = this.text();
+      textarea.style.position = 'absolute';
+      textarea.style.top = areaPosition.y + 'px';
+      textarea.style.left = areaPosition.x + 'px';
+      textarea.style.width = this.width();
+
+      textarea.focus();
+
+      textarea.addEventListener('keydown', function (e) {
+        // hide on enter
+        if (e.keyCode === 13) {
+          this.text(textarea.value);
+          layer.draw();
+          document.body.removeChild(textarea);
+        }
+      });
+    });
   }
 
   /*

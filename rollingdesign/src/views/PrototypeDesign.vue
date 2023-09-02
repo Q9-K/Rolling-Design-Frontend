@@ -20,13 +20,22 @@ import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
 import {ElMessage} from "element-plus";
 import KonvaImage from "@/components/prototype/konvaWidget/KonvaImage";
+import * as Y from "yjs";
+import {WebsocketProvider} from "y-websocket";
 
 const route = useRoute();
 const designId = route.params.id;
 const parentFolderId = route.params.parentFolderId
 
+const ydoc = new Y.Doc();
+const websocketProvider = new WebsocketProvider(
+  'ws://localhost:1234', designId, ydoc
+)
+
 let stage, layer
 let isGroup
+
+const yMap = ydoc.getMap('konva-demo')
 
 const currentElement = ref(null)
 // const isPreviewOpen = ref(false)
@@ -203,7 +212,6 @@ onMounted(() => {
               }
             });
 
-
             stage.find('Image').forEach((imageNode) => {
               const src = imageNode.getAttr('src');
               const image = new Image();
@@ -341,6 +349,61 @@ onMounted(() => {
         }
       })
   }
+
+  yMap.observe((event) => {
+    console.log(event)
+    if (event.keysChanged.has("addText")) {
+      const content = yMap.get('addText')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addTextLocal()
+      // yMap.delete('addShape')
+    }
+    else if (event.keysChanged.has('addButton')) {
+      const content = yMap.get('addButton')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addButtonLocal()
+    }
+    else if (event.keysChanged.has('addInput')) {
+      const content = yMap.get('addInput')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addInputLocal()
+    }
+    else if (event.keysChanged.has('addInputNumber')) {
+      const content = yMap.get('addInputNumber')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addInputNumberLocal()
+    }
+    else if (event.keysChanged.has('addRadio')) {
+      const content = yMap.get('addRadio')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addRadioLocal()
+    }
+    else if (event.keysChanged.has('addRect')) {
+      const content = yMap.get('addRect')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addRectLocal()
+    }
+    else if (event.keysChanged.has('addSelect')) {
+      const content = yMap.get('addSelect')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSelectLocal()
+    }
+    else if (event.keysChanged.has('addSlider')) {
+      const content = yMap.get('addSlider')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSliderLocal()
+    }
+    else if (event.keysChanged.has('addSwitch')) {
+      const content = yMap.get('addSwitch')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSwitchLocal()
+    }
+    // if (key == 'addShape') {
+    //   const shape = new Konva.Rect(value)
+    //   layer.add(shape)
+    // }
+    layer.draw()
+  })
 
 })
 
@@ -511,7 +574,9 @@ const saveGraph = () => {
     })
 }
 
-const addText = () => {
+const addTextLocal = () => {
+  flagId ++
+
   const text = new KonvaText({
     x: 100,
     y: 100,
@@ -520,47 +585,34 @@ const addText = () => {
     fontFamily: 'Arial',
     fill: 'black',
     draggable: true,
-  })
+    flagId: flagId
+  }, stage, layer)
 
   text.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
   })
 
-  text.on('dblclick', () => {
-    const textPosition = text.getAbsolutePosition();
-    const stageBox = stage.container().getBoundingClientRect();
-
-    const areaPosition = {
-      x: stageBox.left + textPosition.x,
-      y: stageBox.top + textPosition.y
-    };
-
-    // create textarea and style it
-    const textarea = document.createElement('textarea');
-    document.body.appendChild(textarea);
-
-    textarea.value = text.text();
-    textarea.style.position = 'absolute';
-    textarea.style.top = areaPosition.y + 'px';
-    textarea.style.left = areaPosition.x + 'px';
-    textarea.style.width = text.width();
-
-    textarea.focus();
-
-    textarea.addEventListener('keydown', function (e) {
-      // hide on enter
-      if (e.keyCode === 13) {
-        text.text(textarea.value);
-        layer.draw();
-        document.body.removeChild(textarea);
-      }
-    });
-  });
-
   adjustMouseState(text)
 
   layer.add(text)
+}
+
+const addText = () => {
+
+  yMap.set('addText', {
+    content: {
+      x: 100,
+      y: 100,
+      text: '点击编辑文本内容',
+      fontSize: 24,
+      fontFamily: 'Arial',
+      fill: 'black',
+      draggable: true,
+    },
+  })
+
+  // addTextLocal()
 }
 
 const addImage = () => {
@@ -634,7 +686,7 @@ const addImage = () => {
 
 }
 
-const addButton = () => {
+const addButtonLocal = () => {
   const button = new KonvaButton({
     x: 100,
     y: 100,
@@ -659,7 +711,29 @@ const addButton = () => {
   layer.add(button)
 }
 
-const addInput = () => {
+const addButton = () => {
+
+  yMap.set('addButton', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 150,
+      height: 50,
+      text: 'Click Me',
+      draggable: true,
+      cornerRadius: 50,
+      fill: 'lightgray',
+      onClick: () => {
+        console.log("哈哈哈哈哈")
+        // alert('Button Clicked!');
+      },
+    }
+  })
+
+  addButtonLocal()
+}
+
+const addInputLocal = () => {
   const input = new KonvaInput({
     x: 100,
     y: 100,
@@ -672,10 +746,23 @@ const addInput = () => {
   layer.add(input)
 }
 
-const addRadio = () => {
+const addInput = () => {
 
-  // const stageBox = stage.container().getBoundingClientRect();
+  yMap.set('addInput', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 30,
+      draggable: true
+    }
+  })
 
+  addInputLocal()
+
+}
+
+const addRadioLocal = () => {
   const radio = new KonvaRadio({
     x: 100,
     y: 100,
@@ -696,8 +783,25 @@ const addRadio = () => {
   layer.add(radio)
 }
 
-const addRect = () => {
+const addRadio = () => {
 
+  yMap.set('addRadio', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 30,
+      draggable: true,
+      options: [
+        { label: 'Option A', value: 'Option A' }
+      ],
+    }
+  })
+
+  addRadioLocal()
+}
+
+const addRectLocal = () => {
   const rect = new KonvaRect({
     x: 100,
     y: 100,
@@ -717,7 +821,26 @@ const addRect = () => {
   layer.add(rect)
 }
 
-const addSwitch = () => {
+const addRect = () => {
+
+  yMap.set('addRect', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 150,
+      height: 100,
+      fill: "#7f9ac7",
+      strokeWidth: 0.01,
+      stroke: "#000000",
+      draggable: true
+    }
+  })
+
+  addRectLocal()
+
+}
+
+const addSwitchLocal = () => {
   const newSwitch = new KonvaSwitch({
     x: 100,
     y: 100,
@@ -729,7 +852,21 @@ const addSwitch = () => {
   layer.add(newSwitch)
 }
 
-const addSlider = () => {
+const addSwitch = () => {
+
+  yMap.set('addSwitch', {
+    content: {
+      x: 100,
+      y: 100,
+      draggable: true
+    }
+  })
+
+  addSwitchLocal()
+
+}
+
+const addSliderLocal = () => {
   const slider = new KonvaSlider({
     x: 100,
     y: 100,
@@ -750,7 +887,25 @@ const addSlider = () => {
   layer.add(slider)
 }
 
-const addSelect = () => {
+const addSlider = () => {
+
+  yMap.set('addSlider', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 100,
+      height: 10,
+      min: -10,
+      max: 10,
+      draggable: true
+    }
+  })
+
+  addSliderLocal()
+
+}
+
+const addSelectLocal = () => {
   const select = new KonvaSelect({
     x: 100,
     y: 100,
@@ -768,7 +923,24 @@ const addSelect = () => {
   layer.add(select)
 }
 
-const addInputNumber = () => {
+const addSelect = () => {
+
+  yMap.set('addSelect', {
+    content: {
+      x: 100,
+      y: 100,
+      options: [
+        { label: 'Option A', value: 'Option A' },
+      ],
+      draggable: true
+    }
+  })
+
+  addSelectLocal()
+
+}
+
+const addInputNumberLocal = () => {
   const inputNumber = new KonvaInputNumber({
     x: 100,
     y: 100,
@@ -787,6 +959,23 @@ const addInputNumber = () => {
   groups.push(inputNumber)
 
   layer.add(inputNumber)
+}
+
+const addInputNumber = () => {
+
+  yMap.set('addInputNumberLocal', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 120,
+      height: 30,
+      min: 0,
+      max: 100,
+      draggable: true
+    }
+  })
+
+  addInputNumberLocal()
 }
 
 const setGraphSize = ({ width, height }) => {
