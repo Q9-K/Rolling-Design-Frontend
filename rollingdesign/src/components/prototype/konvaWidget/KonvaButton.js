@@ -5,6 +5,7 @@ export default class KonvaButton extends Konva.Group {
     super(config);
 
     this.attrs.defineType = 'KonvaButton'
+    this.attrs.flagId = config.flagId
 
     let backgroundColor = 'lightgray'
     if (config.fill) {

@@ -82,9 +82,6 @@ const changeRectStrokeColor = (value) => {
         @active-change="value => changeRectStrokeColor(value)"
       />
     </div>
-    <!--
-    TODO 有时间的话实现Rect的诸多属性的配置，虽然大概率没时间
-    -->
   </div>
 </template>
 

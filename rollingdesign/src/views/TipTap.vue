@@ -448,7 +448,8 @@ const generateLink = async () => {
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id,
     }))
-    link.value = "localhost:8080" + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
+    const baseUrl = 'www.aamofe.top'
+    link.value = baseUrl + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
     console.log("🚀 ~ file: TipTap.vue:421 ~ generateLink ~ res.data.data.url:", res.data.data.token)
 
 }
@@ -522,6 +523,12 @@ const showFileHistory = async () => {
 
 const switchToHistoryFile = async (index) => {
     await editorInstance.commands.setContent(fileHistory.value[index].content)
+    ElNotification({
+        title: 'Success',
+        message: '切换到历史版本文件成功！',
+        type: 'success',
+        duration: 1000
+    })
 }
 
 
@@ -535,8 +542,10 @@ const switchPermission = async () => {
 }
 
 //设置30s脱离焦点自动保存文件
+let saveTimer = null//通过节流实现操作
 const onBlur = async ({ editor }) => {
-    setTimeout(() => {
+    clearTimeout(saveTimer)
+    saveTimer = setTimeout(() => {
         if (editable == true) {
             updateFile()
             ElNotification({
@@ -546,7 +555,7 @@ const onBlur = async ({ editor }) => {
                 duration: 1000
             })
         }
-    }, 200000)
+    }, 30000)
 }
 
 const saveAsTemplate = async () => {
