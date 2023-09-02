@@ -15,7 +15,8 @@ export const authStore = defineStore({
     token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
     userAvatar: localStorage.getItem('userAvatar') ? localStorage.getItem('userAvatar') : '',
     username: localStorage.getItem('username') ? localStorage.getItem('username') : 'Tourist',
-    is_new:false,
+    is_new:localStorage.getItem('is_new') ? localStorage.getItem('is_new') : false,
+
     // nickName: '',
 
     //团队

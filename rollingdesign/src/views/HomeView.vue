@@ -265,6 +265,7 @@ const login = () => {
         userStore.is_new=res.data.user_info.is_new;
         localStorage.setItem('token', res.data.user_info.token);
         localStorage.setItem('isLogin', true);
+        
         localStorage.setItem('userId', res.data.user_info.user_id);
         // localStorage.setItem('is_new',res.data.user_info.is_new);
         // localStorage.setItem('userAvatar', res.data.user_info.avatar_url)
@@ -274,6 +275,11 @@ const login = () => {
         token.value = res.data.user_info.token;
         console.log(token.value);
         userStore.token = res.data.user_info.token;
+        userStore.is_new=res.data.user_info.is_new;
+        if(res.data.user_info.is_new)
+        {
+          localStorage.setItem('is_new', true);
+        }
 
         //跳转
         // const path_url = '/' + path;
@@ -329,6 +335,8 @@ const logout = () => {
   localStorage.removeItem('teamId');
   localStorage.removeItem('teamName');
   localStorage.removeItem('projectList');
+  localStorage.removeItem('is_new');
+
 
   console.log(userStore.isLogin);
   console.log('token' + userStore.token);
