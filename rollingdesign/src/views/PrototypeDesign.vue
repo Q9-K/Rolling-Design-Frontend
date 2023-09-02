@@ -21,6 +21,7 @@ import {ElMessage} from "element-plus";
 import KonvaImage from "@/components/prototype/konvaWidget/KonvaImage";
 import * as Y from "yjs";
 import {WebsocketProvider} from "y-websocket";
+import PrototypeHeader from "@/components/prototype/header/PrototypeHeader.vue";
 
 const route = useRoute();
 const designId = route.params.id;
@@ -1032,6 +1033,7 @@ const handlePreviewPrototype = () => {
 </script>
 
 <template>
+  <PrototypeHeader />
   <div class="prototype-design">
     <div class="left-bar-outer">
       <LeftBar
@@ -1096,8 +1098,8 @@ const handlePreviewPrototype = () => {
 <style scoped lang="scss">
 .prototype-design {
   position: fixed;
-  top: 5vh;
-  height: 95vh;
+  top: 10vh;
+  height: 90vh;
   width: 100%;
   display: flex;
   flex-wrap: nowrap;

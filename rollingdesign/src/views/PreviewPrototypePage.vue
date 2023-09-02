@@ -5,8 +5,9 @@ import {authStore} from "@/store";
 import axios from "axios";
 import Konva from "konva";
 
-import sharePreviewLinkIcon from '@/assets/icon/sharePreviewLinkIcon.png'
+import sharePreviewLinkIcon from '@/assets/prototypeIcon/sharePreviewLinkIcon.png'
 import {ElMessage, ElNotification} from "element-plus";
+import PrototypeHeader from "@/components/prototype/header/PrototypeHeader.vue";
 
 const route = useRoute()
 const prototypeShareToken = route.params.token
@@ -89,6 +90,7 @@ const handleCopyShareLink = () => {
 <!--      :prototype-token="prototypeShareToken"-->
 <!--    />-->
 <!--  </div>-->
+  <PrototypeHeader />
   <div class="preview-prototype-outer">
     <div class="preview-prototype-graph-outer">
       <el-carousel height="100%" class="preview-carousel" :autoplay="false">
@@ -145,7 +147,9 @@ const handleCopyShareLink = () => {
 <style scoped lang="scss">
 .preview-prototype-outer {
   width: 100vw;
-  height: 100vh;
+  position: fixed;
+  top: 10vh;
+  height: 90vh;
   display: flex;
   flex-wrap: nowrap;
   background-color: #f8f8f8;
