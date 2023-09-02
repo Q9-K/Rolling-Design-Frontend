@@ -99,7 +99,7 @@ export default {
 		}
 	},
 	async mounted() {
-		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/'+authStore().userId);
+		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/' + authStore().userId);
 		console.log(res)
 		this.storeData = res
 		//this.datalist = this.storeData.filter(obj => obj.is_read === false)
