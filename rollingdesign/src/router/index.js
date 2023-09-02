@@ -184,6 +184,14 @@ const routes = [
     }
   },
   {
+    path: "/test",
+    name: 'test',
+    component: () => import('../views/test.vue'),
+    meta: {
+      requireAuth: true
+    }
+  },
+  {
     path: '/team/:token',
     name: 'invite',
     component: () => import('../views/Invite.vue'),
