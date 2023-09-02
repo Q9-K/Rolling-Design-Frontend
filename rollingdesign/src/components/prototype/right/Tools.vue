@@ -125,7 +125,7 @@ watch(
 )
 
 const handleCopyShareLink = () => {
-  navigator.clipboard.writeText(prototypeShareToken.value)
+  navigator.clipboard.writeText(prototypeShareLink.value)
 
   ElMessage({
     message: '复制成功',
@@ -222,7 +222,7 @@ const handleShareStatusChange = (value) => {
                     disabled
                     rows="4"
                     type="textarea"
-                    v-model="prototypeShareToken"
+                    v-model="prototypeShareLink"
                   />
                 </div>
                 <div style="width: 100%; height: 10px"></div>
