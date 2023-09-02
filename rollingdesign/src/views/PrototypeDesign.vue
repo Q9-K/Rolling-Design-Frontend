@@ -25,7 +25,8 @@ import PrototypeHeader from "../components/prototype/header/PrototypeHeader.vue"
 
 const route = useRoute();
 const designId = route.params.id;
-const parentFolderId = route.params.parentFolderId
+const parentFolderId = route.params.folderId
+const projectId = route.params.projectId
 
 const ydoc = new Y.Doc();
 const websocketProvider = new WebsocketProvider(
@@ -993,7 +994,8 @@ const saveAsTemplate = () => {
     title: prototypeTitle.value,
     file_type: "prototype",
     width: stage.attrs.width,
-    height: stage.attrs.height
+    height: stage.attrs.height,
+    project_id: projectId
   }))
     .then((response) => {
       if (response.status === 200) {
