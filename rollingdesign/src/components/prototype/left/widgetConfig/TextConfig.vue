@@ -1,7 +1,7 @@
 <script setup>
 import './widgetTypeConfig.scss'
 import {ref, watch} from "vue";
-import ConfigColor from "@/components/prototype/left/configDetail/ConfigColor.vue";
+import ConfigColor from "../../left/configDetail/ConfigColor.vue";
 
 const props = defineProps([
   'currentElement'

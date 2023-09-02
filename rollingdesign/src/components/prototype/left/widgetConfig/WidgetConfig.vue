@@ -1,19 +1,19 @@
 <script setup>
 import {ref, toRaw, watch} from "vue";
-import RectConfig from "@/components/prototype/left/widgetConfig/RectConfig.vue";
+import RectConfig from "../../left/widgetConfig/RectConfig.vue";
 import {Rect} from "konva/lib/shapes/Rect";
 import {Text} from "konva/lib/shapes/Text";
-import TextConfig from "@/components/prototype/left/widgetConfig/TextConfig.vue";
-import KonvaRadio from "@/components/prototype/konvaWidget/KonvaRadio";
-import KonvaRect from "@/components/prototype/konvaWidget/KonvaRect";
-import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
-import RadioConfig from "@/components/prototype/left/widgetConfig/RadioConfig.vue";
-import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
-import SelectConfig from "@/components/prototype/left/widgetConfig/SelectConfig.vue";
-import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
-import SliderConfig from "@/components/prototype/left/widgetConfig/SliderConfig.vue";
-import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
-import InputNumberConfig from "@/components/prototype/left/widgetConfig/InputNumberConfig.vue";
+import TextConfig from "../../left/widgetConfig/TextConfig.vue";
+import KonvaRadio from "../../../prototype/konvaWidget/KonvaRadio";
+import KonvaRect from "../../../prototype/konvaWidget/KonvaRect";
+import KonvaText from "../../../prototype/konvaWidget/KonvaText";
+import RadioConfig from "../../../prototype/left/widgetConfig/RadioConfig.vue";
+import KonvaSelect from "../../../prototype/konvaWidget/KonvaSelect";
+import SelectConfig from "../../../prototype/left/widgetConfig/SelectConfig.vue";
+import KonvaSlider from "../../../prototype/konvaWidget/KonvaSlider";
+import SliderConfig from "../../../prototype/left/widgetConfig/SliderConfig.vue";
+import KonvaInputNumber from "../../../prototype/konvaWidget/KonvaInputNumber";
+import InputNumberConfig from "../../../prototype/left/widgetConfig/InputNumberConfig.vue";
 
 const props = defineProps([
   'currentElement'

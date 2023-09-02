@@ -1,10 +1,10 @@
 <script setup >
-import exportPNGIcon from '@/assets/prototypeIcon/exportPNG.png'
-import exportHTMLIcon from '@/assets/prototypeIcon/exportHTML.png'
-import saveGraphIcon from '@/assets/prototypeIcon/saveGraph.png'
-import quitPrototypeIcon from '@/assets/prototypeIcon/quitPrototype.png'
-import saveAsTemplateIcon from '@/assets/prototypeIcon/saveAsTemplate.png'
-import previewPrototypeIcon from '@/assets/prototypeIcon/previewPrototype.png'
+import exportPNGIcon from '../../../assets/prototypeIcon/exportPNG.png'
+import exportHTMLIcon from '../../../assets/prototypeIcon/exportHTML.png'
+import saveGraphIcon from '../../../assets/prototypeIcon/saveGraph.png'
+import quitPrototypeIcon from '../../../assets/prototypeIcon/quitPrototype.png'
+import saveAsTemplateIcon from '../../../assets/prototypeIcon/saveAsTemplate.png'
+import previewPrototypeIcon from '../../../assets/prototypeIcon/previewPrototype.png'
 import {inject, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {authStore} from "@/store";

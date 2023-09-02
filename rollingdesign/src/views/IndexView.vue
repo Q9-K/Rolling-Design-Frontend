@@ -585,7 +585,7 @@ import { ClickOutside as vClickOutside } from 'element-plus'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import GuideAside from '@/components/GuideAside.vue'
 import Header from '@/components/Header.vue'
-import receiveMessage from '@/components/prototype/receiveMessage.vue'
+import receiveMessage from '@/components/receiveMessage.vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
 import Clipboard from 'clipboard';
 import {
@@ -1622,5 +1622,4 @@ const logout = () => {
   width: 178px;
   height: 178px;
   display: block;
-}
-</style>
+}</style>
