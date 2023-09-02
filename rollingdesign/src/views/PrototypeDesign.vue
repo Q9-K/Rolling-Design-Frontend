@@ -11,7 +11,6 @@ import {authStore} from "../store/index";
 import axios from "axios";
 import {useRoute} from 'vue-router';
 import qs from "qs";
-import PreviewPrototype from "../components/prototype/preview/PreviewPrototype.vue";
 import KonvaRect from "@/components/prototype/konvaWidget/KonvaRect";
 import KonvaText from "@/components/prototype/konvaWidget/KonvaText";
 import KonvaSwitch from "@/components/prototype/konvaWidget/KonvaSwitch";
@@ -19,21 +18,31 @@ import KonvaSlider from "@/components/prototype/konvaWidget/KonvaSlider";
 import KonvaSelect from "@/components/prototype/konvaWidget/KonvaSelect";
 import KonvaInputNumber from "@/components/prototype/konvaWidget/KonvaInputNumber";
 import {ElMessage} from "element-plus";
+import KonvaImage from "@/components/prototype/konvaWidget/KonvaImage";
+import * as Y from "yjs";
+import {WebsocketProvider} from "y-websocket";
 
 const route = useRoute();
 const designId = route.params.id;
 const parentFolderId = route.params.parentFolderId
 
+const ydoc = new Y.Doc();
+const websocketProvider = new WebsocketProvider(
+  'ws://localhost:1234', designId, ydoc
+)
+
 let stage, layer
 let isGroup
 
+const yMap = ydoc.getMap('konva-demo')
+
 const currentElement = ref(null)
-const isPreviewOpen = ref(false)
+// const isPreviewOpen = ref(false)
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const selectedItem = ref(null);
 const showContextMenu = ref(false);
 const prototypeTitle = ref(null)
-const previewPrototypeToken = ref('')
+// const previewPrototypeToken = ref('')
 const initialSize = ref(null)
 const isTemplate = ref(false)
 
@@ -49,15 +58,25 @@ onMounted(() => {
 
   // 本地有从本地拿
   if (stageStringify) {
-
-    // TODO 重新打开插入的图片（本地保存）
     /*
       太NM复杂了，傻逼Konva，傻逼canvas，甚至不能序列化图片
       死给你看
      */
-
+    // console.log(stageStringify)
     const stageJSON = JSON.parse(stageStringify)
+    // console.log(stageJSON)
     stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+
+    stage.find('Image').forEach((imageNode) => {
+      const src = imageNode.getAttr('src');
+      const image = new Image();
+      image.onload = () => {
+        imageNode.image(image);
+        imageNode.getLayer().batchDraw();
+      }
+      image.src = src;
+    });
+
     sessionStorage.removeItem('stageStringify')
   }
   // 本地没有从服务端拿
@@ -76,9 +95,6 @@ onMounted(() => {
     })
       .then((response) => {
         if (response.status === 200) {
-
-          // TODO 从服务器获取
-
           console.log(response.data)
 
           formerContent = response.data.prototype.content
@@ -93,7 +109,8 @@ onMounted(() => {
 
           if (formerContent) {
             const stageJSON = JSON.parse(formerContent)
-            stage = Konva.default.Node.create(stageJSON, 'canvasContainer');
+            // console.log(stageJSON)
+            stage = Konva.default.Stage.create(stageJSON, 'canvasContainer');
             stage.width(width)
             stage.height(height)
             stage.children.forEach((item) => {
@@ -105,6 +122,109 @@ onMounted(() => {
                 item.destroy()
               }
             })
+
+            /*
+              这样行不行，只有天知道
+             */
+            // 遍历舞台上的所有节点
+            stage.find(node => {
+
+              // 检查节点的类型
+              if (node.attrs.defineType === 'KonvaImage') {
+                const myShape = new KonvaImage(node.getAttrs());
+                node.parent.add(myShape);
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSwitch') {
+                const myShape = new KonvaSwitch(node.getAttrs());
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaButton') {
+                const myShape = new KonvaButton(node.getAttrs());
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaInput') {
+                const myShape = new KonvaInput(node.getAttrs());
+                // 将新创建的实例添加到舞台中
+                node.parent.add(myShape);
+                // 删除原来的节点
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaInputNumber') {
+                const myShape = new KonvaInputNumber(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaRadio') {
+                const myShape = new KonvaRadio(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaRect') {
+                const myShape = new KonvaRect(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                // groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSelect') {
+                const myShape = new KonvaSelect(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaText') {
+                const myShape = new KonvaText(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                // groups.push(myShape)
+                node.destroy();
+              }
+              else if (node.attrs.defineType === 'KonvaSlider') {
+                const myShape = new KonvaSlider(node.getAttrs());
+                myShape.on('click', (e) => {
+                  currentElement.value = e.currentTarget
+                })
+                node.parent.add(myShape);
+                groups.push(myShape)
+                node.destroy();
+              }
+            });
+
+            stage.find('Image').forEach((imageNode) => {
+              const src = imageNode.getAttr('src');
+              const image = new Image();
+              image.onload = () => {
+                imageNode.image(image);
+                imageNode.getLayer().batchDraw();
+              }
+              image.src = src;
+            });
+
+            stage.find('KonvaImage').forEach((image) => {
+              image.insertEventListener()
+            })
+
             console.log(stage.getLayers())
             sessionStorage.removeItem('stageStringify')
           }
@@ -225,38 +345,64 @@ onMounted(() => {
             layer.batchDraw();
           }, 100);
 
-          // 每隔1秒钟重新绘制
-          // setInterval(() => {
-          //   stage.getLayers().forEach((item) => {
-          //     if (item.getChildren().length === 0) {
-          //       item.destroy()
-          //     }
-          //     else if (item.getChildren().at(0) instanceof Konva.default.Group &&
-          //       item.getChildren().at(0).getChildren().length === 0) {
-          //       item.destroy()
-          //     }
-          //   })
-          //   console.log(stage.getLayers())
-          // }, 1000);
         }
       })
   }
 
-  // let imageObj = new Image();
-  // imageObj.onload = function() {
-  //   let yoda = new Konva.default.Image({
-  //     x: 50,
-  //     y: 50,
-  //     image: imageObj,
-  //     width: 106,
-  //     height: 118
-  //   });
-  //
-  //   // add the shape to the layer
-  //   layer.add(yoda);
-  //   layer.batchDraw();
-  // };
-  // imageObj.src = 'https://summer-1315620690.cos.ap-beijing.myqcloud.com/user_avatar/1.png';
+  yMap.observe((event) => {
+    console.log(event)
+    if (event.keysChanged.has("addText")) {
+      const content = yMap.get('addText')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addTextLocal()
+      // yMap.delete('addShape')
+    }
+    else if (event.keysChanged.has('addButton')) {
+      const content = yMap.get('addButton')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addButtonLocal()
+    }
+    else if (event.keysChanged.has('addInput')) {
+      const content = yMap.get('addInput')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addInputLocal()
+    }
+    else if (event.keysChanged.has('addInputNumber')) {
+      const content = yMap.get('addInputNumber')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addInputNumberLocal()
+    }
+    else if (event.keysChanged.has('addRadio')) {
+      const content = yMap.get('addRadio')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addRadioLocal()
+    }
+    else if (event.keysChanged.has('addRect')) {
+      const content = yMap.get('addRect')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addRectLocal()
+    }
+    else if (event.keysChanged.has('addSelect')) {
+      const content = yMap.get('addSelect')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSelectLocal()
+    }
+    else if (event.keysChanged.has('addSlider')) {
+      const content = yMap.get('addSlider')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSliderLocal()
+    }
+    else if (event.keysChanged.has('addSwitch')) {
+      const content = yMap.get('addSwitch')
+      console.log("🚀 ~ yMap.observe ~ f:", content)
+      addSwitchLocal()
+    }
+    // if (key == 'addShape') {
+    //   const shape = new Konva.Rect(value)
+    //   layer.add(shape)
+    // }
+    layer.draw()
+  })
 
 })
 
@@ -285,29 +431,6 @@ const adjustMouseState = (element) => {
 }
 
 const exportHTML = () => {
-  // const canvas = stage.toCanvas(); // 将 Konva.Stage 转换为 Canvas 元素
-  //
-  // const canvasDataURL = canvas.toDataURL(); // 获取 Canvas 元素的 Base64 数据
-  //
-  // const html = `
-  //   <!DOCTYPE html>
-  //   <html lang="en-US">
-  //   <head>
-  //     <title>Konva Canvas Export</title>
-  //   </head>
-  //   <body>
-  //     <img src="${canvasDataURL}" alt="Exported Canvas">
-  //   </body>
-  //   </html>
-  // `;
-  //
-  // // 创建一个 Blob 对象，将 HTML 字符串放入其中
-  // const blob = new Blob([html], { type: 'text/html' });
-  //
-  // // 使用 FileSaver.js 将 Blob 对象保存为 HTML 文件
-  // saveAs(blob, 'exported_canvas.html');
-  // 将虚拟舞台的内容导出为SVG
-
   const htmlElements = [];
   const htmlData = []
 
@@ -347,6 +470,9 @@ const exportHTML = () => {
       else if (shape instanceof KonvaSelect) {
         htmlElements.push(shape.exportHTMLString())
         htmlData.push(shape.exportHTMLDate())
+      }
+      else if (shape instanceof KonvaImage) {
+        htmlElements.push(shape.exportHTMLString())
       }
       // 添加更多图形类型的转换逻辑
     });
@@ -422,8 +548,6 @@ const saveGraph = () => {
 
   console.log(stage)
 
-  // TODO 保存图片给后端
-
   axios.post('http://www.aamofe.top/api/document/save/', qs.stringify({
     file_type: "prototype",
     file_id: designId,
@@ -449,7 +573,9 @@ const saveGraph = () => {
     })
 }
 
-const addText = () => {
+const addTextLocal = () => {
+  flagId ++
+
   const text = new KonvaText({
     x: 100,
     y: 100,
@@ -458,47 +584,34 @@ const addText = () => {
     fontFamily: 'Arial',
     fill: 'black',
     draggable: true,
-  })
+    flagId: flagId
+  }, stage, layer)
 
   text.on('click', (e) => {
     console.log(e)
     currentElement.value = e.currentTarget
   })
 
-  text.on('dblclick', () => {
-    const textPosition = text.getAbsolutePosition();
-    const stageBox = stage.container().getBoundingClientRect();
-
-    const areaPosition = {
-      x: stageBox.left + textPosition.x,
-      y: stageBox.top + textPosition.y
-    };
-
-    // create textarea and style it
-    const textarea = document.createElement('textarea');
-    document.body.appendChild(textarea);
-
-    textarea.value = text.text();
-    textarea.style.position = 'absolute';
-    textarea.style.top = areaPosition.y + 'px';
-    textarea.style.left = areaPosition.x + 'px';
-    textarea.style.width = text.width();
-
-    textarea.focus();
-
-    textarea.addEventListener('keydown', function (e) {
-      // hide on enter
-      if (e.keyCode === 13) {
-        text.text(textarea.value);
-        layer.draw();
-        document.body.removeChild(textarea);
-      }
-    });
-  });
-
   adjustMouseState(text)
 
   layer.add(text)
+}
+
+const addText = () => {
+
+  yMap.set('addText', {
+    content: {
+      x: 100,
+      y: 100,
+      text: '点击编辑文本内容',
+      fontSize: 24,
+      fontFamily: 'Arial',
+      fill: 'black',
+      draggable: true,
+    },
+  })
+
+  // addTextLocal()
 }
 
 const addImage = () => {
@@ -526,32 +639,28 @@ const addImage = () => {
     if (file) {
       const base64Image = await convertToBase64(file);
 
-      await new Promise(resolve => base64Image.onload = resolve);
+      const originalWidth = base64Image.width;
+      const originalHeight = base64Image.height;
+      const newWidth = (originalWidth / originalHeight) * 100;
 
-      const image = new Konva.default.Image({
+      const image = new KonvaImage({
         x: 100,
         y: 100,
+        height: 100,
+        width: newWidth,
         image: base64Image,
         base64Image: base64Image,
         draggable: true,
       });
 
-      const originalWidth = base64Image.width;
-      const originalHeight = base64Image.height;
-      const newWidth = (originalWidth / originalHeight) * 100;
-
-      image.width(newWidth);
-      image.height(100);
-
       adjustMouseState(image)
 
       console.log(file)
       console.log(base64Image)
-      // TODO 上传图片给后端
-      axios.post('http://www.aamofe.top/api/document/upload/', qs.stringify({
-        file_type: "prototype",
-        file: file
-      }), {
+      const formData = new FormData()
+      formData.append('file_type', 'prototype')
+      formData.append('file', file)
+      axios.post('http://www.aamofe.top/api/document/upload/', formData, {
         headers:{
           Authorization: authStore().token
         }
@@ -563,6 +672,7 @@ const addImage = () => {
               type: "success"
             })
             image.setAttr('src', response.data.url)
+            console.log(image)
           }
         }
       })
@@ -575,7 +685,7 @@ const addImage = () => {
 
 }
 
-const addButton = () => {
+const addButtonLocal = () => {
   const button = new KonvaButton({
     x: 100,
     y: 100,
@@ -600,7 +710,29 @@ const addButton = () => {
   layer.add(button)
 }
 
-const addInput = () => {
+const addButton = () => {
+
+  yMap.set('addButton', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 150,
+      height: 50,
+      text: 'Click Me',
+      draggable: true,
+      cornerRadius: 50,
+      fill: 'lightgray',
+      onClick: () => {
+        console.log("哈哈哈哈哈")
+        // alert('Button Clicked!');
+      },
+    }
+  })
+
+  // addButtonLocal()
+}
+
+const addInputLocal = () => {
   const input = new KonvaInput({
     x: 100,
     y: 100,
@@ -613,10 +745,23 @@ const addInput = () => {
   layer.add(input)
 }
 
-const addRadio = () => {
+const addInput = () => {
 
-  // const stageBox = stage.container().getBoundingClientRect();
+  yMap.set('addInput', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 30,
+      draggable: true
+    }
+  })
 
+  // addInputLocal()
+
+}
+
+const addRadioLocal = () => {
   const radio = new KonvaRadio({
     x: 100,
     y: 100,
@@ -637,18 +782,25 @@ const addRadio = () => {
   layer.add(radio)
 }
 
-const addRect = () => {
-  // const rect = new Konva.default.Rect({
-  //   x: 100,
-  //   y: 100,
-  //   width: 150,
-  //   height: 100,
-  //   fill: "#7f9ac7",
-  //   strokeWidth: 0.01,
-  //   stroke: "#000000",
-  //   draggable: true
-  // })
+const addRadio = () => {
 
+  yMap.set('addRadio', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 30,
+      draggable: true,
+      options: [
+        { label: 'Option A', value: 'Option A' }
+      ],
+    }
+  })
+
+  // addRadioLocal()
+}
+
+const addRectLocal = () => {
   const rect = new KonvaRect({
     x: 100,
     y: 100,
@@ -668,17 +820,52 @@ const addRect = () => {
   layer.add(rect)
 }
 
-const addSwitch = () => {
+const addRect = () => {
+
+  yMap.set('addRect', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 150,
+      height: 100,
+      fill: "#7f9ac7",
+      strokeWidth: 0.01,
+      stroke: "#000000",
+      draggable: true
+    }
+  })
+
+  // addRectLocal()
+
+}
+
+const addSwitchLocal = () => {
   const newSwitch = new KonvaSwitch({
     x: 100,
     y: 100,
     draggable: true
   })
 
+  groups.push(newSwitch)
+
   layer.add(newSwitch)
 }
 
-const addSlider = () => {
+const addSwitch = () => {
+
+  yMap.set('addSwitch', {
+    content: {
+      x: 100,
+      y: 100,
+      draggable: true
+    }
+  })
+
+  // addSwitchLocal()
+
+}
+
+const addSliderLocal = () => {
   const slider = new KonvaSlider({
     x: 100,
     y: 100,
@@ -694,10 +881,30 @@ const addSlider = () => {
     currentElement.value = e.currentTarget
   })
 
+  groups.push(slider)
+
   layer.add(slider)
 }
 
-const addSelect = () => {
+const addSlider = () => {
+
+  yMap.set('addSlider', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 100,
+      height: 10,
+      min: -10,
+      max: 10,
+      draggable: true
+    }
+  })
+
+  // addSliderLocal()
+
+}
+
+const addSelectLocal = () => {
   const select = new KonvaSelect({
     x: 100,
     y: 100,
@@ -715,7 +922,24 @@ const addSelect = () => {
   layer.add(select)
 }
 
-const addInputNumber = () => {
+const addSelect = () => {
+
+  yMap.set('addSelect', {
+    content: {
+      x: 100,
+      y: 100,
+      options: [
+        { label: 'Option A', value: 'Option A' },
+      ],
+      draggable: true
+    }
+  })
+
+  // addSelectLocal()
+
+}
+
+const addInputNumberLocal = () => {
   const inputNumber = new KonvaInputNumber({
     x: 100,
     y: 100,
@@ -731,7 +955,26 @@ const addInputNumber = () => {
     currentElement.value = e.currentTarget
   })
 
+  groups.push(inputNumber)
+
   layer.add(inputNumber)
+}
+
+const addInputNumber = () => {
+
+  yMap.set('addInputNumberLocal', {
+    content: {
+      x: 100,
+      y: 100,
+      width: 120,
+      height: 30,
+      min: 0,
+      max: 100,
+      draggable: true
+    }
+  })
+
+  // addInputNumberLocal()
 }
 
 const setGraphSize = ({ width, height }) => {
@@ -776,11 +1019,11 @@ const handlePreviewPrototype = () => {
   })
     .then((response) => {
       if (response.status === 200) {
-        console.log("嘿嘿嘿")
         if (response.data.errno === 0) {
-          previewPrototypeToken.value = response.data.token
-          console.log(previewPrototypeToken.value)
-          isPreviewOpen.value = true
+          // previewPrototypeToken.value = response.data.token
+          // console.log(previewPrototypeToken.value)
+          // isPreviewOpen.value = true
+          console.log(response.data)
         }
       }
     })
@@ -824,15 +1067,20 @@ const handlePreviewPrototype = () => {
               :save-as-template="saveAsTemplate"
               :preview-prototype="handlePreviewPrototype"
               :is-template="isTemplate"
+              :design-id="designId"
             />
           </div>
         </div>
       </div>
     </div>
   </div>
-  <el-dialog style="height: 70vh; width: 60vw; background-color: #8c939d" v-model="isPreviewOpen">
-    <PreviewPrototype :prototype-token="previewPrototypeToken"/>
-  </el-dialog>
+<!--  <el-dialog-->
+<!--    class="preview-prototype-dialog"-->
+<!--    v-model="isPreviewOpen"-->
+<!--    top="4vh"-->
+<!--  >-->
+<!--    <PreviewPrototype :prototype-token="previewPrototypeToken"/>-->
+<!--  </el-dialog>-->
   <div v-if="showContextMenu" :style="{
     position: 'absolute',
     left: `${contextMenuPosition.x + 10}px`,
@@ -891,5 +1139,10 @@ const handlePreviewPrototype = () => {
       }
     }
   }
+}
+.preview-prototype-dialog {
+  height: 70vh;
+  width: 60vw;
+  background-color: #8c939d
 }
 </style>

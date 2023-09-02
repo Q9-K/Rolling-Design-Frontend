@@ -4,6 +4,8 @@ export default class KonvaInput extends Konva.Group {
   constructor(config) {
     super(config);
 
+    this.attrs.defineType = 'KonvaInput'
+
     // 添加背景矩形
     const background = new Konva.Rect({
       width: config.width,

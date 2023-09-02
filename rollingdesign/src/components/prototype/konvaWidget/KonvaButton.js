@@ -4,6 +4,8 @@ export default class KonvaButton extends Konva.Group {
   constructor(config, stage, layer) {
     super(config);
 
+    this.attrs.defineType = 'KonvaButton'
+
     let backgroundColor = 'lightgray'
     if (config.fill) {
       backgroundColor = config.fill

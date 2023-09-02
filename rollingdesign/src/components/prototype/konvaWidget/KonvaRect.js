@@ -3,6 +3,8 @@ import Konva from "konva";
 export default class KonvaRect extends Konva.Rect {
   constructor(config) {
     super(config);
+
+    this.attrs.defineType = 'KonvaRect'
   }
 
   /*
