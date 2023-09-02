@@ -355,15 +355,16 @@ const buildNewTeam = () => {
     return;
   }
 
-  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value }), { headers: { Authorization: authStore().token } })
+  axios.post('http://www.aamofe.top/api/team/create_team/', qs.stringify({ team_name: addTeamNameInput.value,description:addTeamInfoInput.value }), { headers: { Authorization: authStore().token } })
     .then(res => {
-      // console.log(res);
+      console.log(res);
 
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
         addTeamVisible.value = false;
         addTeamNameInput.value = '';
+        addTeamInfoInput.value='';
         //重新获取团队列表
         fetchTeamlistData();
         return;
