@@ -51,16 +51,12 @@
 				</div>
 
 				<div class="operations">
-					<div class="markAllRead" @click="this.markReadAll()">
-						<el-button @click="markReadAll()">
-							全部已读
-						</el-button>
-					</div>
-					<div class="deleteAllRead" @click="this.markReadAll()">
-						<el-button @click="deleteAllRead()">
-							删除已读
-						</el-button>
-					</div>
+					<el-button @click="markReadAll()">
+						全部已读
+					</el-button>
+					<el-button @click=" deleteAllRead()">
+						删除已读
+					</el-button>
 				</div>
 			</template>
 		</el-popover>
@@ -128,8 +124,8 @@ export default {
 		async deleteAllRead() {
 			let res = await axios.delete(`http://www.aamofe.top/api/chat/notice/delete_all_read/${authStore().userId}`)
 			this.storeData = this.storeData.filter((item) => {
-				console.log(item.is_read)
-				return !item.is_read
+				// console.log(item.is_read)
+				return item.is_read == false
 			})
 			console.log("🚀 ~ file: receiveMessage.vue:131 ~ deleteAllRead ~ res:", res)
 		}
