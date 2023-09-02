@@ -33,6 +33,9 @@ onMounted(() => {
           const length = prototypeList.length
           for (let i = 0; i < length - 1; i++) {
             const item = prototypeList[i]
+            if (item.content === "'" || item.content === '') {
+              continue
+            }
             previewList.value.push({
               id: item.id,
               title: item.title,
