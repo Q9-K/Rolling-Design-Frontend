@@ -448,7 +448,8 @@ const generateLink = async () => {
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id,
     }))
-    link.value = "localhost:8080" + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
+    const baseUrl = 'www.aamofe.top'
+    link.value = baseUrl + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
     console.log("🚀 ~ file: TipTap.vue:421 ~ generateLink ~ res.data.data.url:", res.data.data.token)
 
 }
