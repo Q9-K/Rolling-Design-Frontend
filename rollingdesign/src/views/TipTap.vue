@@ -17,15 +17,15 @@
                             <i class="iconfont icon-shouye" @click="router.push('/index')"></i>
                         </el-tooltip>
                     </div>
-                    <el-button @click="saveAsTemplate" :disabled="!editAble" id="template">保存为模板</el-button>
                 </div>
+
                 <div class="fileinfo">
-                    <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editAble" id="title"></Title>
-                    <el-popover :disabled="!editAble" :width="300" trigger="click" ref='popper'
+                    <Title v-model="title" @keyup.enter="changeTitle(title)" :disabled="!editable" id="title"></Title>
+                    <el-popover :disabled="!editable" :width="300" trigger="click" ref='popper'
                         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
                             <span id="history" class="lastEditTime" style="font-size: 12px; opacity:0.48; height: 18px; line-height: 18px;
-                 box-sizing: border-box; " @click="editAble ? showFileHistory() : ''">Last Modified: {{ lastEditTime
+                 box-sizing: border-box; " @click="editable ? showFileHistory() : ''">Last Modified: {{ lastEditTime
                  }}</span>
                         </template>
                         <template #default>
@@ -39,53 +39,76 @@
                     </el-popover>
                 </div>
                 <div class="actions2">
-                    <el-dropdown trigger="click" @command="downloadFile">
-                        <el-button type="primary" :disabled="!editAble" id="downloadButton">
-                            下载
-                        </el-button>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item command="md">markdown格式</el-dropdown-item>
-                                <el-dropdown-item command="json">json格式</el-dropdown-item>
-                                <el-dropdown-item command="html">html格式</el-dropdown-item>
-                                <el-dropdown-item command="docx">docx格式</el-dropdown-item>
-                                <el-dropdown-item command="pdf">pdf格式</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
-                    <el-button @click="updateFileAndInform()" :disabled="!editAble" id="syncButton">
-                        同步
-                    </el-button>
-                    <el-popover :width="300" trigger="click" ref='popper'
-                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                        <template #reference>
-                            <el-button @click="generateLink()" :disabled="!editAble" id="shareButton">
-                                分享
+                    <el-row :gutter="20">
+                        <el-col :span="6">
+                            <el-dropdown trigger="click" @command="downloadFile">
+                                <el-button color="#3671ff" type="primary" :disabled="!editable" id="downloadButton">
+                                    下载
+                                </el-button>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item command="md" :divided="true">markdown格式</el-dropdown-item>
+                                        <el-dropdown-item command="json" :divided="true">json格式</el-dropdown-item>
+                                        <el-dropdown-item command="html" :divided="true">html格式</el-dropdown-item>
+                                        <el-dropdown-item command="docx" :divided="true">docx格式</el-dropdown-item>
+                                        <el-dropdown-item command="pdf" :divided="true">pdf格式</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-button color="#3671ff" @click="updateFileAndInform()" :disabled="!editable" id="syncButton"
+                                type="primary" class="children">
+                                同步
                             </el-button>
-                        </template>
-                        <template #default>
-                            <div disabled style="text-align: center;">
-                                <el-input v-model="link" disabled></el-input>
-                                <div>
-                                    <div>分享权限</div>
-                                    <el-switch v-model="shareEditAble" class="ml-2" active-text='可以编辑' inactive-text="不可编辑"
-                                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                                        @change="switchPermission()" />
-                                </div>
-                                <div style="color: #d2d3d7;text-align: left;
+                        </el-col>
+                        <el-col :span="6">
+
+                            <el-popover class="children" :width="300" trigger="click" ref='popper'
+                                popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                                <template #reference>
+                                    <el-button color="#3671ff" @click="generateLink()" :disabled="!editable"
+                                        id="shareButton" type="primary">
+                                        分享
+                                    </el-button>
+                                </template>
+                                <template #default>
+                                    <div disabled style="text-align: center;">
+                                        <el-input v-model="link" disabled></el-input>
+                                        <div>
+                                            <div>分享权限</div>
+                                            <el-switch v-model="shareeditable" class="ml-2" active-text='可以编辑'
+                                                inactive-text="不可编辑"
+                                                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                                                @change="switchPermission()" />
+                                        </div>
+                                        <div style="color: #d2d3d7;text-align: left;
                             margin-top: 20px;">该链接将在<span style="font-weight: 700;">24小时</span>内过期
-                                </div>
-                            </div>
-                            <button @click="copyLink" class="copyLink"
-                                style="text-align: center; 
+                                        </div>
+                                    </div>
+                                    <button @click="copyLink" class="copyLink"
+                                        style="text-align: center; 
                             background-color: #3671ff;
                             outline: none;
-                        margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
-                        </template>
-                    </el-popover>
+                            margin-left:auto; margin-right: auto; margin-top: 15px; padding: 10px; box-sizing: content-box;">复制链接</button>
+                                </template>
+                            </el-popover>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-button class="children" color="#3671ff" @click="saveAsTemplate" :disabled="!editable"
+                                id="template" type="primary" style="z-index: 1;">保存为模板</el-button>
+                        </el-col>
+                    </el-row>
                 </div>
                 <div class="userAvatars">
-                    <span v-if="online_users.length > 0">当前有{{ online_users.length }}位用户正在一起编辑</span>
+                    <div v-if="online_users.length > 0" style="font-size: 14px; opacity:0.48; height: 18px; line-height: 18px;
+                 box-sizing: border-box; ">
+                        当前有
+                        <span style="font-weight: bolder;opacity: 1;color: black;">
+                            {{ online_users.length }}
+                        </span>
+                        位用户正在一起编辑
+                    </div>
                     <div class="team_members">
                         <template v-for="(item, index) in online_users" :key="item.id">
                             <el-avatar :src="item.avatar_url" :size="20" v-if="item.id != authStore().userId"></el-avatar>
@@ -94,7 +117,6 @@
                     <div class="selfAvatars">
                         <template v-if="authStore().isLogin">
                             <el-avatar :size="40" :src='authStore().userAvatar' style="font-size: 30px;"></el-avatar>
-
                         </template>
                         <template v-else>
                             <el-avatar :size="40" style="font-size: 30px;" :icon="UserFilled"></el-avatar>
@@ -104,7 +126,7 @@
             </div>
 
             <el-tiptap v-model:content="content" :extensions="extensions" placeholder="欢迎使用Rolling Markdown Editor!👏"
-                @keydown.s.ctrl.prevent="updateFileAndInform()" spellcheck :readonly="!editAble" @onCreate="onCreate"
+                @keydown.s.ctrl.prevent="updateFileAndInform()" spellcheck :readonly="!editable" @onCreate="onCreate"
                 @onBlur="onBlur" id="editor" autoFocus />
         </template>
     </div>
@@ -258,11 +280,11 @@ const route = useRoute()
 const title = ref('Rolling Document')
 const content = ref('')
 const dataLoaded = ref(false)
-const shareEditAble = ref(true)
+const shareeditable = ref(true)
 const lastEditTime = ref('')
 const fileHistory = ref()
 const axios = inject('axios')
-let editAble = false
+let editable = false
 let socket = null
 let editorInstance
 let online_users = ref([])
@@ -272,127 +294,133 @@ const link = ref('')
 const team_members = ref('')
 let memberSocket
 let username = authStore().username
-let document_id
+let document_id = 'test'
+let extensions = []
+let provider = null
 
 
-const provider = new TiptapCollabProvider({
-    // url: 'ws://101.43.159.45:1234',
-    appId: '8mzo739x', // get this at collab.tiptap.dev
-    name: `rolling-document-${document_id}`, // e.g. a uuid uuidv4();
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
-    document: new Y.Doc(),
-    onConnect() {
-        console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
-        socket = socketStore.socket
-        if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
-            socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
-            socketStore.socket = socket
-        }
-        if (authStore().isLogin) {
-            memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document_id}/document/${authStore().userId}`)
-            memberSocket.onopen = (event) => {
-                console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
-            }
-            memberSocket.onmessage = (event) => {
-                online_users.value = JSON.parse(event.data).online_users
-                if (!dataLoaded.value) {
-                    dataLoaded.value = true
-                }
-            }
-        }
-        else {
-            if (!dataLoaded.value) {
-                dataLoaded.value = true
-            }
-        }
-    }
-})
 
-const extensions = [
-    History.configure({
-        history: false
-    }),
-    Document,
-    Text,
-    Paragraph,
-    Heading,
-    Bold.configure({
-        bubble: true
-    }),
-    Italic.configure({
-        bubble: true
-    }),
-    Strike,
-    Underline.configure({
-        bubble: true
-    }),
-    Image.configure({
-        inline: true,
-        draggable: true,
-        uploadRequest(file) {
-            const fd = new FormData()
-            fd.append('file', file)
-            fd.append('file_type', 'document')
-            //这里似乎用浏览器原生的formdata速度足够快，不会出现先创建img节点的问题，又或者是我的写法的问题
-            // 这里 return 是返回 Promise 对象
-            return axios.post('/document/upload/', fd).then(({ data: res }) => {
-                // 这个 return 是返回最后的结果
-                return res.url
-            })
-        },
-    }),
-    CodeBlock,
-    Blockquote,
-    BulletList,
-    OrderedList,
-    TaskList,
-    TextAlign,
-    Indent,
-    HardBreak,
-    HorizontalRule,
-    Color,
-    Print,
-    Highlight,
-    SelectAll,
-    FontSize,
-    FontFamily,
-    Fullscreen,
-    Typography,
-    Mention.configure({
-        HTMLAttributes: {
-            class: 'mention',
-        },
-        suggestion,
-    }),
-    Collaboration.configure({
-        document: provider.document,
-    }),
-    // Register the collaboration cursor extension
-    CollaborationCursor.configure({
-        provider: provider,
-        user: {
-            //TODO:通过状态管理获取用户名
-            name: username,
-            color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
-        },
-    }),
-];
 
 // Collaboration.config.disableSync = true;//为了防止协作文档重复写入,但是没卵用
 onBeforeMount(async () => {
     const res = await axios.get(`/document/view_document/${route.params.id}`)
     const document = res.data.document
-
     title.value = document.title
     document_id = document.id
     lastEditTime.value = new Date(document.modified_at).toLocaleString()
 
     if (authStore().isLogin) {
-        editAble = document.editable
+        editable = document.editable
+        // console.log("🚀 ~ file: TipTap.vue:298 ~ onBeforeMount ~ document.editable:", document.editable)
     }
     const res2 = await axios.get('/team/all_members/')
     authStore().team_members = res2.data.members
     team_members.value = res2.data.members
+    setTimeout(() => {
+
+        provider = new TiptapCollabProvider({
+            // url: 'ws://101.43.159.45:1234',
+            appId: '8mzo739x', // get this at collab.tiptap.dev
+            name: `rolling-document-${document.id}`, // e.g. a uuid uuidv4();
+            token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.XD10Gr3Bz7Fscz4rzIU60eSnlJkxG7WhEL2juHd9BVY', // see "Authentication" below
+            document: new Y.Doc(),
+            onConnect() {
+                console.log("🚀 ~ file: TipTap.vue:190 ~ provider.configuration.onConnect ~ provider:", provider.status)
+                socket = socketStore.socket
+                if ((socket == null || socket.readyState != 1) && (authStore().isLogin) && (editable == true)) {
+                    socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
+                    socketStore.socket = socket
+                }
+                if (authStore().isLogin && editable == true) {
+                    memberSocket = new WebSocket(`ws://101.43.159.45:8001/${document.id}/document/${authStore().userId}`)
+                    memberSocket.onopen = (event) => {
+                        console.log("🚀 ~ file: TipTap.vue:310 ~ onMounted ~ event:", '连接协同编辑服务器成功！')
+                    }
+                    memberSocket.onmessage = (event) => {
+                        online_users.value = JSON.parse(event.data).online_users
+                        if (!dataLoaded.value) {
+                            dataLoaded.value = true
+                        }
+                    }
+                }
+                else {
+                    if (!dataLoaded.value) {
+                        dataLoaded.value = true
+                    }
+                }
+
+            }
+        })
+        extensions = [
+            History.configure({
+                history: false
+            }),
+            Document,
+            Text,
+            Paragraph,
+            Heading,
+            Bold.configure({
+                bubble: true
+            }),
+            Italic.configure({
+                bubble: true
+            }),
+            Strike,
+            Underline.configure({
+                bubble: true
+            }),
+            Image.configure({
+                inline: true,
+                draggable: true,
+                uploadRequest(file) {
+                    const fd = new FormData()
+                    fd.append('file', file)
+                    fd.append('file_type', 'document')
+                    //这里似乎用浏览器原生的formdata速度足够快，不会出现先创建img节点的问题，又或者是我的写法的问题
+                    // 这里 return 是返回 Promise 对象
+                    return axios.post('/document/upload/', fd).then(({ data: res }) => {
+                        // 这个 return 是返回最后的结果
+                        return res.url
+                    })
+                },
+            }),
+            CodeBlock,
+            Blockquote,
+            BulletList,
+            OrderedList,
+            TaskList,
+            TextAlign,
+            Indent,
+            HardBreak,
+            HorizontalRule,
+            Color,
+            Print,
+            Highlight,
+            SelectAll,
+            FontSize,
+            FontFamily,
+            Fullscreen,
+            Typography,
+            Mention.configure({
+                HTMLAttributes: {
+                    class: 'mention',
+                },
+                suggestion,
+            }),
+            Collaboration.configure({
+                document: provider.document,
+            }),
+            // Register the collaboration cursor extension
+            CollaborationCursor.configure({
+                provider: provider,
+                user: {
+                    //TODO:通过状态管理获取用户名
+                    name: username,
+                    color: ['#09f7e3d9', '#8613d0a6', '#67b42be0', '#d01a5382', '#0993f7db', '#a8a232', '#693f19', '#28474d'][Math.floor(Math.random() * 8 + 1) - 1]
+                },
+            }),
+        ];
+    }, 500);
 })
 
 onMounted(async () => {
@@ -417,7 +445,8 @@ const generateLink = async () => {
     let res = await axios.post('/document/share_document/', qs.stringify({
         document_id,
     }))
-    link.value = res.data.data.url
+    link.value = "localhost:8080" + "/tiptap/" + route.params.projectId + '/' + res.data.data.token
+    console.log("🚀 ~ file: TipTap.vue:421 ~ generateLink ~ res.data.data.url:", res.data.data.token)
 
 }
 const copyLink = () => {
@@ -434,7 +463,7 @@ const copyLink = () => {
 const downloadFile = (command) => {
     // console.log("🚀 ~ file: TipTap.vue:398 ~ downloadFile ~ command:", command)
     const fileType = command
-    const editorContentDOM = document.querySelector('.el-tiptap-editor__content')
+    const editorContentDOM = window.document.querySelector('.el-tiptap-editor__content')
     console.log("🚀 ~ file: TipTap.vue:338 ~ downloadFile ~ content:", content)
     outputFile(fileType, content.value, title.value, editorContentDOM, editorInstance)
 }
@@ -484,7 +513,7 @@ const showFileHistory = async () => {
         }
     })
     fileHistory.value = res.data.history
-    console.log("🚀 ~ file: TipTap.vue:484 ~ showFileHistory ~ res:", res.data.history)
+    // console.log("🚀 ~ file: TipTap.vue:484 ~ showFileHistory ~ res:", res.data.history)
 
 }
 
@@ -494,10 +523,10 @@ const switchToHistoryFile = async (index) => {
 
 
 const switchPermission = async () => {
-    console.log(shareEditAble.value)
+    console.log("🚀 ~ file: TipTap.vue:506 ~ switchPermission ~ shareeditable.value:", shareeditable.value)
     let res = await axios.post('/document/update_document_permisson/', qs.stringify({
         document_id,
-        editable: shareEditAble.value == true ? '1' : '0',
+        editable: shareeditable.value == true ? '1' : '0',
     }))
     console.log("🚀 ~ file: TipTap.vue:517 ~ switchPermission ~ res:", res.data)
 }
@@ -505,7 +534,7 @@ const switchPermission = async () => {
 //设置30s脱离焦点自动保存文件
 const onBlur = async ({ editor }) => {
     setTimeout(() => {
-        if (editAble == true) {
+        if (editable == true) {
             updateFile()
             ElNotification({
                 title: 'Success',
@@ -514,7 +543,7 @@ const onBlur = async ({ editor }) => {
                 duration: 1000
             })
         }
-    }, 20000)
+    }, 200000)
 }
 
 const saveAsTemplate = async () => {
@@ -522,7 +551,7 @@ const saveAsTemplate = async () => {
         content: content.value,
         title: title.value,
         file_type: 'document',
-        project_id: '1'
+        project_id: route.params.projectId
     }))
     ElNotification({
         title: 'Success',
@@ -546,7 +575,7 @@ const onCreate = async ({ editor }) => {
         console.log("🚀 ~ file: TipTap.vue:418 ~ onCreate ~ readyState:", 'CONNECTED!')
     }
     // editorInstance.commands.setContent(fileContent)
-    if (editAble == false) {
+    if (editable == false) {
         editorInstance.extensionManager.extensions.find((extension) => extension.name === 'collaborationCursor').options.user.name = ''
         let elements = window.document.getElementsByClassName("el-tiptap-editor");
         //TODO:根据用户状态弹出消息
@@ -594,28 +623,29 @@ const onCreate = async ({ editor }) => {
         display: flex;
         align-items: center;
 
-        justify-content: space-around;
+        justify-content: space-between;
 
         .actions1 {
-            width: 120px;
-            background: red;
-            background: transparent;
-            margin-left: -50px;
-            outline: none;
+            width: 5%;
             // background: red;
-            width: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
+            background: transparent;
+            // margin-left: -50px;
+            outline: none;
+            text-align: center;
+            // background: red;
+            // width: 120px;
+            // display: flex;
+            // align-items: center;
+            // justify-content: space-around;
 
             .backToCenter {
                 // height: 80px;
                 // background-color: red;
-                margin-left: 0;
                 text-align: center;
                 // font-size: 20px;
 
                 i {
+                    width: 100%;
                     font-size: 25px;
                     cursor: pointer;
                     opacity: 0.8;
@@ -629,7 +659,8 @@ const onCreate = async ({ editor }) => {
         }
 
         .fileinfo {
-            width: 500px;
+            width: 32%;
+            // background-color: red;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -638,19 +669,37 @@ const onCreate = async ({ editor }) => {
 
         .actions2 {
             display: flex;
-            width: 200px;
-            align-items: center;
-            justify-content: space-between;
+            width: 25%;
+            // background: red;
+            // align-items: center;
+            // justify-content: space-around;
+
+            // .chdildren:nth-child(n) {
+            //     height: 100%;
+            //     flex: 1;
+            //     // margin: 0 10px;
+            //     text-align: center;
+            // }
         }
 
         .userAvatars {
             display: flex;
+            // background-color: red;
+            width: 25%;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
 
             .team_members {
-                color: red;
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+            }
+
+            .selfAvatars {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
     }

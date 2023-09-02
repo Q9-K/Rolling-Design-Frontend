@@ -210,15 +210,14 @@ const fetchDelProjectData = () => {
 }
 
 const deleteProject = (index, projectId) => {
-  console.log(index);
-  console.log(projectId);
-  axios.post('http://www.aamofe.top/api/team/delete_one_project/', qs.stringify({ project_id: projectId }), {
+  // console.log(index);
+  // console.log(projectId);
+  axios.post('http://www.aamofe.top/api/team/delete_permanently/', qs.stringify({ project_id: projectId }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
       // 处理响应数据
-      console.log(res);
-      console.log(projectId);
+      // console.log(res);
 
       if (res.data.errno == 0)//成功
       {
@@ -284,20 +283,19 @@ const recoverProject = (index, projectId) => {
       console.error(error);
     });
 }
-
+//输入为0
 const deleteAll = () => {
-  axios.post('http://www.aamofe.top/api/team/all_deleted_project/', {
-    headers: { Authorization: authStore().token }
-  })
+  axios.post('http://www.aamofe.top/api/team/delete_permanently/', qs.stringify({ project_id: 0 }),{ headers: { Authorization: authStore().token } })
     .then(res => {
       // 处理响应数据
       console.log(res);
 
       if (res.data.errno == 0)//成功
       {
-        ElMessage.success(res.data.msg);
+        // ElMessage.success(res.data.msg);
         //把项目从projectList里删除
-        delProjectList = [];
+        delProjectList.value = [];
+        delProjectNum.value=0;
         ElMessage.success('全部删除成功')
       }
       else {//失败
@@ -324,7 +322,8 @@ const recoverAll = () => {
       {
         ElMessage.success(res.data.msg);
         //把项目从projectList里删除
-        delProjectList = [];
+        delProjectList.value = [];
+        delProjectNum.value=0;
       }
       else {//失败
         ElMessage.error(res.data.msg);

@@ -32,6 +32,7 @@
                 <el-button type="primary" @click="newFolderDialog = true">新建文件夹</el-button>
                 <el-button type="primary" @click="newDesign()">新建原型</el-button>
                 <el-button type="primary" @click="newDoc()">新建文档</el-button>
+                <el-button v-if="activeName==='delete'" type="primary" @click="deleteAllDelFileForever()">全部删除</el-button>
               </div>
             </div>
 
@@ -77,8 +78,8 @@
                               <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
                                 重命名
                               </el-dropdown-item>
-                              <el-dropdown-item :icon="CopyDocument"
-                                @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item>
+                              <!-- <el-dropdown-item :icon="CopyDocument"
+                                @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item> -->
                               <el-dropdown-item :icon="FolderDelete"
                                 @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
                             </el-dropdown-menu>
@@ -89,8 +90,8 @@
                               <el-dropdown-item :icon="EditPen" @click="renameInputBlock[index] = true">
                                 重命名
                               </el-dropdown-item>
-                              <el-dropdown-item :icon="CopyDocument"
-                                @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item>
+                              <!-- <el-dropdown-item :icon="CopyDocument"
+                                @click="copyFile(index, item.type, item.id, item)">复制</el-dropdown-item> -->
                               <el-dropdown-item :icon="DocumentDelete"
                                 @click="deleteFile(index, item.type, item.id)">删除</el-dropdown-item>
 
@@ -498,7 +499,7 @@ const fetchNowProject = () => {
         nowProject.designNum = response.data.project.prototype_num;
         nowProject.folderId = response.data.project.folder_id;
         fetchAllFile();
-        console.log(nowProject.value);
+        console.log(nowProject);
         return;
       }
       else {
@@ -572,10 +573,10 @@ const fetchAllTemplate = () => {
         design_public.value = response.data.prototype_public;
         design_private.value = response.data.prototype_private;
 
-        console.log(document_public.value)
-        console.log(document_private.value)
-        console.log(design_public.value)
-        console.log(design_private.value)
+        console.log(document_public.value);
+        console.log(document_private.value);
+        console.log(design_public.value);
+        console.log(design_private.value);
 
 
         design_private_num.value = document_private.value.length;
@@ -607,13 +608,15 @@ const import_from_template = (id, type) => {
         // ElMessage.success(res.data.msg);
         //文件列表增加一个，且跳转过去
         if (type === 'document') {
-          fileList.value.push({ "id": res.data.document.id, "type": type, "name": '新建文档', })
+          fileList.value.push({ "id": res.data.document.id, "type": type, "name": res.data.document.name })
+          jumpToDoc(id);
         }
         else if (type === 'prototype') {
-          fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": '新建原型', })
+          fileList.value.push({ "id": res.data.prototype.id, "type": type, "name": res.data.prototype.name });
+          jumpToDesign(id);
         }
         //跳转过去
-        jumpToDesign(id);
+        
       }
       else {//失败
         ElMessage.error(res.data.msg);
@@ -688,6 +691,7 @@ const renameFile = (index, type, id, item) => {
 }
 //临时删除
 const deleteFile = (index, type, id) => {
+  console.log(fileList.value);
   axios.post('http://www.aamofe.top/api/document/delete/', qs.stringify({ file_type: type, file_id: id, forever: 0 }), {
     headers: { Authorization: authStore().token }
   })
@@ -699,11 +703,13 @@ const deleteFile = (index, type, id) => {
       {
         ElMessage.success(res.data.msg);
         console.log(index);
+        delFileList.value.push(fileList.value[index]);
+        delFileNum.value++;
+
         let i = 0;
-        for (i = 0; i < fileNum - 1; i++) {
-          if (i >= index) {
+        for (i =index; i < fileNum.value - 1; i++) {
+          console.log(i);
             fileList.value[i] = fileList.value[i + 1];
-          }
         }
         fileList.value.pop();
         // console.log(projectList.value);
@@ -734,7 +740,7 @@ const newFolder = () => {
     })
     .then(res => {
       // 处理响应数据
-      console.log(res);
+      // console.log(res);
 
       if (res.data.errno == 0)//成功
       {
@@ -768,11 +774,11 @@ const newDesign = () => {
   })
     .then(res => {
       // 处理响应数据
-      console.log(res);
+      // console.log(res);
 
       if (res.data.errno == 0)//成功
       {
-        fileList.value.push({ "id": res.data.document.id, "title": '新建原型', "type": "prototype" })
+        fileList.value.push({ "id": res.data.document.id, "name": '新建原型', "type": "prototype" })
         fileNum.value++;
         console.log(fileList.value);
 
@@ -806,7 +812,7 @@ const newDoc = () => {
 
       if (res.data.errno == 0)//成功
       {
-        fileList.value.push({ "id": res.data.document.id, "title": '新建文档', "type": "document" })
+        fileList.value.push({ "id": res.data.document.id, "name": '新建文档', "type": "document" })
         fileNum.value++;
 
         //进入文档
@@ -823,7 +829,6 @@ const newDoc = () => {
       console.error(error);
     });
 }
-
 
 //最近删除文件中
 const delFileList = ref([])
@@ -851,6 +856,7 @@ const fetchDelFileListData = () => {
 //【】可能有问题
 
 const recoverDelFile = (index, type, id, item) => {
+  console.log(type);
   console.log(id);
   console.log(index);
   axios.post('http://www.aamofe.top/api/document/restore/', qs.stringify({ file_type: type, file_id: id, project_id: route.params.id }), {
@@ -868,7 +874,7 @@ const recoverDelFile = (index, type, id, item) => {
 
         //把项目从delFileList里删除
         let i = 0;
-        for (i = 0; i < delFileNum - 1; i++) {
+        for (i = 0; i < delFileNum.value - 1; i++) {
           if (i >= index) {
             delFileList.value[i] = delFileList.value[i + 1];
           }
@@ -893,6 +899,7 @@ const recoverDelFile = (index, type, id, item) => {
 
 //永久删除，只删一个
 const deleteDelFileForever = (index, type, id, item) => {
+  console.log(type);
   console.log(id);
   axios.post('http://www.aamofe.top/api/document/delete/', qs.stringify({ file_type: type, file_id: id, forever: 1 }), {
     headers: { Authorization: authStore().token }
@@ -907,7 +914,7 @@ const deleteDelFileForever = (index, type, id, item) => {
 
         //把项目从delFileList里删除
         let i = 0;
-        for (i = 0; i < delFileNum - 1; i++) {
+        for (i = 0; i < delFileNum.value - 1; i++) {
           if (i >= index) {
             delFileList.value[i] = delFileList.value[i + 1];
           }
@@ -915,6 +922,7 @@ const deleteDelFileForever = (index, type, id, item) => {
         delFileList.value.pop();
         // console.log(projectList.value);
         delFileNum.value--;
+        
         console.log(delFileList.value);
 
         closeClickIcon(index);
@@ -929,8 +937,10 @@ const deleteDelFileForever = (index, type, id, item) => {
       console.error(error);
     });
 }
+
 const deleteAllDelFileForever = (index, type, id, item) => {
-  axios.post('http://www.aamofe.top/api/team/delete/', qs.stringify({ file_type: type, file_id: 0, forever: 1 }), {
+  console.log(nowProject.projectId)
+  axios.post('http://www.aamofe.top/api/document/delete_permanently/', qs.stringify({ project_id:nowProject.projectId }), {
     headers: { Authorization: authStore().token }
   })
     .then(res => {
@@ -942,6 +952,7 @@ const deleteAllDelFileForever = (index, type, id, item) => {
         ElMessage.success(res.data.msg);
         //把项目从projectList里删除
         delFileList.value = [];
+        delFileNum.value=0;
       }
       else {//失败
         ElMessage.error(res.data.msg);

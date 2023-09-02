@@ -319,7 +319,7 @@ const getInviteLink = () => {
       console.log(response);
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
-        inviteLink.value = response.data.invatation;
+        inviteLink.value = response.data.token;
         return;
       }
       else {

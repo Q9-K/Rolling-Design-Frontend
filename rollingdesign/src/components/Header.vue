@@ -6,7 +6,6 @@
     <el-row style="display: flex;justify-content: flex-end;align-items: center;">
       <!--通知-->
 
-      <div id="chat" @click="this.$router.push('/chat')">聊天</div>
       <span id="message">
         <receiveMessage></receiveMessage>
       </span>
@@ -192,7 +191,7 @@
 <script setup>
 import qs from 'qs'
 // import { UserFiled } from 'element-plus/'
-import receiveMessage from './prototype/receiveMessage.vue'
+import receiveMessage from './receiveMessage.vue'
 import { UserFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { reactive, toRefs } from 'vue'
