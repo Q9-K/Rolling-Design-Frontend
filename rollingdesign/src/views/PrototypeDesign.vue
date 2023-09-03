@@ -30,7 +30,7 @@ const projectId = route.params.projectId
 
 const ydoc = new Y.Doc();
 const websocketProvider = new WebsocketProvider(
-  'ws://101.43.159.45:1234', designId, ydoc
+  'ws://localhost:1234', designId, ydoc
 )
 
 let flagId = 0
