@@ -40,9 +40,9 @@
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
                     </div>
-                    <div>
+                    <!-- <div> -->
                       <el-button style="width:98%;margin-left: 1%;" type="primary" @click="copyLink()">点击复制链接</el-button>
-                    </div>
+                    <!-- </div> -->
                   </el-popover>
                 </div>
               </el-col>
