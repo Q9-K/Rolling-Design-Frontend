@@ -97,6 +97,7 @@ export default {
 			socketStore.socket = socket
 			socket.onmessage = async (event) => {
 				console.log(event.data)
+				const dataObject = JSON.parse(event.data);
 				this.unReadMessageCount++
 				await nextTick(() => {
 					this.storeData = [JSON.parse(event.data)].concat(this.storeData)
