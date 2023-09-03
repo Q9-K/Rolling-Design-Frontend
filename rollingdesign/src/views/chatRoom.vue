@@ -970,6 +970,7 @@ export default {
                             range: 'all',
                             roomID: roomId,
                             url: 'http://www.aamofe.top/chat',
+                            message_id: '',
                         }));
                     }
                     else {
@@ -980,7 +981,8 @@ export default {
                             range: 'individual',
                             roomID: roomId,
                             url: 'http://www.aamofe.top/chat',
-                            user_id: value
+                            user_id: value,
+                            message_id: ''
                         }));
                     }
                 }
