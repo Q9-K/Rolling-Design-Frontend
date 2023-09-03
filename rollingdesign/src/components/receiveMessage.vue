@@ -206,7 +206,10 @@ export default {
 			text-align: center;
 			flex: 1;
 			box-sizing: border-box;
-			height: 20px;
+			height: 25px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 
 			&:hover {
 				background-color: red;
