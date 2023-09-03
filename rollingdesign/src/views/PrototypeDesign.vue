@@ -29,6 +29,7 @@ const parentFolderId = route.params.folderId
 const projectId = route.params.projectId
 
 const ydoc = new Y.Doc();
+// 本地
 const websocketProvider = new WebsocketProvider(
   'ws://localhost:1234', designId, ydoc
 )
