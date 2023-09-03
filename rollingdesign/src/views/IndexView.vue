@@ -418,7 +418,8 @@
                     <div class="link-block" style="margin-bottom: 12px;">
                       <div>{{ inviteLink }}</div>
                     </div>
-                    <div><el-button style="width:98%;margin-left: 1%;"  type="primary" @click="copyLink()">点击复制链接</el-button></div>
+                    <div><el-button style="width:98%;margin-left: 1%;" type="primary"
+                        @click="copyLink()">点击复制链接</el-button></div>
                   </el-popover>
                 </div>
               </el-col>
@@ -514,12 +515,17 @@
 
                         <el-row style="width:90%;text-align: left;">
                           <el-col :span="23">
-                            <el-row v-if="renameProjectBlock[index]" class="designName" style="padding-left:2%;display: flex;flex-direction: row;align-items: center;">
+                            <el-row v-if="renameProjectBlock[index]" class="designName"
+                              style="padding-left:2%;display: flex;flex-direction: row;align-items: center;">
                               <el-input v-model="renameProjectInput" placeholder="请输入项目名称" style="width:80%"
                                 @keyup.enter="renameProject(index, projectItem.id); renameProjectBlock[index] = false" />
-                                <el-icon style="margin-right: 6px;margin-left: 6px;" @click="renameProject(index, projectItem.id);renameProjectBlock[index]=false;"><Check />
-                                </el-icon>
-                                <el-icon  @click="renameProjectInput='';renameProjectBlock[index]=false;"><Close /></el-icon>
+                              <el-icon style="margin-right: 6px;margin-left: 6px;"
+                                @click="renameProject(index, projectItem.id); renameProjectBlock[index] = false;">
+                                <Check />
+                              </el-icon>
+                              <el-icon @click="renameProjectInput = ''; renameProjectBlock[index] = false;">
+                                <Close />
+                              </el-icon>
 
                             </el-row>
                             <el-row v-else class="designName" style="padding-left:5%">
@@ -841,10 +847,14 @@ onMounted(() => {
   fetchTeamlistData();
   fetchProjectData();
   highLight();
+  console.log(authStore().is_new);
+
   if (authStore().is_new) {
     beginner_guide_show.value = true;
     authStore().is_new = false;
   }
+
+  console.log(beginner_guide_show.value);
   // console.log(wrapper.labels.previousButton);
 
   // const {myConst}=GuideAside.setup();
@@ -1049,50 +1059,50 @@ const sortSwitch = (type, way) => {
 }
 
 
-const renameProject = async(index, projectId) => {
+const renameProject = async (index, projectId) => {
   if (!(renameProjectInput.value)) {
     console.log('不能为空');
     ElMessage.warning('请输入名称');
     return;
   }
- let res=await axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
+  let res = await axios.post('http://www.aamofe.top/api/team/rename_project/', qs.stringify({
     name: renameProjectInput.value, project_id: projectId
   }), {
     headers: {
       Authorization: authStore().token
     }
   })
-    // .then(res => {
-      // 处理响应数据
-      console.log(res);
+  // .then(res => {
+  // 处理响应数据
+  console.log(res);
 
-      if (res.data.errno == 0)//成功
-      {
-        ElMessage.success(res.data.msg);
-        renameProjectDialog.value = false;
-        renameProjectBlock.value[index] = false;
+  if (res.data.errno == 0)//成功
+  {
+    ElMessage.success(res.data.msg);
+    renameProjectDialog.value = false;
+    renameProjectBlock.value[index] = false;
 
-        // projectList.value[index].name=renameProjectInput.value;
-        // projectList.value[index].cover_url=res.data.project.cover_url;
+    // projectList.value[index].name=renameProjectInput.value;
+    // projectList.value[index].cover_url=res.data.project.cover_url;
 
 
-        // projectList.value[index] = '';
-        projectList.value[index] = { "folder_id": projectList.value[index].folder_id, "name": renameProjectInput.value, "id": projectId, "cover_url": res.data.project.cover_url };
-        window.location.reload();//重载页面
+    // projectList.value[index] = '';
+    projectList.value[index] = { "folder_id": projectList.value[index].folder_id, "name": renameProjectInput.value, "id": projectId, "cover_url": res.data.project.cover_url };
+    window.location.reload();//重载页面
 
-        console.log(projectList.value);
-        renameProjectInput.value = '';
-        return;
-      }
-      else {//失败
-        ElMessage.error(res.data.msg);
-        return;
-      }
-    // })
-    // .catch(error => {
-    //   // 处理请求错误
-    //   console.error(error);
-    // });
+    console.log(projectList.value);
+    renameProjectInput.value = '';
+    return;
+  }
+  else {//失败
+    ElMessage.error(res.data.msg);
+    return;
+  }
+  // })
+  // .catch(error => {
+  //   // 处理请求错误
+  //   console.error(error);
+  // });
 }
 
 const deleteProject = (index, projectId) => {
@@ -1170,7 +1180,7 @@ const getInviteLink = () => {
 
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         const baserUrl = 'www.aamofe.top'//or 'localhost:8080'
-        inviteLink.value = baserUrl + '/team/'+ response.data.token;
+        inviteLink.value = baserUrl + '/team/' + response.data.token;
 
         return;
       }
@@ -1184,6 +1194,7 @@ const getInviteLink = () => {
 
 const copyLink = () => {
   navigator.clipboard.writeText(inviteLink.value);
+  ElMessage.success('邀请链接已复制到剪切板上')
 }
 
 const highlightBlock = (index) => {
@@ -1434,6 +1445,8 @@ const logout = () => {
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
+  localStorage.removeItem('is_new');
+
 
   console.log(authStore().isLogin);
   console.log('token' + authStore().token);

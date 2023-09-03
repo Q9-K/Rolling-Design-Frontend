@@ -45,11 +45,8 @@
 						</div>
 					</div>
 					<div class="messagebox">
-
 						<div class="one" v-for='(dataitem, index) in storeData' :key=dataitem.id>
 							<template v-if="dataitem.is_read == showMessageType">
-
-
 								<div class="message_content">
 									<span>张三</span>在<a target="_blank" href='http://www.aamofe.top/chat'>{{ dataitem.type }}</a>中@了你
 								</div>

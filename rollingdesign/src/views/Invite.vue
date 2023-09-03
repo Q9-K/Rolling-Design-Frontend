@@ -55,6 +55,7 @@ import {authStore} from "@/store";
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import axios from "axios";
+import {ElMessage} from "element-plus";
 
 let haveLoggedIn = false
 
@@ -97,7 +98,23 @@ const handleToLogin = () => {
 }
 
 const handleToIndex = () => {
-  router.push('/index')
+
+  axios.post('http://www.aamofe.top/api/team/accept_invitation/' + teamToken + "/", {}, {
+    headers: {
+      Authorization: authStore().token
+    }
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        if (response.data.errno === 0) {
+          router.push('/index')
+          ElMessage({
+            type: "success",
+            message: "加入成功"
+          })
+        }
+      }
+    })
 }
 
 </script>

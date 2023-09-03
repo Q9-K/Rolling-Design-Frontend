@@ -974,7 +974,7 @@ export default {
                             type: 'chat',
                             range: 'all',
                             roomID: roomId,
-                            url: 'http://localhost:8081/chat',
+                            url: 'http://www.aamofe.top/chat',
                         }));
                     }
                     else {
@@ -984,8 +984,8 @@ export default {
                             type: 'chat',
                             range: 'individual',
                             roomID: roomId,
-                            url: 'http://localhost:8081/chat',
-                            user_id: value
+                            url: 'http://www.aamofe.top/chat',
+                            user_id: value,
                         }));
                     }
                 }

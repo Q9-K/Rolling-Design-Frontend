@@ -408,6 +408,8 @@ const logout = () => {
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
+  localStorage.removeItem('is_new');
+
 
   console.log(authStore().isLogin);
   console.log('token' + authStore().token);
