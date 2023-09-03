@@ -95,10 +95,13 @@ export default {
 		if ((socket == null || socket.readyState != 1) && (authStore().isLogin)) {
 			socket = new WebSocket(`ws://101.43.159.45:8001/notice/${authStore().userId}`)
 			socketStore.socket = socket
-			socket.onmessage = (event) => {
+			socket.onmessage = async (event) => {
 				console.log(event.data)
 				this.unReadMessageCount++
-				this.storeData.splice(0, 0, event.data)
+				await nextTick(() => {
+					this.storeData = [JSON.parse(event.data)].concat(this.storeData)
+					console.log(this.storeData)
+				})
 			}
 		}
 		this.isMounted = true

@@ -111,7 +111,7 @@
                     </div>
                     <div class="team_members">
                         <template v-for="(item, index) in online_users" :key="item.id">
-                            <el-avatar :src="item.avatar_url" :size="20" v-if="item.id != authStore().userId"></el-avatar>
+                            <el-avatar :src="item.avatar_url" :size="30" v-if="item.id != authStore().userId"></el-avatar>
                         </template>
                     </div>
                     <div class="selfAvatars">
