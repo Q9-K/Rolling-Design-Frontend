@@ -99,6 +99,13 @@ export default {
 				console.log(event.data)
 				const dataObject = JSON.parse(event.data);
 				this.unReadMessageCount++
+				// const formattedObject = {
+				// 	id: dataObject.id,
+				// 	type: dataObject.type,
+				// 	url: dataObject.url,
+				// 	is_read: dataObject.is_read
+				// };
+				// this.storeData.push(formattedObject)
 				await nextTick(() => {
 					this.storeData = [JSON.parse(event.data)].concat(this.storeData)
 					console.log(this.storeData)
