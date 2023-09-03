@@ -97,8 +97,17 @@ export default {
 			socketStore.socket = socket
 			socket.onmessage = (event) => {
 				console.log(event.data)
+				const dataObject = JSON.parse(event.data);
 				this.unReadMessageCount++
-				this.storeData.splice(0, 0, event.data)
+				const formattedObject = {
+					id: dataObject.id,
+					type: dataObject.type,
+					url: dataObject.url,
+					is_read: dataObject.is_read
+				};
+				this.storeData.push(formattedObject)
+				console.log('storeData')
+				console.log(this.storeData)
 			}
 		}
 		this.isMounted = true
