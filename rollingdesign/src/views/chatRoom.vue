@@ -969,7 +969,7 @@ export default {
                             type: 'chat',
                             range: 'all',
                             roomID: roomId,
-                            url: 'http://localhost:8081/chat',
+                            url: '/chat',
                         }));
                     }
                     else {
@@ -1577,7 +1577,7 @@ export default {
                 this.showForward = false
             }
             else if (this.isOneByOne) {
-                const group_id = this.this.forwardRooms[0].roomId
+                const group_id = this.forwardRooms[0].roomId
                 this.sockets[this.selectedRoom].send(JSON.stringify({
                     forward_single: "",
                     message_ids: messages_ids,
