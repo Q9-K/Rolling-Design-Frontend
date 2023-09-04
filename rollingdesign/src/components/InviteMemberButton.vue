@@ -24,6 +24,8 @@ const generateLink = async () => {
 }
 
 const copyLink = () => {
+  // console.log("can u see me")
+
   navigator.clipboard.writeText(link.value)
 
   // popper.value.hide()

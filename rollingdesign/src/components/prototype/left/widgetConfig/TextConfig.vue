@@ -1,6 +1,7 @@
 <script setup>
 import './widgetTypeConfig.scss'
 import {ref, watch} from "vue";
+import ConfigColor from "../../left/configDetail/ConfigColor.vue";
 
 const props = defineProps([
   'currentElement'
@@ -34,6 +35,12 @@ const changeTextSize = (value) => {
   <div class="config-outer">
     <div class="config-box">
       <div class="config-title">
+        颜色
+      </div>
+      <ConfigColor class="config-setter" :current-element="currentText"/>
+    </div>
+    <div class="config-box">
+      <div class="config-title">
         字号
       </div>
       <el-input-number
@@ -41,7 +48,7 @@ const changeTextSize = (value) => {
         min="2"
         max="30"
         class="config-setter"
-        style="height: 80%"
+        style="height: 80%; margin-left: 0; margin-right: 0"
         @change="value => changeTextSize(value)"
       />
     </div>

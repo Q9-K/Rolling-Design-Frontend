@@ -1,61 +1,59 @@
 <template>
-  <div>
-    <!-- <el-upload class="avatar-uploader" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-      :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" accept=".png,jpg,.jpeg">
-      <el-icon v-else class="avatar-uploader-icon">
-        <Plus />
-      </el-icon>
-    </el-upload> -->
+  <div style="position:absolute;left:48%;top:40%">
+    <div v-for="( item, index) in list" :key="index" style="margin-bottom: 10px;">
+      <div class="block" @mouseover="highlightBlock(index)" @mouseleave="resetBlock(index)"
+        :class="{ 'highlighted-row': highlightIndex === index || clickIndex === index }">
+        <div v-if="index === highlightIndex || clickIndex === index"
+          style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
 
-    <el-button ref="buttonRef" v-click-outside="onClickOutside">Click me</el-button>
-    <el-popover ref="popoverRef" :virtual-ref="buttonRef" trigger="click" title="With title" virtual-triggering>
-      <span> Some content </span>
-    </el-popover>
+          <el-dropdown trigger="click" placement="bottom-start">
+            <!-- <el-icon style="text-align: right;justify-self: right;justify-content:flex-end;"> -->
+            <el-icon class="el-icon--right" @click="clickIcon(index)">
+              <More />
+            </el-icon>
 
-    <el-button ref="buttonRef1" v-click-outside="onClickOutside1">Click me</el-button>
-    <el-popover ref="popoverRef1" :virtual-ref="buttonRef1" trigger="click" title="With title" virtual-triggering>
-      <span> Some content </span>
-    </el-popover>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="rename(index)">Action 1</el-dropdown-item>
+                <el-dropdown-item>
+                  Action 2
+                </el-dropdown-item>
+                <el-dropdown-item>Action 3</el-dropdown-item>
+                <el-dropdown-item>Action 4</el-dropdown-item>
+                <el-dropdown-item>Action 5</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
 
-    <el-button ref="buttonRef2" v-click-outside="onClickOutside2">Click me</el-button>
-    <el-popover ref="popoverRef2" :virtual-ref="buttonRef2" trigger="click" title="With title" virtual-triggering>
-      <span> Some content </span>
-    </el-popover>
+          </el-dropdown>
+        </div>
+        <div v-else
+          style="display: flex;justify-content:flex-end;text-align: right;justify-items: flex-end;justify-self: right;">
+          &nbsp;&nbsp;
+        </div>
 
-    <!-- <span class="rightContent">
-      <el-icon ref="projectButtonRef" v-click-outside="projectOut">
-        <More />
-      </el-icon>
-    </span>
-    <el-popover ref="projectPopoverOp" :virtual-ref="projectButtonRef" trigger="click" title="With title"
-      virtual-triggering>
-      <span> Some content </span>
-    </el-popover> -->
+        <div class="fileBlock">
+          <!-- <img class="img-size" src="@/assets/projects/folder.png" /> -->
+          <!-- <img class="img-size" src="@/assets/projects/word.jpg" /> -->
+          <img class="img-size" src="@/assets/projects/design.png" />
 
-    <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="nickName" label="昵称" width="180" />
-                    <el-table-column prop="name" label="真实姓名" width="180" />
-                    <el-table-column prop="email" label="邮箱" />
-                    <el-table-column prop="role" label="身份" />
-                    <!--如果登录者是创建者-->
-                    <!-- <el-table-column prop="op" label="操作">
-                    <template #default>
-                      <el-button link type="primary" size="small">Detail</el-button>
-                      <el-button link type="primary" size="small">Edit</el-button>
-                    </template>
-                  </el-table-column> -->
-                    <el-table-column prop="op" label="操作">
-                      <template #default>
-                        <el-button link type="primary" size="small">Detail</el-button>
-                        <el-button link type="primary" size="small">Detail</el-button>
-                      </template>
-                    </el-table-column>
-                  </el-table>
+          name
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!--搜索-->
+  <!-- <div>
+    <input type="text" v-model="searchKeyword" placeholder="Search" />
+
+    <ul>
+      <li v-for="item in filteredItems" :key="item">{{ item }}</li>
+    </ul>
+  </div> -->
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { ref, unref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
 import { ElMessage } from 'element-plus'
@@ -66,105 +64,87 @@ import {
   MoreFilled,
   More,
 } from '@element-plus/icons-vue'
-
+const list = ref(['item1', 'item2']);
 // import type { UploadProps } from 'element-plus'
+// const i = ref(1);
+const highlightIndex = ref(-1);
+const moreIndex = ref(-1);
+const clickIndex = ref(-1);
 
-const buttonRef = ref()
-const popoverRef = ref()
-const onClickOutside = () => {
-  // if (popoverRef.value) {
-  unref(popoverRef).popperRef?.delayHide?.()
+const highlightBlock = (index) => {
+  highlightIndex.value = index;
+  moreIndex.value = index;
+  // console.log('ii:' + index);
+
+  // console.log('11--' + highlightIndex.value);
+
+};
+
+const resetBlock = (index) => {
+  // if (flag.value<0) {
+  highlightIndex.value = -1;
+  moreIndex.value = -1;
   // }
-}
+  // console.log('i:' + index.value);
+  // console.log('r:' + highlightIndex.value);
+  // console.log('c:' + clickIndex.value);
 
-const buttonRef1 = ref()
-const popoverRef1 = ref()
-const onClickOutside1 = () => {
-  // if (popoverRef.value) {
-  unref(popoverRef1).popperRef?.delayHide?.()
-  // }
-}
-
-const buttonRef2 = ref()
-const popoverRef2 = ref()
-const onClickOutside2 = () => {
-  // if (popoverRef.value) {
-  unref(popoverRef1).popperRef?.delayHide?.()
-  // }
-}
-
-const projectButtonRef = ref()
-const projectPopoverRef = ref()
-const projectOut = () => {
-  unref(projectPopoverRef).popperRef?.delayHide?.()
-}
-//---
-const imageUrl = ref('')
-
-/*成功后*/
-const handleImageSuccess = (
-  response,
-  uploadFile
-) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw)
-}
-
-const beforeAvatarUpload = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg/png/jpg/gif') {
-    ElMessage.error('请上传图像')
-    return false
-  } else if (rawFile.size / 1024 / 1024 > 8) {
-    ElMessage.error('Image size can not exceed 8MB!')
-    return false
+};
+const flagtimes = ref([0, 0, 0]);
+const clickIcon = (index) => {
+  // flag.value = - flag.value;
+  clickIndex.value = index;
+  flagtimes.value[index]++;
+  // console.log('rr:' + highlightIndex.value);
+  // console.log('cc:' + clickIndex.value);
+  if (flagtimes.value[index] % 2 == 0) {
+    clickIndex.value = -1;
   }
-  return true
-}
 
-const tableData = [
-  {
-    nickName: '哈哈哈哈',
-    name: 'Tom',
-    email: '11324@qq.com',
-    role: '创建者',
-    op: '',
-  },
-  {
-    nickName: '哈哈哈哈',
-    name: 'Tom',
-    email: '11324@qq.com',
-    role: '创建者',
-    op: '',
-  },
-]
+}
+const rename = () => {
+  clickIndex.value = -1;
+  // console.log('rr:' + highlightIndex.value);
+  // console.log('cc:' + clickIndex.value);
+}
+//-----
+const items = ref(['Apple', 'Banana', 'Cherry', 'Date', 'Grape']);
+const searchKeyword = ref('');
+
+// 使用计算属性来过滤数组
+const filteredItems = computed(() => {
+  const keyword = searchKeyword.value.toLowerCase();
+  return items.value.filter(item => item.toLowerCase().includes(keyword));
+});
 </script>
 
 <style scoped>
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
-
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+.img-size {
+  width: 80px;
+  height: 80px;
 }
 
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+.highlighted-row {
+  background-color: rgb(237, 237, 237);
 }
 
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
+.round {
+  border-radius: 10px;
+  /* 设置边框圆角半径，根据需要调整 */
+}
+
+.block {
+  width: 150px;
+  height: 150px;
+  /* display: flex; */
+  /* align-items: center; */
+}
+
+.fileBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-items: center; */
+  margin-top: 8px;
 }
 </style>

@@ -1,7 +1,7 @@
 <!--
  * @Date: 2023-08-27 14:53:57
  * @Author: Q9K
- * @Description: 
+ * @Description:
 -->
 <template>
 	<!-- <nav>
@@ -45,13 +45,10 @@
 						</div>
 					</div>
 					<div class="messagebox">
-						
 						<div class="one" v-for='(dataitem, index) in storeData' :key=dataitem.id>
 							<template v-if="dataitem.is_read == showMessageType">
-							
-	
 								<div class="message_content">
-									<span>张三</span>在<a target="_blank" href='/chat'>{{ dataitem.type }}</a>中@了你
+									<span>张三</span>在<a target="_blank" href='http://www.aamofe.top/chat'>{{ dataitem.type }}</a>中@了你
 								</div>
 								<div class="actions">
 									<template v-if="dataitem.type == false">
@@ -69,8 +66,8 @@
 									</div>
 								</div>
 							</template>
-							</div>
-							
+						</div>
+
 					</div>
 					<!-- </template> -->
 				</div>
@@ -79,74 +76,74 @@
 		</el-popover>
 	</div>
 </template>
-
 <script>
 // const app = createApp(App)
 
 
-import {Check,Delete,Edit,Message,Search,Star} from '@element-plus/icons-vue'
+import { Check, Delete, Edit, Message, Search, Star } from '@element-plus/icons-vue'
 import { provide, onMounted, onBeforeMount, ref, reactive } from 'vue'
 import axios from 'axios'
 import qs from 'qs'
-import { useSocketStore } from '../../stores/useSocketStore'
-export default{
-	data(){
-		return{
+import { useSocketStore } from '../../store/useSocketStore'
+import { authStore } from '@/store'
+export default {
+	data() {
+		return {
 			datalist: [],
-			storeData: [],	
-			showMessageType: true		
+			storeData: [],
+			showMessageType: true
 		}
 	},
 	async mounted() {
-		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/1');
+		const { data: res } = await axios.get('http://101.43.159.45:8001/api/chat/' + authStore().userId);
 		console.log(res)
 		this.storeData = res
 		//this.datalist = this.storeData.filter(obj => obj.is_read === false)
 		this.datalist = this.storeData
-		console.log('datalist'+this.datalist)
- 	},
+		console.log('datalist' + this.datalist)
+	},
 	methods: {
-		setRead(){
+		setRead() {
 			this.showMessageType = !this.showMessageType
 			// this.storeData[index].is_read = !this.storeData[index].is_read
 			// this.datalist = this.storeData.filter(obj => obj.is_read === true)
 		},
-		setUnRead(){
+		setUnRead() {
 			this.showMessageType = !this.showMessageType
 		},
-		async markweidu(index){
-			 this.storeData[index].is_read = !this.storeData[index].is_read
-			 
-			 //let res = await axios.post('将一个消息标记为未读接口')
+		async markweidu(index) {
+			this.storeData[index].is_read = !this.storeData[index].is_read
+
+			//let res = await axios.post('将一个消息标记为未读接口')
 			console.log(1)
-			},
-			async markRead(index){
-				this.storeData[index].is_read = !this.storeData[index].is_read
-				let res = await axios.post(`http://101.43.159.45:8001/api/chat/notice/make_read/${this.storeData[index].id}`,)
-				// let targetObject = this.storeData.find(obj => obj.id === this.datalist[index].Id);
-				// console.log(targetObject)
-				console.log(res.data)
-				// targetObject.is_read = true
-				// this.datalist = this.storeData.filter(obj => obj.is_read === false)
-			},
-			async deleteMessage(index){
-				let res = await axios.delete('http://101.43.159.45:8001/api/chat/notice/delete/'+this.storeData[index].id )
-				this.storeData.splice(index,1)
-				console.log(res.data)
-			},
-			async markRead(index){
-				
-				this.storeData[index].is_read = !this.storeData[index].is_read
-				let res = await axios.post('http://101.43.159.45:8001/api/chat/notice/make_read/',qs.stringify({
-					id: this.storeData[index].id 
-				}))
-				
 		},
-		
-		async markReadAll(){
+		async markRead(index) {
+			this.storeData[index].is_read = !this.storeData[index].is_read
+			let res = await axios.post(`http://101.43.159.45:8001/api/chat/notice/make_read/${this.storeData[index].id}`,)
+			// let targetObject = this.storeData.find(obj => obj.id === this.datalist[index].Id);
+			// console.log(targetObject)
+			console.log(res.data)
+			// targetObject.is_read = true
+			// this.datalist = this.storeData.filter(obj => obj.is_read === false)
+		},
+		async deleteMessage(index) {
+			let res = await axios.delete('http://101.43.159.45:8001/api/chat/notice/delete/' + this.storeData[index].id)
+			this.storeData.splice(index, 1)
+			console.log(res.data)
+		},
+		async markRead(index) {
+
+			this.storeData[index].is_read = !this.storeData[index].is_read
+			let res = await axios.post('http://101.43.159.45:8001/api/chat/notice/make_read/', qs.stringify({
+				id: this.storeData[index].id
+			}))
+
+		},
+
+		async markReadAll() {
 			let res = await axios.put(`http://101.43.159.45:8001/api/chat/notice/all_as_read/1`)
 		},
-		async deleteMessageAll(){
+		async deleteMessageAll() {
 			this.storeData = []
 			let res = await axios.delete('http://101.43.159.45:8001/api/chat/notice/delete_all_read/1')
 		}
@@ -163,7 +160,7 @@ export default{
 
 // }
 // const setRead = () => {
-// 	datalist 
+// 	datalist
 // }
 // const socketStore = useSocketStore()
 // const axiosInstance = axios.create({
@@ -212,7 +209,7 @@ onMounted(async () => {
 			flex: 1;
 		}
 
-		.allyidu{
+		.allyidu {
 			text-align: center;
 			flex: 1;
 		}

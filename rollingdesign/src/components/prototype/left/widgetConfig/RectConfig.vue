@@ -1,6 +1,7 @@
 <script setup>
 import {ref, watch} from "vue";
 import './widgetTypeConfig.scss'
+import ConfigColor from "../../left/configDetail/ConfigColor.vue";
 
 const props = defineProps([
   'currentElement'
@@ -45,6 +46,12 @@ const changeRectStrokeColor = (value) => {
   <div class="config-outer">
     <div class="config-box">
       <div class="config-title">
+        颜色
+      </div>
+      <ConfigColor class="config-setter" :current-element="currentRect"/>
+    </div>
+    <div class="config-box">
+      <div class="config-title">
         圆角
       </div>
       <el-slider
@@ -75,9 +82,6 @@ const changeRectStrokeColor = (value) => {
         @active-change="value => changeRectStrokeColor(value)"
       />
     </div>
-    <!--
-    TODO 有时间的话实现Rect的诸多属性的配置，虽然大概率没时间
-    -->
   </div>
 </template>
 

@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13304019",
+      "name": "react",
+      "font_class": "react",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    },
+    {
+      "icon_id": "23711835",
+      "name": "scrolling",
+      "font_class": "scrolling",
+      "unicode": "e6e8",
+      "unicode_decimal": 59112
+    },
+    {
       "icon_id": "1228",
       "name": "首页",
       "font_class": "shouye",

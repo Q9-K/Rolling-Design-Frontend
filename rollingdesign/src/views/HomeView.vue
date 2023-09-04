@@ -1,42 +1,33 @@
 <template>
   <div class="loginContainer">
     <!--header-->
-    <!--如果已经登录-->
     <el-container>
       <el-header>
+        <!--如果已经登录-->
         <div v-if="userStore.isLogin">
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
-            <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
-            <span style="margin-right:30px">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
+            <!-- <img alt="web logo" src="@/assets/webLogo.png" style="margin-top:25px ;width:10%;margin-right: 30px;"> -->
+
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
+
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('index')">
               主页
             </span>
-            <span style="margin-right:30px">
-              草稿箱
-            </span>
-            <span style="margin-right:30px">
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('teamPeople')">
               团队管理
             </span>
-            <span style="margin-right:30px">
+            <span class="canClick textBtn" style="margin-right:30px" @click="jumpTo('project')">
               项目
             </span>
-            <span>
+            <span class="canClick textBtn"  @click="jumpTo('chat')">
               消息中心
             </span>
 
-            <el-button color="#626aef" style="margin-left:8%" size="large" @click="jumpTo('index')">进入工作区</el-button>
-            <el-button color="#626aef" style="margin-left:1%" size="large" @click="logout()">退出登录</el-button>
-
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="jumpTo('index')">进入工作区</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large" @click="logout()">退出登录</el-button>
           </div>
-
-          <!-- <div>
-        <div>
-          一起创造
-        </div>
-        <div> 面向团队的专业 UI/UX 设计工具</div>
-
-        <div> 多人同时编辑、随时在线评审、设计一键交付，让想法更快实现</div>
-        <div>快来使用吧～</div>
-      </div> -->
 
           <div>
             <img class="show" src="@/assets/show.png" />
@@ -44,30 +35,32 @@
         </div>
         <!--未登录-->
         <div v-else>
-          <div class="head" style=" display: flex;align-items: center;justify-content: center;padding-top: 24px;">
-            <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;">
-            <span style="margin-right:30px">
+          <div class="head"
+            style=" margin-top:25px ;display: flex;align-items: center;justify-content: center;margin-left: 16%;">
+            <!-- <img alt="web logo" src="@/assets/webLogo.png" style="width:8%;margin-right: 30px;"> -->
+            <img alt="web logo" src="@/assets/logo.svg" style="position: absolute;top:-46px;left:26%;height:200px;">
+            <span style="margin-right:30px" @click="jumpTo('/index')">
               主页
             </span>
-            <span style="margin-right:30px">
-              草稿箱
+
+            <span style="margin-right:30px" @click="jumpTo('/teamPeople')">
+              团队人员
             </span>
-            <span style="margin-right:30px">
-              团队管理
-            </span>
-            <span style="margin-right:30px">
+            <span style="margin-right:30px" @click="jumpTo('/index')">
               项目
             </span>
-            <span>
+            <span @click="jumpTo('/message')">
               消息中心
             </span>
 
             <!-- <div class="likeBtnBlock" style="margin-left:8%" @click="loginDialog = true"> 登录</div> -->
-            <el-button color="#626aef" style="margin-left:8%" size="large" @click="loginDialog = true">登录</el-button>
-            <el-button color="#626aef" style="margin-left:1%" size="large" @click="registerDialog = true">注册</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:8%" size="large"
+              @click="loginDialog = true">登录</el-button>
+            <el-button color="#626aef" style="z-index:1999;margin-left:1%" size="large"
+              @click="registerDialog = true">注册</el-button>
 
             <!--登录-->
-            <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="20%">
+            <el-dialog v-model="loginDialog" class="loginPage" title="密码登录" width="23%">
               <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱登录</el-col>
                 <el-col :span="24">
@@ -82,9 +75,9 @@
               </el-row>
 
               <div style="margin-top:25px;width: 100%;">
-                <el-button type="primary" style="width:90%" @click="login()">登录</el-button>
+                <el-button type="primary" style="width:90%;margin-left: 5%;" @click="login()">登录</el-button>
               </div>
-              <div style="margin-top:25px;width: 90%;padding-left: 20px;">
+              <div style="margin-top:25px;width: 90%;margin-left:5%;">
                 <div style="display: flex;justify-content: center;">
                   <el-button link size="small" @click="loginDialog = false; registerDialog = true">还没有账号？去注册</el-button>
                 </div>
@@ -92,7 +85,7 @@
             </el-dialog>
 
             <!--注册-->
-            <el-dialog v-model="registerDialog" title="注册" width="20%">
+            <el-dialog v-model="registerDialog" class="registerPage" title="注册" width="23%">
               <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请使用邮箱注册</el-col>
                 <el-col :span="24">
@@ -103,14 +96,14 @@
                 style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">真实姓名</el-col>
                 <el-col :span="24">
-                  <el-input v-model="registerNickNameInput" placeholder="输入姓名" />
+                  <el-input v-model="registerNameInput" placeholder="输入姓名" />
                 </el-col>
               </el-row>
               <el-row
                 style="margin-top:25px;display: flex;flex-direction: row;justify-items: flex-start;width: 90%;margin-left: 5%;">
                 <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">昵称</el-col>
                 <el-col :span="24">
-                  <el-input v-model="registerNameInput" placeholder="输入昵称" />
+                  <el-input v-model="registerNickNameInput" placeholder="输入昵称" />
                 </el-col>
               </el-row>
               <el-row style="margin-top:25px;width: 90%;margin-left: 5%;">
@@ -127,23 +120,8 @@
                 </el-col>
               </el-row>
 
-              <!-- <el-row style="margin-top:25px;justify-items: flex-start;width: 90%;margin-left: 5%;">
-          <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">验证码2分钟内有效</el-col>
-          <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="15">
-                <el-input v-model="registerCode" placeholder="验证码" />
-              </el-col>
-              <el-col :span="4">
-                <el-button plain @click="sendCode">获取验证码</el-button>
-              </el-col>
-              <el-col :span="5"></el-col>
-            </el-row>
-          </el-col>
-        </el-row> -->
-
               <div style="margin-top:25px;width: 100%;">
-                <el-button type="primary" style="width:90%" @click="register">注册</el-button>
+                <el-button type="primary" style="width:90%;margin-left: 5%;" @click="register()">注册</el-button>
               </div>
               <div style="margin-top:25px;width: 90%;padding-left: 20px;">
                 <div style="display: flex;justify-content: center;">
@@ -152,25 +130,43 @@
               </div>
 
             </el-dialog>
-
           </div>
         </div>
       </el-header>
 
       <el-main style="height:80vh">
+        <div style="position:absolute;left:14%;top:16% ;width:40%">
+
+          <div style="font-size:30px;margin-bottom:8px;font-weight: 800;">在线一体化</div>
+          <div style="font-size:45px;margin-bottom:8px;font-weight: 900;">软工开发团队协作与管理平台</div>
+          <div style="font-size:30px;margin-bottom:10px;font-weight: 800;">流转设计 &nbsp; &nbsp;让团队开发更简单</div>
+          <div style="font-size:30px;font-weight: 800;">快来使用吧～</div>
+
+          <div class="pulse" v-if="userStore.isLogin" style="margin-top: 20px;">
+            <!-- <transition name="pulse"> -->
+            <el-button color="#626aef" class="btnHover" style="z-index:1999;padding:35px 30px 35px 30px" size="large"
+              @click="jumpTo('index')">
+              <span style="font-size: 27px;">进入工作区</span>
+            </el-button>
+            <!-- </transition> -->
+          </div>
+          <div v-else style="margin-top: 20px;">
+            <el-button color="#626aef" style="z-index:1999;" size="large" @click="loginDialog = true">登录</el-button>
+          </div>
+
+        </div>
         <div>
-          <img class="show" src="@/assets/show.png" />
+          <img class="show imgHover" src="@/assets/show.png" />
         </div>
       </el-main>
-      <el-footer style="position:absolute;bottom:0;right:0;text-align: center;">
-        <a herf="" target="_blank">备案号：</a>
-        <a herf="https://beian.miit.gov.cn/" target="_blank">京ICP备号20230032129号-1</a>
-      </el-footer>
+      <el-footer style=" position: absolute;bottom: 0;right: 0;text-align: center;"><a href=" " target="_blank">备案号：</a>
+        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2023003129号-1</a></el-footer>
     </el-container>
   </div>
 </template>
 
 <script setup>
+import 'animate.css';//动态效果
 import { useRouter } from 'vue-router'
 import { ref, unref, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -180,35 +176,7 @@ import { reactive, toRefs } from 'vue'
 import axios from 'axios'
 // const axios = inject('axios')
 
-
-// const incrementCount = () => {
-//   authStore.increment() // 调用 store 中的 mutation
-// }
-/*----------*/
 const router = useRouter()
-
-/**/
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'],
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key, keyPath) => {
-  console.log(key, keyPath)
-}
-
-const btnSwiTeam = ref()
-const popoverTeam = ref()
-const teamOutside = () => {
-  unref(popoverTeam).popoverTeam?.delayHide?.()
-}
 
 /*main*/
 const loginDialog = ref(false)
@@ -225,8 +193,6 @@ const registerPwdConfrimInput = ref('')
 
 /*注册*/
 const register = () => {
-  // console.log(registerEmailInput);
-
   if (!(registerEmailInput.value && registerNameInput.value && registerPwdInput.value && registerPwdConfrimInput.value)) {
     console.log('不能为空');
     ElMessage.error('请输入所有信息，不能为空');
@@ -250,6 +216,7 @@ const register = () => {
       if (res.data.errno == 0)//成功
       {
         ElMessage.success(res.data.msg);
+        registerDialog.value=false;
         return;
       }
       else {//失败
@@ -295,22 +262,31 @@ const login = () => {
         //ElMessage.success('登录成功');//也许会有跳转失败
         //登录状态
         userStore.isLogin = true;
+        userStore.is_new=res.data.user_info.is_new;
         localStorage.setItem('token', res.data.user_info.token);
         localStorage.setItem('isLogin', true);
+        
         localStorage.setItem('userId', res.data.user_info.user_id);
+        // localStorage.setItem('is_new',res.data.user_info.is_new);
+        // localStorage.setItem('userAvatar', res.data.user_info.avatar_url)
         //id
         userStore.userId = res.data.user_info.user_id;
         //token
         token.value = res.data.user_info.token;
         console.log(token.value);
         userStore.token = res.data.user_info.token;
+        userStore.is_new=res.data.user_info.is_new;
+        if(res.data.user_info.is_new)
+        {
+          localStorage.setItem('is_new', true);
+        }
 
         //跳转
         // const path_url = '/' + path;
         // setTimeout(() => {
         window.open('/index', '_self');
         // }, 3000); // 3秒后执行
-        loginDialog = false;
+        loginDialog.value = false;
 
         return;
       }
@@ -325,7 +301,7 @@ const login = () => {
     });
 }
 
-console.log('hhh' + userStore.isLogin);
+// console.log('hhh' + userStore.isLogin);
 /*跳转对应页*/
 const jumpTo = (path) => {
   //this.$router.push('/video/'+video_id);
@@ -342,12 +318,25 @@ const jumpTo = (path) => {
 /*欢迎页的退出登录*/
 const logout = () => {
   userStore.isLogin = false;
+  userStore.isAdmin = false;
+  userStore.userAvatar = '';
   userStore.token = '';
   userStore.userId = '';
+  userStore.teamId = '';
+  userStore.teamName = '';
+  userStore.projectList = [];
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
   localStorage.removeItem('userId');
+  localStorage.removeItem('userAvatar');
+  localStorage.removeItem('isAdmin');
+
+  localStorage.removeItem('teamId');
+  localStorage.removeItem('teamName');
+  localStorage.removeItem('projectList');
+  localStorage.removeItem('is_new');
+
 
   console.log(userStore.isLogin);
   console.log('token' + userStore.token);
@@ -389,12 +378,59 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
+.pulse {
+  /* animation: btn-move 1.8s infinite; */
+}
+
+@keyframes btn-move {
+
+  /* 0% {
+        letter-spacing: 2px;
+        transform: translate(0px, 0px);
+    }
+
+    50% {
+        letter-spacing: 6px;
+        transform: translate(0px, -2px);
+    }
+
+    100% {
+        letter-spacing: 4px;
+        transform: translate(0px, 0px);
+    } */
+  /* 0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  } */
+}
 .head {
   /* font-family: SimHei;  */
   font-weight: 600;
   font-size: 18px;
 }
 
+.center-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
 
 ::v-deep .loginPage {
   /* --el-bg-color: #000741 !important; */
@@ -440,10 +476,36 @@ onMounted(() => {
   width: 50%;
 }
 
+.imgHover {
+  transition: transform 0.2s;
+}
+
+.imgHover:hover {
+  transform: scale(1.04);
+}
+
+.btnHover {
+  transition: transform 0.2s;
+}
+
+.btnHover:hover {
+  transform: scale(1.04);
+}
+.canClick{
+  cursor: pointer;
+}
+
 .likeBtnBlock {
   border: 2px solid #d0dcdc9a;
   border-radius: 10px;
   padding: 10px 0 10px 0;
   box-shadow: 0 .5px 0 .5px#e7f6f69a;
 }
+
+.textBtn:hover {
+  color: rgb(0, 102, 255);
+  /*这个颜色比较接近链接的颜色*/
+  cursor: pointer;
+}
+
 </style>

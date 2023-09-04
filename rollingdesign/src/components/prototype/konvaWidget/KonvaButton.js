@@ -4,6 +4,9 @@ export default class KonvaButton extends Konva.Group {
   constructor(config, stage, layer) {
     super(config);
 
+    this.attrs.defineType = 'KonvaButton'
+    this.attrs.flagId = config.flagId
+
     let backgroundColor = 'lightgray'
     if (config.fill) {
       backgroundColor = config.fill
@@ -100,5 +103,28 @@ export default class KonvaButton extends Konva.Group {
     });
 
 
+  }
+
+  /*
+    哦天哪
+    看看这是那个小天才的解决方法
+    他竟然想到了用这样的方法导出真正的HTML
+    快看看
+    这不是天才是什么
+   */
+  exportHTMLString() {
+    return `
+      <button style="
+        position: absolute;
+        left: ${this.attrs.x}px;
+        top: ${this.attrs.y}px;
+        width: ${this.attrs.width}px;
+        height: ${this.attrs.height}px;
+        border-radius: ${this.attrs.cornerRadius}px;
+        background-color: ${this.attrs.fill};
+        order: ${this.attrs.strokeWidth}px ${this.attrs.stroke} solid;
+      "
+      >${this.attrs.text}</button>
+    `
   }
 }

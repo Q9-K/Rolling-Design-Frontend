@@ -21,9 +21,10 @@ export default {
         // console.log(res.data)
         const array = authStore().team_members
         const userId = authStore().userId
-        console.log('我是傻逼', array)
-        return array.filter(item => (item.username.toLowerCase().startsWith(query.toLowerCase())))
-        // }, 2000);
+        console.log("🚀 ~ file: suggestion.js:23 ~ //setTimeout ~ team_members:", authStore().team_members)
+        // 
+        return array.filter(item => (item.id != authStore().userId && item.username.toLowerCase().startsWith(query.toLowerCase())))
+
     },
 
     render: () => {

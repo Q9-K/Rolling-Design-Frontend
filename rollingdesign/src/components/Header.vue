@@ -1,18 +1,20 @@
 <template>
   <!--header-->
   <div>
+    <!-- <VOnboardingWrapper ref="wrapper2" :steps="steps2" /> -->
     <!--顶部-->
-    <el-row style="display: flex;justify-content: flex-end;">
+    <el-row style="display: flex;justify-content: flex-end;align-items: center;">
       <!--通知-->
-      <div @click="this.$router.push('/chat')">聊天</div>
-      <receiveMessage></receiveMessage>
+
+      <span id="message">
+        <receiveMessage></receiveMessage>
+      </span>
 
       <!--顶部的头像-->
-      <div style="margin-left:2%">
+      <div id="user_info" style="margin-left:2%">
         <!-- <el-avatar :size="50" :src="circleUrl" ref="buttonRef" v-click-outside="onClickOutside" /> -->
         <el-avatar :size="50" :src="user.userAvatar" ref="buttonRef" v-click-outside="onClickOutside" />
         <!-- <el-avatar :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ref="buttonRef" v-click-outside="onClickOutside" /> -->
-
       </div>
 
       <!--点击头像，出现悬浮板-->
@@ -21,7 +23,8 @@
         <div style="padding-left:15px;padding-right:15px">
           <div style="display: flex;align-items: center;padding-top:10px;" @click="personMsgDialog = true;">
             <!--完善关闭悬浮-->
-            <el-avatar :size="50" :src="user.userAvatar" @click="personMsgDialog = true" style="margin-right:5px" /> 
+            <span class="canClick"><el-avatar :size="50" :src="user.userAvatar" @click="personMsgDialog = true"
+                style="margin-right:5px" /></span>
             <span style="font-weight:900;font-size:16px;">{{
               user.nickName }}</span>
           </div>
@@ -48,7 +51,7 @@
           <div class="borderBlock" style="margin-bottom:35px;padding-left: 10px;">
             <el-row style="display: flex;align-items: center;justify-content: space-between;">
               <div class="leftContent" style="display: flex;justify-content:flex-start">
-                <el-avatar :size="50" :src="circleUrl" style="margin-right:10px" />
+                <el-avatar :size="50" :src="user.userAvatar" style="margin-right:10px" />
                 <div>
                   <div class="hintText" style="text-align: left;">昵称</div>
                   <div style="text-align: left;">{{ user.nickName }}</div>
@@ -75,14 +78,15 @@
             <el-row style="display: flex;flex-direction: row;justify-items: flex-start;width: 90%;padding-left: 20px;">
               <el-col class="hintText" :span="24" style="text-align: left;margin-bottom: 10px;">请输入昵称</el-col>
               <el-col :span="24">
-                <el-input v-model="nickNameConfigInput" placeholder="请输入昵称" />
+                <el-input v-model="nickNameConfigInput" @keyup.enter="nickNameConfig = false; nickNameConfigMethod()"
+                  placeholder="请输入昵称" />
               </el-col>
             </el-row>
 
             <template #footer>
               <span class="dialog-footer">
                 <el-button @click="nickNameConfig = false">取消</el-button>
-                <el-button type="primary" @click="nickNameConfig = false;nickNameConfigMethod()"><!--发送修改-->
+                <el-button type="primary" @click="nickNameConfig = false; nickNameConfigMethod()"><!--发送修改-->
                   确认
                 </el-button>
               </span>
@@ -92,7 +96,7 @@
           <!--头像-->
           <el-row style="display: flex;align-items: center;justify-content: space-between;">
             <div class="leftContent" style="display: flex;justify-content:flex-start">
-              <el-avatar :size="50" :src="circleUrl" style="margin-right:10px" />
+              <el-avatar :size="50" :src="user.userAvatar" style="margin-right:10px" />
             </div>
             <el-upload v-model:file-list="fileList" class="upload-demo"
               action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" multiple :on-preview="handlePreview"
@@ -139,11 +143,12 @@
           <el-divider />
 
           <!--登录密码-->
-          <el-row class="leftContent"
-            style="margin-top: 10px;margin-bottom: 40px;align-items: center;justify-content:space-between">
-            <div style="justify-items: left;flex-direction: column;">
-              <div class="hintText" style="justify-items: left;margin-bottom: 6px;">登录密码</div>
-              <div style="justify-items: left;font-size:small">已设置密码</div>
+          <el-row style="display: flex;margin-bottom: 40px;align-items: center;justify-content:space-between">
+            <div class="leftContent" style="display: flex;justify-content:flex-start">
+              <div>
+                <div class="hintText" style="text-align: left;margin-bottom: 6px;">登录密码</div>
+                <div style="text-align: left;font-size:small">已设置密码</div>
+              </div>
             </div>
             <div style="justify-self: end;">
               <el-button link type="primary" size="small" @click="pwdConfig = true">修改密码</el-button>
@@ -170,7 +175,7 @@
             <span class="dialog-footer">
               <el-button @click="pwdConfig = false">取消</el-button>
               <!--点击确认，修改密码-->
-              <el-button type="primary" @click="pwdConfig = false;pwdConfigMethod()">
+              <el-button type="primary" @click="pwdConfig = false; pwdConfigMethod()">
                 确认
               </el-button>
             </span>
@@ -182,12 +187,13 @@
 </template>
 
 <script setup>
+import qs from 'qs'
 // import { UserFiled } from 'element-plus/'
-import receiveMessage from './prototype/receiveMessage.vue'
+import receiveMessage from './receiveMessage.vue'
 import { UserFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { reactive, toRefs } from 'vue'
-import { ref, unref } from 'vue'
+import { ref, unref, defineProps } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted } from 'vue'
 import { UploadProps, UploadUserFile } from 'element-plus'
@@ -196,10 +202,41 @@ import {
   Tools,
   SwitchButton,
 } from '@element-plus/icons-vue'
+import { defineComponent } from 'vue'
+import { VOnboardingWrapper, useVOnboarding } from 'v-onboarding'
+import 'v-onboarding/dist/style.css'
+
+const steps2 = [
+  {
+    attachTo: { element: '#user_info' },
+    content: {
+      title: "个人信息",
+      description: "点击这里可查看账户信息，可以退出登录"
+    }
+  },
+  {
+    attachTo: { element: '#message' },
+    content: {
+      title: "消息通知",
+      description: "点击查看消息通知，可一键已读所有未读消息"
+    }
+  },
+  {
+    attachTo: { element: '#chat' },
+    content: {
+      title: "聊天页面",
+      description: "点击进入聊天页面进行聊天，除个人空间外的每个空间都有一个默认的群聊，您可以根据需要进行私聊或创建新的群聊"
+    }
+  }
+]
+// const props = defineProps({
+//   // Define a prop to pass steps2 to the parent component.
+//   steps2: Array,
+// });
 
 const user = reactive({
   userId: '',
-  name:'',
+  name: '',
   nickName: '',
   userAvatar: '',
   email: '',
@@ -270,7 +307,6 @@ const jumpTo = (path) => {
   window.open(path_url, '_self');
 }
 
-
 const fetchUserData = () => {
   let Headers = { 'Authorization': authStore().token };
 
@@ -282,8 +318,11 @@ const fetchUserData = () => {
       if (response.data.errno == 0) {  //获取成功“我”的身份信息
         user.userId = response.data.user_info.id;
         user.name = response.data.user_info.username;
+        localStorage.setItem('username', user.name);
         user.nickName = response.data.user_info.nickname;
-        user.userAvatar = response.data.user_info.avatar_url;   //这是头像
+        nickNameConfigInput.value = user.nickName;
+        user.userAvatar = response.data.user_info.avatar_url;
+        localStorage.setItem('userAvatar', user.userAvatar)  //头像
         user.email = response.data.user_info.email;
         return;
       }
@@ -293,27 +332,6 @@ const fetchUserData = () => {
     }).catch(error => {
       console.log(error);
     })
-
-  // axios.get('http://www.aamofe.top/api/user/personal_info/', { headers: Headers })
-  //   .then((response) => {
-  //     console.log(Headers);
-  //     console.log(response);
-
-  //     if (response.data.errno == 0) {  //获取成功“我”的身份信息
-  //       user.userId = response.data.user_info.id;
-  //       user.name = response.data.user_info.username;
-  //       user.nickName = response.data.user_info.nickname;
-  //       user.userAvatar = response.data.user_info.avatar_url;   //这是头像
-  //       user.email = response.data.user_info.email;
-  //       console.log(user);
-  //       return;
-  //     }
-  //     else {
-  //       ElMessage.warning(response.data.msg);
-  //     }
-  //   }).catch(error => {
-  //     console.log(error);
-  //   })
 }
 
 onMounted(() => {
@@ -328,30 +346,28 @@ const nickNameConfigMethod = () => {
     ElMessage.warning('请输入昵称');
     return;
   }
-  let formData = new FormData();
-  formData.append("nickname", nickNameConfigInput.value);
-  axios.post('http://www.aamofe.top/api/user/update_info/', formData)
-      .then(res => {
-        // 处理响应数据
-        console.log(formData);
-        console.log(res);
+  axios.post('http://www.aamofe.top/api/user/update_info/',
+    qs.stringify({ nickname: nickNameConfigInput.value }), { headers: { Authorization: authStore().token } })
+    .then(res => {
+      // 处理响应数据
+      console.log(res);
 
-        if (res.data.errno == 0)//成功
-        {
-         user.nickName=nickNameConfigInput.value;
-          nickNameConfig = false;
-          nickNameConfigInput.value='';
-          return;
-        }
-        else {//失败
-          ElMessage.error(res.data.msg);
-          return;
-        }
-      })
-      .catch(error => {
-        // 处理请求错误
-        console.error(error);
-      });
+      if (res.data.errno == 0)//成功
+      {
+        user.value.nickName = nickNameConfigInput.value;
+        nickNameConfig.value = false;
+        nickNameConfigInput.value = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 
 /*修改密码*/
@@ -361,29 +377,28 @@ const pwdConfigMethod = () => {
     ElMessage.warning('请输入密码');
     return;
   }
-  let formData = new FormData();
-  formData.append("nickname", pwdConfigInput.value);
-  axios.post('http://www.aamofe.top/api/user/update_info/', formData)
-      .then(res => {
-        // 处理响应数据
-        console.log(formData);
-        console.log(res);
+  axios.post('http://www.aamofe.top/api/user/update_info/',
+    qs.stringify({ password: pwdConfigInput.value }), { headers: { Authorization: authStore().token } })
+    .then(res => {
+      // 处理响应数据
+      console.log(formData);
+      console.log(res);
 
-        if (res.data.errno == 0)//成功
-        {
-          pwdConfig = false;
-          pwdConfigInput.value='';
-          return;
-        }
-        else {//失败
-          ElMessage.error(res.data.msg);
-          return;
-        }
-      })
-      .catch(error => {
-        // 处理请求错误
-        console.error(error);
-      });
+      if (res.data.errno == 0)//成功
+      {
+        pwdConfig = false;
+        pwdConfigInput.value = '';
+        return;
+      }
+      else {//失败
+        ElMessage.error(res.data.msg);
+        return;
+      }
+    })
+    .catch(error => {
+      // 处理请求错误
+      console.error(error);
+    });
 }
 
 /*主页面的退出登录*/
@@ -393,6 +408,8 @@ const logout = () => {
   /*浏览器中*/
   localStorage.removeItem('isLogin');
   localStorage.removeItem('token');
+  localStorage.removeItem('is_new');
+
 
   console.log(authStore().isLogin);
   console.log('token' + authStore().token);
@@ -467,5 +484,18 @@ const logout = () => {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+
+
+.imgHover {
+  transition: transform 0.2s !important;
+}
+
+.imgHover:hover {
+  transform: scale(1.04) !important;
+}
+
+.canClick {
+  cursor: pointer;
 }
 </style>

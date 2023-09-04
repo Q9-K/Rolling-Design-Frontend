@@ -1,8 +1,16 @@
+/*
+ * @Date: 2023-09-05 00:07:34
+ * @Author: Q9K
+ * @Description: 
+ */
 import Konva from "konva";
 
 export default class KonvaInput extends Konva.Group {
   constructor(config) {
     super(config);
+
+    this.attrs.defineType = 'KonvaInput'
+    this.attrs.flagId = config.flagId
 
     // 添加背景矩形
     const background = new Konva.Rect({
@@ -46,5 +54,24 @@ export default class KonvaInput extends Konva.Group {
     });
     this.add(placeholderText);
 
+  }
+
+  /*
+    哦天哪
+    看看这是那个小天才的解决方法
+    他竟然想到了用这样的方法导出真正的HTML
+    快看看
+    这不是天才是什么
+   */
+  exportHTMLString() {
+    return `
+      <input placeholder="请输入" style="
+        position: absolute;
+        left: ${this.attrs.x}px;
+        top: ${this.attrs.y}px;
+        width: ${this.attrs.width}px;
+        height: ${this.attrs.height}px;
+      " />
+    `
   }
 }
